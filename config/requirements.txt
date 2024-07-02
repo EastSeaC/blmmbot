@@ -1,0 +1,7 @@
+aiohttp
+khl.py
+requests
+sqlalchemy
+openpyxl
+pymysql
+aiohttp-jinja2

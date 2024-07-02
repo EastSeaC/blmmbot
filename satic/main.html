@@ -1,0 +1,136 @@
+<html>
+
+<head>
+    <script src="/satic/layui/layui.js"></script>
+    <link href="/satic/layui/css/layui.css" rel="stylesheet">
+    <!--    <script src="./lib/jquery.min.js"></script>-->
+    <script src="/satic/layui/layui.js"></script>
+    <script src="/satic/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo layui-hide-xs layui-bg-black">BLMM[BTL]网页端</div>
+            <!-- 头部区域（可配合layui 已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                <!-- 移动端显示 -->
+                <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+                    <i class="layui-icon layui-icon-spread-left"></i>
+                </li>
+                <li class="layui-nav-item layui-hide-xs"><a href="/">导出数据</a></li>
+                <li class="layui-nav-item layui-hide-xs"><a href="/ban">封印</a></li>
+
+            </ul>
+        </div>
+    </div>
+    <blockquote class="layui-elem-quote layui-text">
+        管理员界面
+    </blockquote>
+    <div hidden="true" id="myData" data="{{match_data}}"></div>
+    <table class="layui-hide" id="playerInfo" lay-filter="playerInfo">
+
+    </table>
+    <button class="layui-btn" id="demo" onclick="GetMatchData()">Export</button>
+
+</body>
+<script>
+    var myDataElement = document.getElementById('myData');
+    var myVariableValue = myDataElement.getAttribute('data');
+    console.log(myVariableValue, typeof myVariableValue);
+    var CtrUpdateData = JSON.parse(myVariableValue);
+
+    var ctrCheckArr = [];
+
+    function GetMatchData() {
+        // 创建 XMLHttpRequest 对象
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/GetDataEx', true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+        xhr.responseType = 'arraybuffer';
+
+        xhr.onload = function () {
+            if (ctrCheckArr.length == 0) {
+                return
+            }
+
+            if (xhr.status === 200) {
+                var blob = new Blob([xhr.response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                var url = URL.createObjectURL(blob);
+
+                var a = document.createElement('a');
+                a.href = url;
+				
+				const now = new Date();
+				const year = now.getFullYear();
+				const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从 0 开始，需要加 1
+				const day = String(now.getDate()).padStart(2, '0');
+
+				const formattedDate = `${year}-${month}-${day}`;
+				console.log(formattedDate);
+
+                a.download = `${formattedDate}BTL.xlsx`;
+                a.click();
+
+                URL.revokeObjectURL(url);
+            } else {
+                console.error('发生错误：' + xhr.status);
+            }
+        };
+
+        xhr.send(JSON.stringify(ctrCheckArr));
+    }
+
+    layui.use(['element', 'table', 'jquery', 'form'], function () {
+        var element = layui.element,
+            table = layui.table
+            , form = layui.form
+            , laydate = layui.laydate;
+
+
+        var ctrUpdateTable = table.render({
+            elem: '#playerInfo'
+            , height: 670
+            , cols: [[ //表头
+                { type: 'checkbox', title: '全选', fixed: 'left' }
+                // , {field: 'experience', title: '序号', width: 100, type: 'numbers'}
+                , { field: 'id', title: 'ID', width: 110 }
+                , { field: 'time_match', title: '时间', width: 220 }
+                , { field: 'left_scores', title: 'left_scores', width: 386 }
+            ]]
+            , limit: 40
+            , data: CtrUpdateData//数据
+            , page: {
+                layout: ['count', 'prev', 'page', 'next', "skip"] //自定义分页布局
+                //,curr: 5 //设定初始在第 5 页
+                , groups: 2//只显示 1 个连续页码
+                , first: false //不显示首页
+                , last: false //不显示尾页
+            },
+            done: function () {
+
+            }
+        })
+
+
+        table.on('checkbox(playerInfo)', function (obj) {
+            ctrCheckArr.length = 0;
+            let checkStatus = table.checkStatus('playerInfo')
+                , data = checkStatus.data; //获取选中的数据
+            // console.log(data)
+            for (let i = 0; i < data.length; i++) {
+                ctrCheckArr.push(data[i].id)
+            }
+            console.log(ctrCheckArr);
+        });
+
+        //根据新数据可以重新加载表格
+        ctrUpdateTable.reload({
+            data: CtrUpdateData,
+        });
+    });
+
+
+</script>
+
+</html>

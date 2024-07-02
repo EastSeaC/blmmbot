@@ -126,3 +126,68 @@ async def ShowLastMatch():
                 )
             )
             await g_channels.command_channel.send(CardMessage(c2))
+
+# @bot.command(name='add_admin', case_sensitive=False)
+# async def add_admin(msg: Message, kook_id: str):
+#     pass
+
+
+# @bot.command(name='ban', case_sensitive=False)
+# async def ban(msg: Message, type: str = 'gi', condition: str = ''):
+#     cm = CardMessage()
+#
+#     type1 = type[1]
+#     if type[0] == 'g':
+#         if type[1] == 'i':
+#             if re.match(r'2\.0\.0\.\d+', condition):
+#                 player: Player = sqlSession.query(Player).filter(Player.playerId == condition).first()
+#                 if player is not None:
+#                     pass
+#             else:
+#                 await msg.reply(f"guid错误，请仔细检擦{condition}")
+#         elif type1 == 'n':
+#             p = sqlSession.query(Player).filter(Player.playerId == condition).all()
+#             for i in p:
+#                 k: Player = i
+#                 # cm.append()
+#                 pass
+#             pass
+#     elif True:
+#         pass
+#     c8 = Card(
+#         Module.ActionGroup(
+#             Element.Button("临时封印", value='1', click=Types.Click.RETURN_VAL, theme=Types.Theme.INFO),
+#             Element.Button("永久封印", value='2', click=Types.Click.RETURN_VAL, theme=Types.Theme.DANGER),
+#             Element.Button("封印KOOK", value='3', click=Types.Click.RETURN_VAL, theme=Types.Theme.DANGER),
+#             Element.Button("封印Game", value='4', click=Types.Click.RETURN_VAL, theme=Types.Theme.DANGER),
+#         )
+#     )
+#     cm.append(c8)
+#     await msg.reply(cm)
+#     # sqlSession.commit()
+#     # if id_type == 'k':
+#     #     record = sqlSession.query(Player).filter(Player.kookId == target_id)
+#     # elif id_type == 'g':
+#     #     record = sqlSession.query(Player).filter(Player.playerId == target_id)
+#     # else:
+#     #     record = sqlSession.query(Player).filter(Player.kookId == target_id)
+#     #     pass
+#     # if record.count() == 1:
+#     #     player: Player = record.first()
+#     #
+#     #     if unit == 'h':
+#     #         player.ban_until_time = dt.now() + timedelta(hours=count)
+#     #         pass
+#     # pass
+#     pass
+#
+#
+# @bot.command(name='unban', case_sensitive=False)
+# async def unban(msg: Message, id_type: str, target_id: str):
+#     if id_type == 'k':
+#         record = sqlSession.query(Player).filter(Player.kookId == target_id)
+#     elif id_type == 'g':
+#         record = sqlSession.query(Player).filter(Player.playerId == target_id)
+#     else:
+#         record = sqlSession.query(Player).filter(Player.kookId == target_id)
+#     pass

@@ -25,7 +25,7 @@ class ChannelManager:
     # 通用 人类提示频道
     common_channel = '3137719365146347'
     command_channel = '6826420429749824'
-    manager_user_id = []
+    manager_user_id = ['482714005']
 
 
 class EsChannels:

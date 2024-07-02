@@ -1,13 +1,12 @@
-import json
-
 from khl import Bot, Message, EventTypes, Event
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
-from sqlalchemy import literal, desc
+from sqlalchemy import literal, desc, text
 
 from blmm_bot import EsChannels
 from init_db import get_session
-from tables.Admin import DBAdmin
+from lib.basic import generate_numeric_code
 from tables import *
+from tables.Admin import DBAdmin
 from tables.PlayerNames import DB_PlayerNames
 
 session = get_session()
@@ -62,20 +61,34 @@ def init(bot: Bot, es_channels: EsChannels):
             return
 
         if value == AdminButtonValue.Refresh_All_VerifyCode:
-            await RefreshAllPlayerVerifyCode()
+            z = RefreshAllPlayerVerifyCode()
+            if z:
+                await es_channels.command_channel.send('刷新所有人验证码成功')
         elif value == AdminButtonValue.Show_Last_Match:
             await ShowLastMatch()
 
 
-async def RefreshAllPlayerVerifyCode():
-    t = session.query(DB_PlayerNames).all()
-    for i in t:
-        player_names_obj: DB_PlayerNames = i
-        very = Verify()
-        very.playerId = i
+def RefreshAllPlayerVerifyCode():
+    # 清空表中的所有记录
+    session.execute(text('DELETE FROM PlayerNames'))
+    session.commit()
 
-        session.add()
-    pass
+    result = session.query(
+        DB_PlayerNames
+    ).distinct(DB_PlayerNames.playerId).all()
+    player_ids = result
+    dict_x = {}
+    for i in player_ids:
+        player_names_obj: DB_PlayerNames = i
+        dict_x[player_names_obj.playerId] = generate_numeric_code()
+
+    for k, v in dict_x.items():
+        very = Verify()
+        very.playerId = k
+        very.code = v
+        session.add(very)
+    session.commit()
+    return True
 
 
 async def ShowLastMatch():

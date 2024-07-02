@@ -3,6 +3,10 @@ import string
 from datetime import datetime, timedelta
 
 
+def generate_numeric_code(length=6):
+    return ''.join([str(random.randint(0, 9)) for _ in range(length)])
+
+
 def generate_verification_code():
     # 生成包含数字和大写字母的字符集
     characters = string.digits + string.ascii_uppercase

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, VARCHAR
 from .base import Base
 
+
 class DB_PlayerNames(Base):
     __tablename__ = "playernames"
 

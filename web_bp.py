@@ -11,8 +11,10 @@ from sqlalchemy import or_
 
 from LogHelper import LogHelper
 from convert.PlayerMatchData import TPlayerMatchData
+from entity.PlayerRegInfo import PlayerInfo
 from init_db import get_session
 from tables import *
+from tables.PlayerNames import DB_PlayerNames
 
 # 创建一个蓝图
 bp = web.RouteTableDef()
@@ -39,8 +41,30 @@ async def index(request):
 @bp.get('/get_player_info/{player_id}')
 async def get_player_info(request):
     player_id = request.match_info['player_id']
-    z = session.query(DB_PlayerData).filter(Player.playerId == player_id)
-    return z
+    query = session.query(Player).filter(Player.playerId == player_id)
+    z1 = query.count()
+
+    player_reg = PlayerInfo()
+    player_reg.player_id = player_id
+
+    if z1 == 0:  # 说明没注册
+        query = session.query(Verify).filter(Verify.playerId == player_id)
+        z = query.count()
+        very = Verify()
+        if z == 0:
+            very.code = generate_numeric_code()
+            very.playerId = player_id
+            session.add(very)
+            session.commit()
+        elif z == 1:
+            very: Verify = query.first()
+
+        player_reg.verify_code = very.code
+        player_reg.is_reg = False
+    elif z1 > 0:
+        player_reg.is_reg = True
+
+    return Response(text=json.dumps(player_reg.__dict__))
 
 
 @bp.get('/get_reg/{player_id}')
@@ -84,6 +108,21 @@ async def get_verify_code(request):
         list[u.playerId] = u.code
     return web.Response(text=json.dumps(list))
 
+
+@bp.get('/add_player_name/{player_id}/{name}')
+async def add_player_name(request):
+    player_id = request.match_info['player_id']
+    name = request.match_info['name']
+    query = session.query(DB_PlayerNames).filter(Player.playerId == player_id)
+    z1 = query.count()
+    if z1 == 0:
+        player_name = DB_PlayerNames()
+        player_name.playerId = player_id
+        player_name.PlayerName = name
+        session.add(player_name)
+        session.commit()
+    LogHelper.log(f"已添加玩家名称:{name}")
+    return Response(text='success')
 
 # @bp.get('/UploadMatchData/{json_str}')
 # async def update_match_data(request):

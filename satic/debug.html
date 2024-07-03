@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>调试界面</title>
+    <script src="jquery.min.js"></script>
+</head>
+
+<body>
+    <form>
+        <input id="cru" />
+    </form>
+    <button class="niceButton3" onclick="require()">调试</button>
+
+</body>
+<script>
+    function require() {
+        var text = $('#cru').val()
+        console.log(text);
+        $.ajax({
+            url: 'localhost:14725/get_player_info/' + text, // 请求的URL
+            type: 'GET', // 请求类型
+            dataType: 'json', // 预期服务器返回的数据类型
+            success: function (response) {
+                // 请求成功后的处理逻辑
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // 请求失败后的处理逻辑
+                console.log('Error: ' + textStatus);
+            }
+        })
+    }
+</script>
+<style>
+    .niceButton3 {
+        background-color: #1795bb;
+        border-radius: 12px;
+        border: none;
+        color: white;
+        padding: 16px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        -webkit-transition-duration: 0.4s;
+        transition-duration: 0.4s;
+        cursor: pointer;
+    }
+
+    .niceButton3:hover {
+        background-color: #fff;
+        color: #1795bb;
+        border: 1px solid #ccc;
+    }
+</style>
+
+</html>

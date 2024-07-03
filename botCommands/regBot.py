@@ -4,6 +4,7 @@ from random import randint
 from khl import Bot, Message, PrivateMessage
 from sqlalchemy import or_
 
+from LogHelper import LogHelper
 from init_db import get_session
 from kook.ChannelKit import EsChannels
 from tables import *
@@ -14,13 +15,14 @@ g_channels: EsChannels
 
 # 用于注册命令的函数
 def init(bot: Bot, es_channels):
-
     global g_channels
     g_channels = es_channels
 
     @bot.command('v', case_sensitive=False)
     async def v(msg: Message, player_id: str = '', verify_code: str = ''):
         user_id = msg.author_id
+        user = await  bot.client.fetch_user(user_id)
+
         failed_text = ''
 
         if verify_code == '':
@@ -40,6 +42,8 @@ def init(bot: Bot, es_channels):
             user = await bot.client.fetch_user(user_id)
             # 获取GuildUser对象
             await user.send(text)
+            global g_channels
+            await g_channels.command_channel.send(text)
             return
 
         # 检测是否已被注册
@@ -52,7 +56,8 @@ def init(bot: Bot, es_channels):
 
         # 判断
         verify_code_obj = session.query(Verify).filter(Verify.code == verify_code, Verify.playerId == player_id)
-        if verify_code_obj is not None:
+        if verify_code_obj is None:
+            LogHelper.log(Verify(verify_code_obj).code)
             failed_text += '验证码错误'
             await msg.reply(failed_text)
             return
@@ -60,7 +65,9 @@ def init(bot: Bot, es_channels):
         player = Player()
         player.playerId = player_id
         player.kookId = user_id
+        player.kookName = user.username
         session.add(player)
+        session.commit()
         await msg.reply("注册成功")
 
 

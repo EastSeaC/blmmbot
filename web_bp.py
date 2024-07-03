@@ -5,9 +5,11 @@ from random import randint
 
 import aiohttp_jinja2
 from aiohttp import web
+from aiohttp.web import Response
 from openpyxl.workbook import Workbook
 from sqlalchemy import or_
 
+from LogHelper import LogHelper
 from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from tables import *
@@ -44,9 +46,9 @@ async def get_player_info(request):
 @bp.get('/get_reg/{player_id}')
 async def get_reg(req):
     player_id = req.match_info['player_id']
-    query = session.query(Verify).filter(Player.playerId == player_id)
+    session.commit()
+    query = session.query(Verify).filter(Verify.playerId == player_id)
     z = query.count()
-
     very = Verify()
     if z == 0:
         very.code = generate_numeric_code()
@@ -54,9 +56,9 @@ async def get_reg(req):
         session.add(very)
         session.commit()
     elif z == 1:
-        very: Verify = z.first()
-
-    return very.code
+        very: Verify = query.first()
+    LogHelper.log(f"{player_id}, 验证码{very.code}")
+    return Response(text=very.code)
 
 
 @bp.get('/reg/{player_id}/{very_code}')

@@ -13,7 +13,7 @@ from khl import Bot, Message, Event, EventTypes, GuildUser
 from khl.card import Card, Module, Types, Element, Struct, CardMessage
 
 from LogHelper import LogHelper
-from botCommands import adminBot, regBot
+from botCommands import adminBot, regBot, playerBot
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
 from match_guard import MatchGuard
@@ -53,7 +53,7 @@ def open_file(path: str):
 
 # 打开config.json
 # config = open_file('config\config.json')
-config = open_file('config\config.json')
+config = open_file('config\\config.json')
 
 # 初始化机器人
 """main bot"""
@@ -83,32 +83,15 @@ async def help_x(msg: Message):
 
     /score_list /sl 查看分数榜单
     /score /s 查看自己的分数
-    /reg [player_id] 注册指令 例如 /reg 2.0.0.xxxxxxxxxx
-    /v [code] 回复验证码 例如 /v 6axdee
+    
+    注册指令：
+    /v [playerId] [code]  例如 /v 2.0.0.xxxxxxxxxx 600860
 
     /spniwc  查看当前等候频道里的玩家有
-    /reset_state_machine
-    
-    /request_admin [playerId/userId] 申请成为管理
-    /change_admin_level [playerId] [level] 修改管理员等级
-    /cancel_admin [playerId/userId] 取消管理员
-    
-    /ban [gi/gu/ki/ku] [condition] 封印玩家
-        说明：
-        1.gi 类型为游戏PlayerID  举例 /ban gi 2.0.0.762.....
-        2.gu 类型为游戏名称       例如 /ban gi doinb
-        3.ki kook的userID        例如 /ban ki 222
-        4.ku kook的用户名        例如  /ban ku 2123
-    
-    /unban [PlayerId]
+
     /show_match 显示已有对局   
     '''
     await msg.reply(t)
-
-
-@bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
-async def confirm_ban(b: Bot, e: Event):
-    pass
 
 
 @bot.command(name='show_player_numbers_in_waiting_channel', case_sensitive=False, aliases=['spniwc', 'spn'])
@@ -279,14 +262,17 @@ async def worldO(msg: Message):
                           f'Authorization': f"Bot {config['token']}",
                       },
                       params={
-                          'msg_id': 'a69d7d69-08c7-4e32-9e72-c87ff68ae3a4',
+                          'msg_id': '8477c586-9111-4312-bc38-a9664d75b32c',
                       })
     print(r.text)
     print(UrlHelper.delete_message)
-    # z = await es_channels.command_channel.list_messages()
-    #
-    # for i in z["items"]:
-    #     print(i['id'])
+    z = await es_channels.command_channel.list_messages()
+
+    for i in z["items"]:
+        print(i['id'])
+        print(i)
+        print(type(z))
+        break
     #     r = requests.post(UrlHelper.delete_message,
     #                       headers={
     #                           f'Authorization': f"Bot {config['token']}",
@@ -395,6 +381,7 @@ async def player_exit_channel(b: Bot, e: Event):
 async def bot_init(bot1: Bot):
     adminBot.init(bot1, es_channels)
     regBot.init(bot1, es_channels)
+    playerBot.init(bot1, es_channels)
 
 
 # 开跑

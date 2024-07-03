@@ -43,6 +43,25 @@ def init(bot: Bot, es_channels: EsChannels):
         cm.append(c8)
         await es_channels.command_channel.send(cm)
 
+    @bot.command(name='es2', case_sensitive=False)
+    async def es2(msg: Message):
+        t = '''    /reset_state_machine
+    
+    /request_admin [playerId/userId] 申请成为管理
+    /change_admin_level [playerId] [level] 修改管理员等级
+    /cancel_admin [playerId/userId] 取消管理员
+    
+    /ban [gi/gu/ki/ku] [condition] 封印玩家
+        说明：
+        1.gi 类型为游戏PlayerID  举例 /ban gi 2.0.0.762.....
+        2.gu 类型为游戏名称       例如 /ban gi doinb
+        3.ki kook的userID        例如 /ban ki 222
+        4.ku kook的用户名        例如  /ban ku 2123
+    
+    /unban [PlayerId]
+        '''
+        await msg.reply(t)
+
     @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
     async def btn_click_event(b: Bot, e: Event):
         """按钮点击事件"""

@@ -1,9 +1,7 @@
-from random import randint
-
-from khl import Bot, Message, PrivateMessage
+from khl import Bot, Message
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
-from sqlalchemy import or_
 
+from config import get_rank_name
 from init_db import get_session
 from kook.ChannelKit import EsChannels
 from tables import *
@@ -56,8 +54,14 @@ def init(bot: Bot, es_channels: EsChannels):
             player: Player = t.first()
             cm = CardMessage()
             c1 = Card(
-                Module.Header("等级"),
-                Module.Section(str(player.rank))
+                Module.Header("基本信息"),
+                Module.Section(
+                    Struct.Paragraph(
+                        3,
+                        Element.Text(f"分数:\n{player.rank}", type=Types.Text.KMD),
+                        Element.Text(f"位阶:\n{get_rank_name(player.rank)}", type=Types.Text.KMD),
+                    )
+                )
             )
             Kill_Info = f'''**Kill Info**
     Kills:{player.kill}

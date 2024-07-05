@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 import json
-import re
 from random import randint
 
 import aiohttp
@@ -10,15 +9,17 @@ import jinja2
 import requests
 from aiohttp import web
 from khl import Bot, Message, Event, EventTypes, GuildUser
-from khl.card import Card, Module, Types, Element, Struct, CardMessage
+from khl.card import Card, Module, Struct, Element, Types, CardMessage
 
 from LogHelper import LogHelper
 from botCommands import adminBot, regBot, playerBot
+from config import get_rank_name
+from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
 from match_guard import MatchGuard
-from match_state import MatchState, MatchCondition, PlayerInfo
-from tables import *
+from match_state import MatchState, MatchCondition, PlayerInfo, MatchConditionEx
+from tables import DB_Matchs
 from web_bp import bp
 
 sqlSession = get_session()
@@ -301,6 +302,62 @@ async def show_match(msg: Message):
 
 @bot.task.add_interval(seconds=1)
 async def task1():
+    # 检查是否有数据
+    if MatchConditionEx.state:
+        MatchConditionEx.state = False
+        LogHelper.log("输出比赛数据")
+        await es_channels.command_channel.send(CardMessage(Card(Module.Divider())))
+        z = MatchConditionEx.data
+
+        score_str = ''
+        KD_str = ''
+        name_str = '姓名:'
+        for i in z:
+            player: TPlayerMatchData = i
+            name_str += f'\n{player.player_name}'
+            kill_info = \
+                f'''战场表现:
+Kills:{player.kill}
+Deaths:{player.death}
+KDA:{(player.kill + player.assist) / max(player.death, 1)}
+KD: {player.kill / max(player.death, 1)}
+'''
+            game_info = f'''**游戏**
+对局数:{player.match}
+胜场:{player.win}
+败场:{player.lose}
+平局:{player.draw}
+胜/败:{player.win / max(player.lose, 1)}
+MVPs:{0}'''
+            c1 = Card(
+                Module.Header(f"名称:{player.player_name}\tUID:{player.player_id}"),
+                Module.Context(
+                    f"得分: (font){+40}(font)[success]"
+                ),
+                Module.Section(
+                    Struct.Paragraph(
+                        3,
+                        Element.Text(kill_info, type=Types.Text.KMD),
+                        Element.Text(game_info, type=Types.Text.KMD),
+                        Element.Text(f"位阶:\n{get_rank_name(1000)}", type=Types.Text.KMD),
+                    )
+                )
+            )
+            await es_channels.command_channel.send(CardMessage(c1))
+        # 添加名字
+        #
+        # c1 = Card(
+        #     Module.Header("胜者组"),
+        #     Module.Section(
+        #         Struct.Paragraph(
+        #             3,
+        #             Element.Text(f"名字:\n{}",type=Types.Text.KMD),
+        #             Element.Text(f"分数:\n{player.rank}", type=Types.Text.KMD),
+        #             Element.Text(f"位阶:\n{get_rank_name(player.rank)}", type=Types.Text.KMD),
+        #         )
+        #     )
+        # )
+
     if not es_channels.ready:
         await es_channels.Initial(bot)
 

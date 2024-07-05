@@ -73,6 +73,14 @@ RANKS = [
     }
 ]
 
+
+def get_rank_name(score: int):
+    for i in RANKS:
+        if score >= i["rank"]:
+            return i["name"]
+    return "小丑"
+
+
 MATCH_MODES = [
     {
         "id": 1,  # 此id禁止修改
@@ -118,125 +126,13 @@ MATCH_MODES = [
 
 # 封闭图：6人，2射5步2骑；8人，3射6步3骑
 # 开阔图：6人，2射3步3骑；8人，3射4步4骑
-MAPS = [
-    {
-        "id": 507,
-        "name": "竞技场",
-        "type": "closed",
-        "modes": [4, 5],
-    },
-    {
-        "id": 577,
-        "name": "The Cage",
-        "type": "closed",
-        "modes": [1],
-    },
-    {
-        "id": 563,
-        "name": "维洛伦",
-        "type": "closed",
-        "modes": [2, 3],
-    },
-    {
-        "id": 564,
-        "name": "卡斯特卢",
-        "type": "open",
-        "modes": [2, 3],
-    },
-    {
-        "id": 565,
-        "name": "虔信村",
-        "type": "open",
-        "modes": [2, 3],
-    },
-    {
-        "id": 566,
-        "name": "荣耀堡",
-        "type": "closed",
-        "modes": [2, 3],
-    },
-    {
-        "id": 567,
-        "name": "沙漠堡",
-        "type": "closed",
-        "modes": [2, 3],
-    },
-    {
-        "id": 568,
-        "name": "天茶镇",
-        "type": "closed",
-        "modes": [2, 3],
-    },
-    # {
-    #    "id": 569,
-    #    "name": "河畔村",
-    #    "type": "open",
-    #    "modes": [2, 3],
-    # },
-    {
-        "id": 570,
-        "name": "凌霜圣地",
-        "type": "open",
-        "modes": [2, 3],
-    },
-    {
-        "id": 571,
-        "name": "咸鱼镇",
-        "type": "closed",
-        "modes": [2, 3],
-    },
-    {
-        "id": 572,
-        "name": "海军哨所",
-        "type": "closed",
-        "modes": [2, 3],
-    },
-    {
-        "id": 573,
-        "name": "绿洲瀑布",
-        "type": "open",
-        "modes": [2, 3],
-    },
-    {
-        "id": 574,
-        "name": "诺德城镇",
-        "type": "closed",
-        "modes": [2, 3],
-    },
-    {
-        "id": 575,
-        "name": "山中堡垒",
-        "type": "closed",
-        "modes": [2, 3],
-    },
-    # {
-    #    "id": 576,
-    #    "name": "凛冬堡",
-    #    "type": "closed",
-    #    "modes": [2, 3],
-    # },
-    {
-        "id": 578,
-        "name": "三角村",
-        "type": "closed",
-        "modes": [2, 3],
-    },
-    {
-        "id": 579,
-        "name": "径流",
-        "type": "open",
-        "modes": [2, 3],
-    },
-    {
-        "id": 580,
-        "name": "斯瓦迪亚城镇",
-        "type": "closed",
-        "modes": [2, 3],
-    },
-    # {
-    #    "id": 581,
-    #    "name": "新废墟",
-    #    "type": "open",
-    #    "modes": [2, 3],
-    # },
-]
+MAPS = [{
+    "id": 507,
+    "name": "竞技场",
+    "type": "closed",
+    "modes": [4, 5],
+}, ]
+
+if __name__ == '__main__':
+    z = get_rank_name(2000)
+    print(z)

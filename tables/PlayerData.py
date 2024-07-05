@@ -13,7 +13,7 @@ class DB_PlayerData(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     playerId = Column(VARCHAR(50), nullable=False, unique=True)
-    playerName = Column(VARCHAR(50), nullable=False)
+    playerName = Column(VARCHAR(50), nullable=True)
 
     admin_level = Column(Integer, nullable=False, default=0)
     ban_until_time = Column(DateTime)

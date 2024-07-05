@@ -7,12 +7,13 @@ import aiohttp_jinja2
 from aiohttp import web
 from aiohttp.web import Response
 from openpyxl.workbook import Workbook
-from sqlalchemy import or_
+from sqlalchemy import or_, desc
 
 from LogHelper import LogHelper
 from convert.PlayerMatchData import TPlayerMatchData
 from entity.PlayerRegInfo import PlayerInfo
 from init_db import get_session
+from match_state import MatchConditionEx
 from tables import *
 from tables.PlayerNames import DB_PlayerNames
 
@@ -29,11 +30,19 @@ def generate_numeric_code(length=6):
 
 @bp.get('/')
 async def index(request):
-    context = {
-        'title': 'Main Page',
-        'content': 'Welcome to the main page!',
-        'match_data': json.dumps([i.get_data() for i in session.query(DB_Matchs).all()])
-    }
+    try:
+        context = {
+            'title': 'Main Page',
+            'content': 'Welcome to the main page!',
+            'match_data': json.dumps([i.get_data() for i in session.query(DB_Matchs).all()])
+        }
+    except Exception as e:
+        session.rollback()
+        context = {
+            'title': 'Main Page',
+            'content': 'Welcome to the main page!',
+            'match_data': json.dumps([i.get_data() for i in session.query(DB_Matchs).all()])
+        }
 
     return aiohttp_jinja2.render_template('main.html', request, context)
 
@@ -124,6 +133,7 @@ async def add_player_name(request):
     LogHelper.log(f"已添加玩家名称:{name}")
     return Response(text='success')
 
+
 # @bp.get('/UploadMatchData/{json_str}')
 # async def update_match_data(request):
 #     print('update_match_data')
@@ -153,9 +163,12 @@ async def add_player_name(request):
 async def update_match_data2(request):
     formatted_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[UploadMatchData|Right{formatted_time}]")
+
     data = await request.json()
-    for key, value in data.items():
-        print(f"Key: {key}, Value: {value}")
+    print(data)
+    print('*' * 45)
+    # for key, value in data.items():
+    #     print(f"Key: {key}, Value: {value}")
 
     session.commit()
     t = DB_Matchs()
@@ -170,9 +183,47 @@ async def update_match_data2(request):
     playerData = data["_players"]
     t.raw = playerData
 
-    session.add(t)
+    IsMatchEnding = t.tag["IsMatchEnding"]
+    RoundCount = t.tag["RoundCount"]
+    if IsMatchEnding:
+        if RoundCount == 1:
+            playerData_2: dict = playerData
+            print('数据只有一项', '*' * 65)
 
-    result = session.query(DB_PlayerData).filter(DB_PlayerData.playerId.in_(playerData.keys())).all()
+            show_data = []
+            for j in playerData_2.values():
+                k = TPlayerMatchData(j)
+                show_data.append(k)
+                pass
+            # 保存数据到静态 , 转为有比赛结果
+            MatchConditionEx.round_count = RoundCount
+            MatchConditionEx.data = show_data
+            LogHelper.log("数据已保存")
+        else:
+            # 加起来这些数据
+            # 根据 RoundCount 取 n 个比赛数据
+            result = (session.query(DB_Matchs).filter(DB_Matchs.server_name == t.server_name)
+                      .order_by(desc(DB_Matchs.time_match))
+                      .limit(RoundCount).all())
+            for i in result:
+                match_obj: DB_Matchs = i
+                # match_obj.raw 直接就是dict
+                playerData_2: dict = match_obj.raw
+                print(playerData_2)
+                print('+' * 65)
+                for j in playerData_2.values():
+                    k = TPlayerMatchData(j)
+            pass
+        # 存放到 静态类中，让机器人输出
+        MatchConditionEx.state = True
+
+    t.tag = json.dumps(t.tag)
+    session.add(t)
+    player_ids = list(playerData.keys())
+    print(type(player_ids))
+    print(player_ids)
+    result = session.query(DB_PlayerData).filter(DB_PlayerData.playerId.in_(player_ids))
+
     result_player_ids = []
     for i in result:
         oldData: DB_PlayerData = i
@@ -370,8 +421,8 @@ async def GetDataEx(request):
 
     # 附录信息
     new_sheet = wb.create_sheet(title='附录信息')
-    new_sheet.apeend(['开始时间', ""])
-    new_sheet.apeend(['结束时间', ""])
+    new_sheet.append(['开始时间', ""])
+    new_sheet.append(['结束时间', ""])
 
     # 将Excel文件内容写入BytesIO对象
     excel_data = BytesIO()

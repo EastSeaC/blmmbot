@@ -3,6 +3,12 @@ from enum import Enum
 from random import randint
 
 
+class MatchConditionEx:
+    state: bool = False
+    data = None
+    round_count = 0
+
+
 class MatchCondition(Enum):
     NoPlayer = 0
     WaitingJoin = 1

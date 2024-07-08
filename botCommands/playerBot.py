@@ -69,6 +69,7 @@ def init(bot: Bot, es_channels: EsChannels):
     Assists:{player.assist}
     KDA:{(player.kill + player.assist) / max(player.death, 1)}
     KD: {player.kill / max(player.death, 1)}
+    伤害:
     '''
 
             game_info = f'''**游戏**

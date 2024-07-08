@@ -321,6 +321,7 @@ Kills:{player.kill}
 Deaths:{player.death}
 KDA:{(player.kill + player.assist) / max(player.death, 1)}
 KD: {player.kill / max(player.death, 1)}
+伤害/TK: {player.damage}/{player.team_damage}
 '''
             game_info = f'''**游戏**
 对局数:{player.match}

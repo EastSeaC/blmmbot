@@ -122,15 +122,17 @@ async def get_verify_code(request):
 async def add_player_name(request):
     player_id = request.match_info['player_id']
     name = request.match_info['name']
-    query = session.query(DB_PlayerNames).filter(Player.playerId == player_id)
-    z1 = query.count()
+    LogHelper.log(f"player_id:{player_id} name{name}")
+    z1 = session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId == player_id).count()
     if z1 == 0:
         player_name = DB_PlayerNames()
         player_name.playerId = player_id
         player_name.PlayerName = name
         session.add(player_name)
         session.commit()
-    LogHelper.log(f"已添加玩家名称:{name}")
+        LogHelper.log(f"已添加玩家名称:{name}")
+    else:
+        LogHelper.log("名字已存在")
     return Response(text='success')
 
 
@@ -159,6 +161,21 @@ async def add_player_name(request):
 #     session.commit()
 
 
+async def admin_add_player_name(player_id: str, name: str):
+    LogHelper.log(f"player_id:{player_id} name{name}")
+    z1 = session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId == player_id).count()
+    if z1 == 0:
+        player_name = DB_PlayerNames()
+        player_name.playerId = player_id
+        player_name.PlayerName = name
+        session.add(player_name)
+        session.commit()
+        LogHelper.log(f"已添加玩家名称:{name}")
+    else:
+        LogHelper.log("名字已存在")
+    pass
+
+
 @bp.post('/UploadMatchData')
 async def update_match_data2(request):
     formatted_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -169,13 +186,13 @@ async def update_match_data2(request):
     print('*' * 45)
     # for key, value in data.items():
     #     print(f"Key: {key}, Value: {value}")
-
+    data = json.loads(data)
     session.commit()
     t = DB_Matchs()
     t.left_scores = data["AttackScores"]
     t.right_scores = data["DefendScores"]
-    t.left_players = data["AttackPlayerIds"]
-    t.right_players = data["DefendPlayerIds"]
+    t.left_players = list(set(data["AttackPlayerIds"]))
+    t.right_players = list(set(data["DefendPlayerIds"]))
     t.left_win_rounds = data["AttackRound"]
     t.right_win_rounds = data["DefendRound"]
     t.server_name = data["ServerName"]
@@ -205,7 +222,15 @@ async def update_match_data2(request):
             result = (session.query(DB_Matchs).filter(DB_Matchs.server_name == t.server_name)
                       .order_by(desc(DB_Matchs.time_match))
                       .limit(RoundCount).all())
-            for i in result:
+            show_data = []
+            # 初始化数据
+            first_match_obj: DB_Matchs = result[0]
+            player_data_ex_cx: dict = first_match_obj.raw
+            player_data_ex: dict = {}
+            for k1, v1 in player_data_ex_cx.items():
+                player_data_ex[k1] = TPlayerMatchData(v1)
+
+            for i in result[1:]:
                 match_obj: DB_Matchs = i
                 # match_obj.raw 直接就是dict
                 playerData_2: dict = match_obj.raw
@@ -213,6 +238,15 @@ async def update_match_data2(request):
                 print('+' * 65)
                 for j in playerData_2.values():
                     k = TPlayerMatchData(j)
+                    if k.player_id in player_data_ex:
+                        cur_player_data = player_data_ex[k.player_id]
+                        player_data_ex[k.player_id] = cur_player_data + k
+                    else:
+                        player_data_ex[k.player_id] = k
+                    # 名字补全
+                    await admin_add_player_name(k.player_id, k.player_name)
+            MatchConditionEx.data = list(player_data_ex.values())
+            LogHelper.log("多项-数据已保存")
             pass
         # 存放到 静态类中，让机器人输出
         MatchConditionEx.state = True
@@ -292,6 +326,11 @@ async def update_match_data2(request):
     session.commit()
 
     return web.Response(text='123')
+
+
+@bp.get('/Show_Last_Match')
+async def Show_Last_Match(request):
+    pass
 
 
 @bp.get('/GetData')

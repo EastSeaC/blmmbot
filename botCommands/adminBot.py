@@ -2,8 +2,10 @@ from khl import Bot, Message, EventTypes, Event
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import literal, desc, text
 
+from LogHelper import LogHelper
 from blmm_bot import EsChannels
 from init_db import get_session
+from kook.ChannelKit import ChannelManager
 from lib.basic import generate_numeric_code
 from tables import *
 from tables.Admin import DBAdmin
@@ -23,6 +25,20 @@ class AdminButtonValue:
 def init(bot: Bot, es_channels: EsChannels):
     global g_channels
     g_channels = es_channels
+
+    # 初始化指令
+    @bot.command(name='initial', aliases=['ini'])
+    async def es_initial(msg: Message):
+        try:
+            await bot.client.fetch_public_channel(ChannelManager.command_channel)
+            await  bot.client.delete_channel(ChannelManager.command_channel)
+        except Exception as e:
+            LogHelper.log(e.with_traceback())
+        finally:
+            guild = await bot.client.fetch_guild(ChannelManager.sever)
+            await bot.client.create_text_channel(guild, '指令频道')
+            
+        pass
 
     # 必须写明命令的name
     @bot.command(name='es_adv', aliases=['es'])

@@ -6,6 +6,7 @@ from random import randint
 class MatchConditionEx:
     state: bool = False
     data = None
+    data2 = None
     round_count = 0
 
 

@@ -4,6 +4,7 @@ from random import randint
 
 
 class MatchConditionEx:
+    server_name = None
     state: bool = False
     data = None
     data2 = None

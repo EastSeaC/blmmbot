@@ -181,7 +181,13 @@ async def task1():
     if MatchConditionEx.state:
         MatchConditionEx.state = False
         LogHelper.log("输出比赛数据")
-        await es_channels.command_channel.send(CardMessage(Card(Module.Divider())))
+        await es_channels.command_channel.send(CardMessage(
+            Card(
+                Module.Header(f'服务器名称:{MatchConditionEx.server_name}'),
+                # Module.Context(f'比赛时间为{MatchConditionEx}'),
+                Module.Divider(),
+
+            )))
         z = MatchConditionEx.data
 
         score_str = ''

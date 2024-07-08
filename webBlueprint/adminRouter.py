@@ -6,7 +6,7 @@ from lib.ServerManager import ServerManager
 adminRouter = web.RouteTableDef()
 
 
-@adminRouter.get('show_all_window_name')
+@adminRouter.get('/show_all_window_name')
 def show_all_window_name(req):
     ServerManager.RestartBLMMServer()
     return Response(text='123')

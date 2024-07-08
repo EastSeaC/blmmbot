@@ -107,7 +107,32 @@ class MatchState:
             print(i.score, i.user_id)
         pass
 
+    @staticmethod
     def divide_player_test(self, a: list):
+        for i in a:
+            k: PlayerInfo = i
+            print(k.score, k.user_id)
+        print('a*' * 20)
+        x, y = min_diff_partition(a)
+        m = []
+        for i in x:
+            k: PlayerInfo = i
+            m.append(k.user_id)
+            print(k.score, k.user_id)
+
+        print('*' * 20)
+        n = []
+        for i in y:
+            k: PlayerInfo = i
+            n.append(k.user_id)
+            print(k.score, k.user_id)
+        return m, n
+
+    @staticmethod
+    def divide_player_ex(a: list):
+        """
+        用于分组
+        """
         for i in a:
             k: PlayerInfo = i
             print(k.score, k.user_id)
@@ -137,13 +162,17 @@ class PlayerInfo:
         self.score = player_dict.get('score', 0)
         self.user_id = player_dict.get('user_id', '62a')  # kook的用户id
         self.player_id = player_dict.get('playerId')  # 游戏Id
-        self.kill = player_dict.get('kill')
-        self.death = player_dict.get('death')
-        self.assist = player_dict.get('assist')  # 辅助
+        self.kill = player_dict.get('kill', 0)
+        self.death = player_dict.get('death', 0)
+        self.assist = player_dict.get('assist', 0)  # 辅助
         pass
 
     def __lt__(self, other):
         return self.score < other.score
+
+    @staticmethod
+    def convert(self, z):
+        pass
 
 
 def min_diff_partition(nums):

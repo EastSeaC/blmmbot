@@ -18,13 +18,14 @@ from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
 from match_guard import MatchGuard
 from match_state import MatchState, MatchCondition, MatchConditionEx
+from webBlueprint.adminRouter import adminRouter
 from web_bp import bp
 
 sqlSession = get_session()
 # 添加routes到app中
 app = web.Application()
 app.add_routes(bp)
-
+app.add_routes(adminRouter)
 stateMachine = MatchState()
 guard = MatchGuard()
 

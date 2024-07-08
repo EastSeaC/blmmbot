@@ -8,6 +8,7 @@ from LogHelper import LogHelper
 from init_db import get_session
 from kook.ChannelKit import EsChannels
 from tables import *
+from tables.PlayerNames import DB_PlayerNames
 
 session = get_session()
 g_channels: EsChannels
@@ -25,16 +26,6 @@ def init(bot: Bot, es_channels):
 
         failed_text = ''
 
-        if verify_code == '':
-            await msg.reply('验证码不得为空')
-            return
-        if player_id == '':
-            await msg.reply('playerId不得为空')
-            return
-
-        if re.match(r'\d{17}', player_id):
-            player_id = '2.0.0.' + player_id
-
         if not isinstance(msg, PrivateMessage):
             await msg.delete()
 
@@ -46,7 +37,22 @@ def init(bot: Bot, es_channels):
             await g_channels.command_channel.send(text)
             return
 
-        # 检测是否已被注册
+        if verify_code == '':
+            await msg.reply('验证码不得为空')
+            return
+        if player_id == '':
+            await msg.reply('playerId不得为空')
+            return
+
+        if re.match(r'\d{17}', player_id):
+            player_id = '2.0.0.' + player_id
+
+        z = session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId == player_id).count()
+        if z == 0:
+            await msg.reply('该playerId 所属的玩家暂未进入服务器，请先进入游戏服务器')
+            return
+
+            # 检测是否已被注册
         t = session.query(Player).filter(
             or_(Player.playerId == player_id, Player.kookId == user_id)).count()
         if t > 0:

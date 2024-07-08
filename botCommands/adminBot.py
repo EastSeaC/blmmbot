@@ -1,4 +1,6 @@
-from khl import Bot, Message, EventTypes, Event
+from random import randint
+
+from khl import Bot, Message, EventTypes, Event, GuildUser
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import literal, desc, text
 
@@ -7,6 +9,7 @@ from blmm_bot import EsChannels
 from init_db import get_session
 from kook.ChannelKit import ChannelManager
 from lib.basic import generate_numeric_code
+from match_state import PlayerInfo
 from tables import *
 from tables.Admin import DBAdmin
 from tables.PlayerNames import DB_PlayerNames
@@ -37,7 +40,7 @@ def init(bot: Bot, es_channels: EsChannels):
         finally:
             guild = await bot.client.fetch_guild(ChannelManager.sever)
             await bot.client.create_text_channel(guild, '指令频道')
-            
+
         pass
 
     # 必须写明命令的name
@@ -101,6 +104,101 @@ def init(bot: Bot, es_channels: EsChannels):
                 await es_channels.command_channel.send('刷新所有人验证码成功')
         elif value == AdminButtonValue.Show_Last_Match:
             await ShowLastMatch()
+
+    @bot.command(name='rtc', case_sensitive=False, aliases=['yc'])
+    async def tojadx(msg: Message):
+        if msg.author_id != ChannelManager.es_user_id:
+            await msg.reply('禁止使用es指令')
+            return
+
+        channel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
+        k = await channel.fetch_user_list()
+        player_list = []
+        for id, user in enumerate(k):
+            t: GuildUser = user
+            player_list.append(PlayerInfo(
+                {'score': randint(10, 20), 'user_id': t.id}))
+        if len(player_list) % 2 != 0:
+            player_list.pop()
+
+        # x, y = stateMachine.divide_player_test(player_list)
+        # await move_a_to_b_ex(ChannelManager.match_attack_channel, x)
+        # await move_a_to_b_ex(ChannelManager.match_defend_channel, y)
+        await msg.reply('over!+')
+
+    @bot.command(name='move_set_to_wait', case_sensitive=False, aliases=['msw'])
+    async def worldO(msg: Message):
+        if msg.author_id != ChannelManager.es_user_id:
+            await msg.reply('禁止使用es指令')
+            return
+
+        await move_a_to_b(ChannelManager.match_set_channel, ChannelManager.match_wait_channel)
+
+        await msg.reply('移动成功')
+        pass
+
+    @bot.command(name='move_to_wait', case_sensitive=False, aliases=['mtw'])
+    async def worldO(msg: Message):
+        if msg.author_id != ChannelManager.es_user_id:
+            await msg.reply('禁止使用es指令')
+            return
+        # await bot.client.fetch_guild(ChannelManager.sever)
+        channel = await bot.client.fetch_public_channel(ChannelManager.match_attack_channel)
+        channel_b = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
+        k = await channel.fetch_user_list()
+        for id, user in enumerate(k):
+            d: GuildUser = user
+            await channel_b.move_user(ChannelManager.match_wait_channel, d.id)
+
+        channel = await bot.client.fetch_public_channel(ChannelManager.match_defend_channel)
+        k = await channel.fetch_user_list()
+        for id, user in enumerate(k):
+            d: GuildUser = user
+            await channel_b.move_user(ChannelManager.match_wait_channel, d.id)
+
+        await msg.reply('移动成功')
+        pass
+
+    @bot.command(name='move_to_set', case_sensitive=False, aliases=['mtset'])
+    async def worldO(msg: Message):
+        if msg.author_id != ChannelManager.es_user_id:
+            await msg.reply('禁止使用es指令')
+            return
+
+        await move_a_to_b(ChannelManager.match_wait_channel, ChannelManager.match_set_channel)
+
+        await msg.reply('移动成功')
+        pass
+
+    @bot.command(name='guiltest', case_sensitive=False)
+    async def worldO(msg: Message):
+        if msg.author_id != ChannelManager.es_user_id:
+            await msg.reply('禁止使用es指令')
+            return
+
+        await bot.client.fetch_guild(ChannelManager.sever)
+        channel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
+        channel_b = await bot.client.fetch_public_channel(ChannelManager.match_attack_channel)
+        k = await channel.fetch_user_list()
+        list_t = []
+        for i in k:
+            d: GuildUser = i
+            list_t.append(d.id)
+
+            await channel_b.move_user(ChannelManager.match_attack_channel, d.id)
+
+    async def move_a_to_b(a: str, b: str):
+        channel = await bot.client.fetch_public_channel(a)
+        channel_b = await bot.client.fetch_public_channel(b)
+        k = await channel.fetch_user_list()
+        for id, user in enumerate(k):
+            d: GuildUser = user
+            await channel_b.move_user(ChannelManager.match_wait_channel, d.id)
+
+    async def move_a_to_b_ex(b: str, list_player: list):
+        channel_b = await bot.client.fetch_public_channel(b)
+        for id, user_id in enumerate(list_player):
+            await channel_b.move_user(b, user_id)
 
 
 def RefreshAllPlayerVerifyCode():

@@ -1,14 +1,13 @@
 import asyncio
 import datetime
 import json
-from random import randint
 
 import aiohttp
 import aiohttp_jinja2
 import jinja2
 import requests
 from aiohttp import web
-from khl import Bot, Message, Event, EventTypes, GuildUser
+from khl import Bot, Message, Event, EventTypes
 from khl.card import Card, Module, Struct, Element, Types, CardMessage
 
 from LogHelper import LogHelper
@@ -18,8 +17,7 @@ from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
 from match_guard import MatchGuard
-from match_state import MatchState, MatchCondition, PlayerInfo, MatchConditionEx
-from tables import DB_Matchs
+from match_state import MatchState, MatchCondition, MatchConditionEx
 from web_bp import bp
 
 sqlSession = get_session()
@@ -143,24 +141,6 @@ async def worldO(msg: Message):
     # print(f"bot.client.send | msg_id {ret['msg_id']}")  # 方法2 发送消息的id
     # await msg.reply('')
 
-
-@bot.command(name='guiltest', case_sensitive=False)
-async def worldO(msg: Message):
-    if msg.author_id != ChannelManager.es_user_id:
-        await msg.reply('禁止使用es指令')
-        return
-
-    await bot.client.fetch_guild(ChannelManager.sever)
-    channel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
-    channel_b = await bot.client.fetch_public_channel(ChannelManager.match_attack_channel)
-    k = await channel.fetch_user_list()
-    list_t = []
-    for i in k:
-        d: GuildUser = i
-        list_t.append(d.id)
-
-        await channel_b.move_user(ChannelManager.match_attack_channel, d.id)
-
     # data = {'target_id': ChannelManager.match_set_channel, 'array': json.dumps(list_t)}
     # requests.post(UrlHelper.move_user, data)
     # await msg.reply('移动成功')
@@ -171,93 +151,12 @@ async def worldO(msg: Message):
     #     print(i.name)
 
 
-@bot.command(name='move_to_wait', case_sensitive=False, aliases=['mtw'])
-async def worldO(msg: Message):
-    if msg.author_id != ChannelManager.es_user_id:
-        await msg.reply('禁止使用es指令')
-        return
-    # await bot.client.fetch_guild(ChannelManager.sever)
-    channel = await bot.client.fetch_public_channel(ChannelManager.match_attack_channel)
-    channel_b = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
-    k = await channel.fetch_user_list()
-    for id, user in enumerate(k):
-        d: GuildUser = user
-        await channel_b.move_user(ChannelManager.match_wait_channel, d.id)
-
-    channel = await bot.client.fetch_public_channel(ChannelManager.match_defend_channel)
-    k = await channel.fetch_user_list()
-    for id, user in enumerate(k):
-        d: GuildUser = user
-        await channel_b.move_user(ChannelManager.match_wait_channel, d.id)
-
-    await msg.reply('移动成功')
-    pass
-
-
-@bot.command(name='move_to_set', case_sensitive=False, aliases=['mtset'])
-async def worldO(msg: Message):
-    if msg.author_id != ChannelManager.es_user_id:
-        await msg.reply('禁止使用es指令')
-        return
-
-    await move_a_to_b(ChannelManager.match_wait_channel, ChannelManager.match_set_channel)
-
-    await msg.reply('移动成功')
-    pass
-
-
-@bot.command(name='rtc', case_sensitive=False, aliases=['yc'])
-async def tojadx(msg: Message):
-    if msg.author_id != ChannelManager.es_user_id:
-        await msg.reply('禁止使用es指令')
-        return
-
-    channel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
-    k = await channel.fetch_user_list()
-    player_list = []
-    for id, user in enumerate(k):
-        t: GuildUser = user
-        player_list.append(PlayerInfo(
-            {'score': randint(10, 20), 'user_id': t.id}))
-    if len(player_list) % 2 != 0:
-        player_list.pop()
-
-    x, y = stateMachine.divide_player_test(player_list)
-    await move_a_to_b_ex(ChannelManager.match_attack_channel, x)
-    await move_a_to_b_ex(ChannelManager.match_defend_channel, y)
-    await msg.reply('over!+')
-
-
-async def move_a_to_b(a: str, b: str):
-    channel = await bot.client.fetch_public_channel(a)
-    channel_b = await bot.client.fetch_public_channel(b)
-    k = await channel.fetch_user_list()
-    for id, user in enumerate(k):
-        d: GuildUser = user
-        await channel_b.move_user(ChannelManager.match_wait_channel, d.id)
-
-
-async def move_a_to_b_ex(b: str, list_player: list):
-    channel_b = await bot.client.fetch_public_channel(b)
-    for id, user_id in enumerate(list_player):
-        await channel_b.move_user(b, user_id)
-
-
-@bot.command(name='move_set_to_wait', case_sensitive=False, aliases=['msw'])
-async def worldO(msg: Message):
-    if msg.author_id != ChannelManager.es_user_id:
-        await msg.reply('禁止使用es指令')
-        return
-
-    await move_a_to_b(ChannelManager.match_set_channel, ChannelManager.match_wait_channel)
-
-    await msg.reply('移动成功')
-    pass
-
-
 @bot.command(name='uca', case_sensitive=False, aliases=['ca', 'xa'])
 async def worldO(msg: Message):
-    # guild = await bot.client.fetch_guild(ChannelManager.sever)
+    if msg.author_id != ChannelManager.es_user_id:
+        await msg.reply('禁止使用es 指令')
+        return
+        # guild = await bot.client.fetch_guild(ChannelManager.sever)
     r = requests.post(UrlHelper.delete_message,
                       headers={
                           f'Authorization': f"Bot {config['token']}",
@@ -269,39 +168,15 @@ async def worldO(msg: Message):
     print(UrlHelper.delete_message)
     z = await es_channels.command_channel.list_messages()
 
-    for i in z["items"]:
-        print(i['id'])
-        print(i)
-        print(type(z))
-        break
-    #     r = requests.post(UrlHelper.delete_message,
-    #                       headers={
-    #                           f'Authorization': f"Bot {config['token']}",
-    #                       },
-    #                       params={
-    #                           'msg_id': i['id'],
-    #                       })
-    #     print(r.text)
-    # # 真是结果
-    # result = json.loads(r.text)
-    # data: list = result['data']
-    # print(data)
-    # print(len(data))
-    # break
-
 
 @bot.command(name='show_match', case_sensitive=False, aliases=['sm'])
 async def show_match(msg: Message):
-    # x
-
     pass
-
-
-# 1s触发器
 
 
 @bot.task.add_interval(seconds=1)
 async def task1():
+    # 1s触发器
     # 检查是否有数据
     if MatchConditionEx.state:
         MatchConditionEx.state = False

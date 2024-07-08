@@ -246,6 +246,7 @@ async def update_match_data2(request):
                     # 名字补全
                     await admin_add_player_name(k.player_id, k.player_name)
             MatchConditionEx.data = list(player_data_ex.values())
+            MatchConditionEx.server_info = t.server_name
             LogHelper.log("多项-数据已保存")
             pass
         # 存放到 静态类中，让机器人输出

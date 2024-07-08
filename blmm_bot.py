@@ -83,7 +83,8 @@ async def help_x(msg: Message):
     /score_list /sl 查看分数榜单
     /score /s 查看自己的分数
     
-    注册指令：
+    注册指令(私聊机器人注册)：
+    
     /v [playerId] [code]  例如 /v 2.0.0.xxxxxxxxxx 600860
 
     /spniwc  查看当前等候频道里的玩家有

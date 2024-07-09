@@ -56,6 +56,7 @@ def init(bot: Bot, es_channels: EsChannels):
             cm = CardMessage()
             c1 = Card(
                 Module.Header("基本信息"),
+                Module.Context(f'playerId:{player.playerId}'),
                 Module.Section(
                     Struct.Paragraph(
                         3,

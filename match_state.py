@@ -172,6 +172,7 @@ class PlayerInfo:
     def __init__(self, player_dict: dict) -> None:
         self.score = player_dict.get('score', 0)
         self.user_id = player_dict.get('user_id', '62a')  # kook的用户id
+        self.user_name = player_dict.get('kook_name', 'baga')
         self.player_id = player_dict.get('playerId')  # 游戏Id
         self.kill = player_dict.get('kill', 0)
         self.death = player_dict.get('death', 0)

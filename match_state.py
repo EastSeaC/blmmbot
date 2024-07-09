@@ -131,17 +131,21 @@ class MatchState:
     @staticmethod
     def divide_player_ex(a: list):
         """
-        用于分组
+        用于分组, 第一组是 攻击者的 user_id， 第二组是 防御者的 userid
         """
         for i in a:
             k: PlayerInfo = i
             print(k.score, k.user_id)
         print('a*' * 20)
         x, y = min_diff_partition(a)
+
+        attacker_score_temp = 0
+        defender_score_temp = 0
         m = []
         for i in x:
             k: PlayerInfo = i
             m.append(k.user_id)
+            attacker_score_temp += k.score
             print(k.score, k.user_id)
 
         print('*' * 20)
@@ -149,8 +153,15 @@ class MatchState:
         for i in y:
             k: PlayerInfo = i
             n.append(k.user_id)
+            defender_score_temp += k.score
             print(k.score, k.user_id)
-        return m, n
+
+        div = DivideData()
+        div.attacker_list = m
+        div.defender_list = n
+        div.attacker_scores = attacker_score_temp
+        div.defend_scores = defender_score_temp
+        return div
 
     @property
     def is_start_match(self):
@@ -173,6 +184,17 @@ class PlayerInfo:
     @staticmethod
     def convert(self, z):
         pass
+
+
+class DivideData:
+    def __init__(self):
+        self.attacker_list = []
+        self.defender_list = []
+        self.attacker_scores: int = 0
+        self.defend_scores: int = 0
+
+    def __str__(self):
+        return f"{self.attacker_list},{self.defender_list}, attacker_scores:{self.attacker_scores}, defend_scores:{self.defend_scores}, diff {self.attacker_scores - self.defend_scores}"
 
 
 def min_diff_partition(nums):

@@ -15,7 +15,7 @@ def init(bot: Bot, es_channels: EsChannels):
     g_channels = es_channels
 
     @bot.command(name='score_list', case_sensitive=False, aliases=['sl'])
-    async def world(msg: Message):
+    async def world(msg: Message, *args):
         cm = CardMessage()
 
         sqlSession.commit()
@@ -47,7 +47,8 @@ def init(bot: Bot, es_channels: EsChannels):
         await msg.reply(cm)
 
     @bot.command(name='score', case_sensitive=False, aliases=['s'])
-    async def show_score(msg: Message):
+    async def show_score(msg: Message, *args):
+        # 处理玩家随便输入的时候， 在函数原型中加入 , *args
         sqlSession.commit()
         t = sqlSession.query(Player).filter(Player.kookId == msg.author_id)
         if t.count() == 1:

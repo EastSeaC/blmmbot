@@ -22,8 +22,8 @@ def init(bot: Bot, es_channels):
     @bot.command('v', case_sensitive=False)
     async def v(msg: Message, player_id: str = '', verify_code: str = ''):
         user_id = msg.author_id
-        user = await  bot.client.fetch_user(user_id)
-
+        user = await bot.client.fetch_user(user_id)
+        LogHelper.log(f'注册指令启动: playerId{player_id}, kookId:{user_id}')
         failed_text = ''
 
         if not isinstance(msg, PrivateMessage):

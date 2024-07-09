@@ -47,6 +47,10 @@ def init(bot: Bot, es_channels):
         if re.match(r'\d{17}', player_id):
             player_id = '2.0.0.' + player_id
 
+        if not re.match(r'^[\d\\.]+$', player_id):
+            await msg.reply('playerId 不合规则，请重新确认并仔细填写')
+            pass
+
         z = session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId == player_id).count()
         if z == 0:
             await msg.reply('该playerId 所属的玩家暂未进入服务器，请先进入游戏服务器')

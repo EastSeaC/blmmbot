@@ -76,7 +76,7 @@ def get_time_str():
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-@bot.command(name='help', case_sensitive=False)
+@bot.command(name='help', case_sensitive=False, aliases=['h'])
 async def help_x(msg: Message):
     t = '''
     /help 查看所有指令
@@ -84,7 +84,7 @@ async def help_x(msg: Message):
     /score_list /sl 查看分数榜单
     /score /s 查看自己的分数
     
-    注册指令(私聊机器人注册)：
+    注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：
     
     /v [playerId] [code]  例如 /v 2.0.0.xxxxxxxxxx 600860
 

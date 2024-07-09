@@ -49,7 +49,7 @@ def init(bot: Bot, es_channels):
 
         if not re.match(r'^[\d\\.]+$', player_id):
             await msg.reply('playerId 不合规则，请重新确认并仔细填写')
-            pass
+            return
 
         z = session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId == player_id).count()
         if z == 0:

@@ -120,9 +120,13 @@ async def get_verify_code(request):
 
 @bp.get('/add_player_name/{player_id}/{name}')
 async def add_player_name(request):
-    player_id = request.match_info['player_id']
+    player_id: str = request.match_info['player_id']
     name = request.match_info['name']
-    LogHelper.log(f"player_id:{player_id} name{name}")
+    LogHelper.log(f"添加 player_id 和 Name指令：player_id:{player_id} name{name}")
+
+    if not player_id or not name:
+        return Response(text='不得为空')
+
     z1 = session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId == player_id).count()
     if z1 == 0:
         player_name = DB_PlayerNames()

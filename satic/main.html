@@ -9,29 +9,29 @@
 </head>
 
 <body>
-    <div class="layui-layout layui-layout-admin">
-        <div class="layui-header">
-            <div class="layui-logo layui-hide-xs layui-bg-black">BLMM[BTL]网页端</div>
-            <!-- 头部区域（可配合layui 已有的水平导航） -->
-            <ul class="layui-nav layui-layout-left">
-                <!-- 移动端显示 -->
-                <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
-                    <i class="layui-icon layui-icon-spread-left"></i>
-                </li>
-                <li class="layui-nav-item layui-hide-xs"><a href="/">导出数据</a></li>
-                <li class="layui-nav-item layui-hide-xs"><a href="/ban">封印</a></li>
-
-            </ul>
-        </div>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo layui-hide-xs layui-bg-black">BLMM[BTL]网页端</div>
+        <!-- 头部区域（可配合layui 已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <!-- 移动端显示 -->
+            <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+                <i class="layui-icon layui-icon-spread-left"></i>
+            </li>
+            <li class="layui-nav-item layui-hide-xs"><a href="/">导出数据</a></li>
+            <li class="layui-nav-item layui-hide-xs"><a href="/ban">封印</a></li>
+            <li class="layui-nav-item layui-hide-xs"><a href="/debug">调试界面</a></li>
+        </ul>
     </div>
-    <blockquote class="layui-elem-quote layui-text">
-        管理员界面
-    </blockquote>
-    <div hidden="true" id="myData" data="{{match_data}}"></div>
-    <table class="layui-hide" id="playerInfo" lay-filter="playerInfo">
+</div>
+<blockquote class="layui-elem-quote layui-text">
+    管理员界面
+</blockquote>
+<div hidden="true" id="myData" data="{{match_data}}"></div>
+<table class="layui-hide" id="playerInfo" lay-filter="playerInfo">
 
-    </table>
-    <button class="layui-btn" id="demo" onclick="GetMatchData()">Export</button>
+</table>
+<button class="layui-btn" id="demo" onclick="GetMatchData()">Export</button>
 
 </body>
 <script>

@@ -8,6 +8,7 @@
 </head>
 
 <body>
+    <label id="server_state">未启动</label>
     <form>
         <label class="">playerId</label>
         <input id="playerId" style="width: 300px" /><br>
@@ -77,7 +78,7 @@
 
     function restart_server() {
         $.ajax({
-            url: '/restart_server/' , // 请求的URL
+            url: '/restart_server/', // 请求的URL
             type: 'GET', // 请求类型
             dataType: 'json', // 预期服务器返回的数据类型.
             success: function (response) {
@@ -86,6 +87,24 @@
             }
         })
     }
+
+
+
+    window.addEventListener('load', function () {
+        console.log('页面完全加载');
+        $.ajax({
+            url: '//', // 请求的URL
+            type: 'GET', // 请求类型
+            dataType: 'json', // 预期服务器返回的数据类型.
+            success: function (response) {
+                console.log(response);
+                
+                $('#server_state').val(response);
+            }
+        })
+        // 在这里执行你的代码
+    });
+
 </script>
 <style>
     .niceButton3 {

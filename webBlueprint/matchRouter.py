@@ -44,3 +44,9 @@ async def upload_player_list(req):
     LogHelper.log('玩家player ids 上传收到 ')
     return Response(text='123')
     pass
+
+
+@matchRouter.get('/get_server_state')
+async def get_server_state(req):
+
+    return Response(text='')

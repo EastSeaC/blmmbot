@@ -9,7 +9,7 @@ from blmm_bot import EsChannels
 from init_db import get_session
 from kook.ChannelKit import ChannelManager
 from lib.basic import generate_numeric_code
-from match_state import PlayerInfo
+from match_state import PlayerInfo, MatchState, DivideData
 from tables import *
 from tables.Admin import DBAdmin
 from tables.PlayerNames import DB_PlayerNames
@@ -113,14 +113,34 @@ def init(bot: Bot, es_channels: EsChannels):
 
         channel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
         k = await channel.fetch_user_list()
+
+        if len(k) % 2 == 1:
+            await msg.reply('人数异常')
+            return
         player_list = []
+
+        z = session.query(Player).filter(Player.kookId.in_([i.id for i in k])).all()
+        dict_for_kook_id = {}
+        for i in z:
+            t: Player = i
+            dict_for_kook_id[t.kookId] = t
+
+        print([i.__dict__ for i in z])
         for id, user in enumerate(k):
             t: GuildUser = user
-            player_list.append(PlayerInfo(
-                {'score': randint(10, 20), 'user_id': t.id}))
-        if len(player_list) % 2 != 0:
-            player_list.pop()
+            player: Player = dict_for_kook_id[t.id]
+            player_info = PlayerInfo({})
+            player_info.score = player.rank
+            player_info.user_id = t.id
+            player_info.kook_name = t.username
+            player_list.append(player_info)
 
+        # if len(player_list) % 2 != 0:
+        #     player_list.pop()
+
+        divide_data: DivideData = MatchState.divide_player_ex(player_list)
+        print(divide_data.attacker_list)
+        print(divide_data.defender_list)
         # x, y = stateMachine.divide_player_test(player_list)
         # await move_a_to_b_ex(ChannelManager.match_attack_channel, x)
         # await move_a_to_b_ex(ChannelManager.match_defend_channel, y)

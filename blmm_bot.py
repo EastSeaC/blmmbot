@@ -242,9 +242,6 @@ MVPs:{0}'''
         #     )
         # )
 
-    if not es_channels.ready:
-        await es_channels.Initial(bot)
-
     # 定时器
     condition = stateMachine.check_state()
     if condition == MatchCondition.DividePlayer:
@@ -320,6 +317,9 @@ async def player_exit_channel(b: Bot, e: Event):
 
 @bot.on_startup
 async def bot_init(bot1: Bot):
+    if not es_channels.ready:
+        await es_channels.Initial(bot)
+
     adminBot.init(bot1, es_channels)
     regBot.init(bot1, es_channels)
     playerBot.init(bot1, es_channels)

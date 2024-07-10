@@ -4,7 +4,7 @@ from .base import Base
 
 
 class DB_Ban(Base):
-    __tablename__ = "admins"
+    __tablename__ = "ban"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     kookId = Column(VARCHAR(50), unique=True)

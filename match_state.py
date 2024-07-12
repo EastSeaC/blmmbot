@@ -2,6 +2,8 @@ from datetime import datetime
 from enum import Enum
 from random import randint
 
+from LogHelper import LogHelper
+
 
 class MatchConditionEx:
     server_name = None
@@ -204,7 +206,7 @@ class DivideData:
         self.defender_names = []
 
     def __str__(self):
-        return f"{self.attacker_list},{self.defender_list}, attacker_scores:{self.attacker_scores}, defend_scores:{self.defend_scores}, diff {self.attacker_scores - self.defend_scores}"
+        return f"attacker_names:{self.attacker_names} defender_names:{self.defender_names}, list:{self.attacker_list},{self.defender_list}, attacker_scores:{self.attacker_scores}, defend_scores:{self.defend_scores}, diff {self.attacker_scores - self.defend_scores}"
 
 
 def sorted_aux(player):
@@ -214,6 +216,7 @@ def sorted_aux(player):
 def min_diff_partition(nums):
     if isinstance(nums[0], PlayerInfo):
         num_list = sorted(nums[:], key=sorted_aux)
+        LogHelper.log('排序使用key')
     else:
         num_list = sorted(nums[:])
 

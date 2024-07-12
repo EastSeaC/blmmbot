@@ -204,7 +204,8 @@ async def update_match_data2(request):
     t.tag = data["Tag"]
     playerData = data["_players"]
     t.raw = playerData
-
+    session.add(t)
+    session.commit()
     IsMatchEnding = t.tag["IsMatchEnding"]
     RoundCount = t.tag["RoundCount"]
     if IsMatchEnding:
@@ -257,8 +258,9 @@ async def update_match_data2(request):
         # 存放到 静态类中，让机器人输出
         MatchConditionEx.state = True
 
-    t.tag = json.dumps(t.tag)
-    session.add(t)
+    if isinstance(t.tag, dict):
+        t.tag = json.dumps(t.tag)
+    # session.add(t)
     player_ids = list(playerData.keys())
     print(type(player_ids))
     print(player_ids)

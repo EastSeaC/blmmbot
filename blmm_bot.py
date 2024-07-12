@@ -81,8 +81,7 @@ async def help_x(msg: Message):
     t = '''/help 查看所有指令
     /score_list /sl 查看分数榜单
     /score /s 查看自己的分数
-    **(font)注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：(font)[red]**
-    **注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：**(font)[red]
+    **(font)注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：(font)[warning]**
     /v [playerId] [code]  例如 /v 2.0.0.xxxxxxxxxx 600860
     '''
     file_path = 'satic/img/reg-1.png'

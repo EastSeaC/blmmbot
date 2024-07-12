@@ -24,7 +24,7 @@ def init(bot: Bot, es_channels):
         user_id = msg.author_id
         user = await bot.client.fetch_user(user_id)
         LogHelper.log(
-            f'注册指令启动: playerId{player_id}, verify_code:{verify_code}, kookId:{user_id}, kookName:{user.username}')
+            f'注册指令启动: playerId:{player_id}, verify_code:{verify_code}, kookId:{user_id}, kookName:{user.username}')
         failed_text = ''
 
         if not isinstance(msg, PrivateMessage):

@@ -158,6 +158,7 @@ class MatchState:
             k: PlayerInfo = i
             n.append(k.user_id)
             defender_score_temp += k.score
+            defender_names.append(k.user_name)
             print(k.score, k.user_id)
 
         div = DivideData()
@@ -166,6 +167,7 @@ class MatchState:
         div.defender_list = n
         div.attacker_scores = attacker_score_temp
         div.defend_scores = defender_score_temp
+        div.defender_names = defender_names
         return div
 
     @property
@@ -205,8 +207,16 @@ class DivideData:
         return f"{self.attacker_list},{self.defender_list}, attacker_scores:{self.attacker_scores}, defend_scores:{self.defend_scores}, diff {self.attacker_scores - self.defend_scores}"
 
 
+def sorted_aux(player):
+    return player.score
+
+
 def min_diff_partition(nums):
-    num_list = sorted(nums[:])
+    if isinstance(nums[0], PlayerInfo):
+        num_list = sorted(nums[:], key=sorted_aux)
+    else:
+        num_list = sorted(nums[:])
+
     first_list = []
     second_list = []
     first_list.append(num_list.pop(-1))

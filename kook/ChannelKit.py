@@ -7,7 +7,7 @@ class ChannelManager:
     # 公告区
     announcement = '7368706706716074'
     # 集结频道ID
-    wait_channel = '3137719365146347'
+    old_wait_channel = '3137719365146347'
     # 休息室
     sleep_room_channel = '2602141163900435'
     # 比赛分组

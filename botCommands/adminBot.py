@@ -105,6 +105,18 @@ def init(bot: Bot, es_channels: EsChannels):
         elif value == AdminButtonValue.Show_Last_Match:
             await ShowLastMatch()
 
+    @bot.command(name='test_move_old_wait_channel_to_bot_channel', case_sensitive=False, aliases=['test_mowctbc'])
+    async def move_from_old_wait_channel_to_x(msg: Message):
+        if msg.author_id != ChannelManager.es_user_id:
+            await msg.reply('禁止使用es指令')
+            return
+
+        channel = await bot.client.fetch_public_channel(ChannelManager.old_wait_channel)
+        k = await channel.fetch_user_list()
+        await move_a_to_b_ex(ChannelManager.match_wait_channel, k)
+        await  msg.reply('成功！')
+        pass
+
     @bot.command(name='rtc', case_sensitive=False, aliases=['yc'])
     async def tojadx(msg: Message):
         if msg.author_id != ChannelManager.es_user_id:

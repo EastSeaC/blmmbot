@@ -46,6 +46,11 @@ def init(bot: Bot, es_channels: EsChannels):
         cm.append(c2)
         await msg.reply(cm)
 
+    @bot.command(name='reset_score', case_sensitive=False, aliases=['rs'])
+    async def reset_score(msg: Message, *args):
+
+        pass
+
     @bot.command(name='score', case_sensitive=False, aliases=['s'])
     async def show_score(msg: Message, *args):
         # 处理玩家随便输入的时候， 在函数原型中加入 , *args

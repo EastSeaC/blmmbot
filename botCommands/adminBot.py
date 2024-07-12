@@ -163,6 +163,7 @@ def init(bot: Bot, es_channels: EsChannels):
         print(divide_data.defender_list)
         await move_a_to_b_ex(ChannelManager.match_attack_channel, divide_data.attacker_list)
         await move_a_to_b_ex(ChannelManager.match_defend_channel, divide_data.defender_list)
+
         await msg.reply('分配完毕!')
 
     @bot.command(name='move_set_to_wait', case_sensitive=False, aliases=['msw'])

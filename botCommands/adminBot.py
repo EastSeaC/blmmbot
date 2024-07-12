@@ -145,6 +145,7 @@ def init(bot: Bot, es_channels: EsChannels):
             dict_for_kook_id[t.kookId] = t
 
         print([i.__dict__ for i in z])
+        print([i.__dict__ for i in dict_for_kook_id])
         for id, user in enumerate(k):
             t: GuildUser = user
             player: Player = dict_for_kook_id[t.id]

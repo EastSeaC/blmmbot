@@ -322,7 +322,7 @@ async def player_exit_channel(b: Bot, e: Event):
         # 获取指定频道
         ch = await bot.client.fetch_public_channel(ChannelManager.announcement)
         ret = await ch.send(warning_text)  # 方法1
-        print(f"ch.send | msg_id {ret['msg_id']}")  # 方法1 发送消息的id
+        # LogHelper.log(f" {ret['msg_id']}")  # 方法1 发送消息的id
         pass
 
 

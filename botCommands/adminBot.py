@@ -144,8 +144,8 @@ def init(bot: Bot, es_channels: EsChannels):
             t: Player = i
             dict_for_kook_id[t.kookId] = t
 
-        print([i.__dict__ for i in z])
-        print([i.__dict__ for i in dict_for_kook_id.values()])
+        # print([i.__dict__ for i in z])
+        # print([i.__dict__ for i in dict_for_kook_id.values()])
         for id, user in enumerate(k):
             t: GuildUser = user
             player: Player = dict_for_kook_id[t.id]
@@ -161,7 +161,6 @@ def init(bot: Bot, es_channels: EsChannels):
         divide_data: DivideData = MatchState.divide_player_ex(player_list)
         print(divide_data.attacker_list)
         print(divide_data.defender_list)
-
         await move_a_to_b_ex(ChannelManager.match_attack_channel, divide_data.attacker_list)
         await move_a_to_b_ex(ChannelManager.match_defend_channel, divide_data.defender_list)
         await msg.reply('分配完毕!')

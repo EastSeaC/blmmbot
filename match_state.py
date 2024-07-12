@@ -133,19 +133,23 @@ class MatchState:
         """
         用于分组, 第一组是 攻击者的 user_id， 第二组是 防御者的 userid
         """
+
         for i in a:
             k: PlayerInfo = i
             print(k.score, k.user_id)
         print('a*' * 20)
         x, y = min_diff_partition(a)
 
+        attacker_names = []
         attacker_score_temp = 0
+        defender_names = []
         defender_score_temp = 0
         m = []
         for i in x:
             k: PlayerInfo = i
             m.append(k.user_id)
             attacker_score_temp += k.score
+            attacker_names.append(k.user_name)
             print(k.score, k.user_id)
 
         print('*' * 20)
@@ -158,6 +162,7 @@ class MatchState:
 
         div = DivideData()
         div.attacker_list = m
+        div.attacker_names = attacker_names
         div.defender_list = n
         div.attacker_scores = attacker_score_temp
         div.defend_scores = defender_score_temp
@@ -193,6 +198,8 @@ class DivideData:
         self.defender_list = []
         self.attacker_scores: int = 0
         self.defend_scores: int = 0
+        self.attacker_names = []
+        self.defender_names = []
 
     def __str__(self):
         return f"{self.attacker_list},{self.defender_list}, attacker_scores:{self.attacker_scores}, defend_scores:{self.defend_scores}, diff {self.attacker_scores - self.defend_scores}"

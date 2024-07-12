@@ -1,6 +1,6 @@
 from random import randint
 
-from khl import Bot, Message, EventTypes, Event, GuildUser
+from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import literal, desc, text
 
@@ -106,15 +106,22 @@ def init(bot: Bot, es_channels: EsChannels):
             await ShowLastMatch()
 
     @bot.command(name='test_move_old_wait_channel_to_bot_channel', case_sensitive=False, aliases=['test_mowctbc'])
-    async def move_from_old_wait_channel_to_x(msg: Message):
+    async def move_from_old_wait_channel_to_x(msg: Message, custom_channel_id: str = ''):
+        """
+        移动某个频道的玩家到 等候频道
+        """
         if msg.author_id != ChannelManager.es_user_id:
             await msg.reply('禁止使用es指令')
             return
 
-        channel = await bot.client.fetch_public_channel(ChannelManager.old_wait_channel)
+        channel: PublicChannel
+        if len(custom_channel_id) == 0:
+            channel = await bot.client.fetch_public_channel(ChannelManager.old_wait_channel)
+        else:
+            channel = await bot.client.fetch_public_channel(custom_channel_id)
         k = await channel.fetch_user_list()
         await move_a_to_b_ex(ChannelManager.match_wait_channel, k)
-        await  msg.reply('成功！')
+        await msg.reply('成功！')
         pass
 
     @bot.command(name='rtc', case_sensitive=False, aliases=['yc'])

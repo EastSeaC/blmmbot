@@ -122,7 +122,7 @@ async def get_verify_code(request):
 async def add_player_name(request):
     player_id: str = request.match_info['player_id']
     name = request.match_info['name']
-    LogHelper.log(f"添加 player_id 和 Name指令：player_id:{player_id} name{name}")
+    LogHelper.log(f"添加 player_id 和 Name 指令：player_id:{player_id} name:{name}")
 
     if not player_id or not name:
         return Response(text='不得为空')

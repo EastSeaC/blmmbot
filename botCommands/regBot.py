@@ -79,6 +79,8 @@ def init(bot: Bot, es_channels):
         player.kookName = user.username
         session.add(player)
         session.commit()
+
+        LogHelper.log(f'注册成功, playerId:{player_id}, kookName:{user.username}')
         await msg.reply("注册成功")
 
 

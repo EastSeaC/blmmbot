@@ -190,7 +190,8 @@ async def update_match_data2(request):
     print('*' * 45)
     # for key, value in data.items():
     #     print(f"Key: {key}, Value: {value}")
-    data = json.loads(data)
+    if not isinstance(data, dict):
+        data = json.loads(data)
     session.commit()
     t = DB_Matchs()
     t.left_scores = data["AttackScores"]

@@ -16,8 +16,8 @@ class LogHelper:
     __open_log = True
 
     @staticmethod
-    def log_star_start(s=''):
-        print(f"{start_str}\n[{get_time_str()}]:{s}\n{start_str}")
+    def log_star_start(s='分界线'):
+        print(start_str + f"[{get_time_str()}]:{s}{start_str}")
 
     @staticmethod
     def log(s):

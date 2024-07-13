@@ -10,6 +10,7 @@ from openpyxl.workbook import Workbook
 from sqlalchemy import or_, desc
 
 from LogHelper import LogHelper
+from config import INITIAL_SCORE, WIN_REWARD_SCORE, LOSE_PENALTY_SCORE
 from convert.PlayerMatchData import TPlayerMatchData
 from entity.PlayerRegInfo import PlayerInfo
 from init_db import get_session
@@ -278,6 +279,10 @@ async def update_match_data2(request):
         oldData: DB_PlayerData = i
         k = TPlayerMatchData(playerData[oldData.playerId])
 
+        if k.win_rounds >= 3:
+            oldData.rank += 40
+        else:
+            oldData.rank -= 40
         oldData.playerName = k.player_name
         oldData.match += 1
         oldData.win += k.win
@@ -306,7 +311,13 @@ async def update_match_data2(request):
         # print('test123')
         k = TPlayerMatchData(i)
         newData = DB_PlayerData()
-
+        # 积分
+        newData.rank = INITIAL_SCORE
+        if k.win_rounds >= 3:
+            newData.rank += WIN_REWARD_SCORE
+        else:
+            newData.rank += LOSE_PENALTY_SCORE
+        # 积分
         newData.playerId = k.player_id
         newData.playerName = k.player_name
         newData.match = 1

@@ -4,6 +4,7 @@
 
 from sqlalchemy import *
 
+from convert.PlayerMatchData import TPlayerMatchData
 from .base import Base
 
 
@@ -52,6 +53,29 @@ class DB_PlayerData(Base):
     horse_kill = Column(Integer, nullable=False, default=0)
     horse_tk = Column(Integer, nullable=False, default=0)
     horse_tk_val = Column(Integer, nullable=False, default=0)
+
+    def add_match_data(self, match_data: TPlayerMatchData):
+        self.win += match_data.win
+        self.lose += match_data.lose
+        self.draw += match_data.draw_rounds
+
+        self.infantry += match_data.Infantry
+        self.cavalry += match_data.Cavalry
+        self.archer += match_data.Archer
+
+        self.damage += match_data.damage
+        self.team_damage += match_data.team_damage
+
+        self.win_rounds += match_data.win_rounds
+        self.fail_rounds += match_data.lose_rounds
+        self.draw_rounds += match_data.draw_rounds
+
+        self.horse_damage += match_data.horse_damage
+
+        self.kill += match_data.kill
+        self.death += match_data.death
+        self.assist += match_data.assist
+        pass
 
     def GetHeaders(self):
         return [

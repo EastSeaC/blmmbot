@@ -35,7 +35,7 @@ class ServerManager:
 
             server_path = opx.get('SERVER_PATH', '')
             LogHelper.log(f"取得BA服务器路径{server_path}")
-            if len(server_path) == 0 or os.path.exists(server_path):
+            if len(server_path) == 0 or not os.path.exists(server_path):
                 LogHelper.log(f"路径异常，退出{server_path}")
                 return False
 

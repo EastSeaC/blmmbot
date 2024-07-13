@@ -205,12 +205,19 @@ async def update_match_data2(request):
     t.tag = data["Tag"]
     playerData = data["_players"]
     t.raw = playerData
+    ###### 提前保存，防止数据异常
     session.add(t)
     session.commit()
-    IsMatchEnding = t.tag["IsMatchEnding"]
-    RoundCount = t.tag["RoundCount"]
-    if IsMatchEnding:
-        if RoundCount == 1:
+
+    if isinstance(t.tag, dict):
+        is_match_ending = t.tag["IsMatchEnding"]
+        round_count = t.tag["RoundCount"]
+    else:
+        round_count = False
+        is_match_ending = False
+
+    if is_match_ending:
+        if round_count == 1:
             playerData_2: dict = playerData
             print('数据只有一项', '*' * 65)
 
@@ -220,7 +227,7 @@ async def update_match_data2(request):
                 show_data.append(k)
                 pass
             # 保存数据到静态 , 转为有比赛结果
-            MatchConditionEx.round_count = RoundCount
+            MatchConditionEx.round_count = round_count
             MatchConditionEx.data = show_data
             LogHelper.log("数据已保存")
         else:
@@ -228,7 +235,7 @@ async def update_match_data2(request):
             # 根据 RoundCount 取 n 个比赛数据
             result = (session.query(DB_Matchs).filter(DB_Matchs.server_name == t.server_name)
                       .order_by(desc(DB_Matchs.time_match))
-                      .limit(RoundCount).all())
+                      .limit(round_count).all())
             show_data = []
             # 初始化数据
             first_match_obj: DB_Matchs = result[0]
@@ -278,7 +285,7 @@ async def update_match_data2(request):
         # print('u2')
         oldData: DB_PlayerData = i
         k = TPlayerMatchData(playerData[oldData.playerId])
-
+        ## 计分系统
         if k.win_rounds >= 3:
             oldData.rank += 40
         else:

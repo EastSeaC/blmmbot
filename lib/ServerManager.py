@@ -1,3 +1,4 @@
+import json
 import os.path
 import subprocess
 import time
@@ -5,7 +6,8 @@ import time
 import win32con
 import win32gui
 
-from LogHelper import display
+from LogHelper import display, LogHelper
+from lib.ServerGameConfig import GameConfig
 
 
 class ServerManager:
@@ -19,6 +21,29 @@ class ServerManager:
                 open_bat()
                 display('重启服务器!')
         # 获取所有顶层窗口句柄和标题
+
+    @staticmethod
+    def GenerateConfigFile(config: GameConfig):
+        with open(os.path.join(os.getcwd(), 'x.json'), 'r') as f:
+            LogHelper.log_star_start()
+            z = f.read()
+            if len(z) == 0:
+                return False
+            opx = json.loads(z)
+            if not isinstance(opx, dict):
+                return False
+
+            server_path = opx.get('SERVER_PATH', '')
+            LogHelper.log(f"取得BA服务器路径{server_path}")
+            if len(server_path) == 0 or os.path.exists(server_path):
+                LogHelper.log(f"路径异常，退出{server_path}")
+                return False
+
+        from lib.ServerGamePathManager import ServerGamePathManager
+        file_confit_path = os.path.join(ServerGamePathManager.get_native_path_ex(server_path), 'blmmbot.txt')
+        with open(file_confit_path, 'w', encoding='utf8') as f:
+            f.write(config.to_str())
+        LogHelper.log_star_start()
 
 
 def open_bat():

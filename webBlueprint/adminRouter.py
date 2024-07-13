@@ -6,6 +6,7 @@ from aiohttp.web_response import Response
 
 from entity.BanType import BanType
 from init_db import get_session
+from lib.ServerGameConfig import GameConfig
 from lib.ServerManager import ServerManager
 from match_state import PlayerInfo
 from tables.Ban import DB_Ban
@@ -44,10 +45,19 @@ def ban_player(request):
     return Response(text=z)
 
 
-@adminRouter.get('/show_all_window_name')
+@adminRouter.get('/restart_server')
 def show_all_window_name(req):
     ServerManager.RestartBLMMServer()
     return Response(text='123')
+
+
+@adminRouter.get('/test_auto_config')
+def test_auto_config(req):
+    game_config = GameConfig()
+    game_config.ramdom_faction()
+
+    ServerManager.GenerateConfigFile(game_config)
+    return Response(text=game_config.to_str())
 
 
 @adminRouter.get('/test_divide_players')

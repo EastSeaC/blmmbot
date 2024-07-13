@@ -1,5 +1,7 @@
 import random
 
+from LogHelper import LogHelper
+
 
 def get_random_faction_2():
     z = ['sturgia', 'vlandia', 'battania', 'empire', 'khuzait', 'aserai']
@@ -43,6 +45,12 @@ class GameConfig:
         self.allow_polls_to_change_maps = True
         self.automated_battle_count = -1
         self.automated_battle_switching_enabled = True
+
+    def shuffle_all(self):
+        self.map = random.sample(self.automated_battle_pool, k=1)
+        self.ramdom_faction()
+        LogHelper.log('打乱成功')
+        pass
 
     def ramdom_faction(self):
         x, y = get_random_faction_2()

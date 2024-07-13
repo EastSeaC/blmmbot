@@ -1,6 +1,13 @@
 import random
 
 
+def get_random_faction_2():
+    z = ['sturgia', 'vlandia', 'battania', 'empire', 'khuzait', 'aserai']
+    # 从列表中随机选择两个元素
+    random_selection = random.sample(z, 2)
+    return random_selection
+
+
 class GameConfig:
     def __init__(self):
         self.server_name = "CN_BTL_NINGBO_1"
@@ -38,15 +45,9 @@ class GameConfig:
         self.automated_battle_switching_enabled = True
 
     def ramdom_faction(self):
-        x, y = self.get_random_faction_2()
+        x, y = get_random_faction_2()
         self.culture_team1 = x
         self.culture_team2 = y
-
-    def get_random_faction_2(self):
-        z = ['sturgia', 'vlandia', 'battania', 'empire', 'khuzait', 'aserai']
-        # 从列表中随机选择两个元素
-        random_selection = random.sample(z, 2)
-        return random_selection
 
     def start_game_and_mission(self):
         # Placeholder for starting game and mission logic

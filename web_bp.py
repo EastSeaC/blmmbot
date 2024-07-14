@@ -206,9 +206,12 @@ async def update_match_data2(request):
     playerData = data["_players"]
     t.raw = playerData
     ###### 提前保存，防止数据异常
+
+    t.tag = json.dumps(t.tag)
     session.add(t)
     session.commit()
 
+    t.tag = json.loads(t.tag)
     if isinstance(t.tag, dict):
         is_match_ending = t.tag["IsMatchEnding"]
         round_count = t.tag["RoundCount"]

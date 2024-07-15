@@ -171,7 +171,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='move_set_to_wait', case_sensitive=False, aliases=['msw'])
     async def worldO(msg: Message):
-        if msg.author_id != ChannelManager.es_user_id:
+        if not check_admin(msg):
             await msg.reply('禁止使用es指令')
             return
 
@@ -229,6 +229,12 @@ def init(bot: Bot, es_channels: EsChannels):
             list_t.append(d.id)
 
             await channel_b.move_user(ChannelManager.match_attack_channel, d.id)
+
+    async def check_admin(msg: Message):
+        if msg.author_id != ChannelManager.es_user_id or msg.author_id in ChannelManager.manager_user_id:
+            await msg.reply('禁止使用es指令')
+            return False
+        return True
 
     async def move_a_to_b(a: str, b: str):
         channel = await bot.client.fetch_public_channel(a)

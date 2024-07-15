@@ -156,7 +156,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 player_info.kook_name = t.username
                 player_list.append(player_info)
         except Exception as e:
-            print(t.kookId, t.kookName)
+            print(t.id, t.kookName)
             return
             # if len(player_list) % 2 != 0:
         #     player_list.pop()

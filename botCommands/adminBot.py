@@ -1,6 +1,6 @@
 from random import randint
 
-from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel
+from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel, PublicVoiceChannel
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import literal, desc, text
 
@@ -130,7 +130,7 @@ def init(bot: Bot, es_channels: EsChannels):
             await msg.reply('禁止使用es指令')
             return
 
-        channel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
+        channel: PublicVoiceChannel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
         k = await channel.fetch_user_list()
 
         if len(k) % 2 == 1:
@@ -146,16 +146,19 @@ def init(bot: Bot, es_channels: EsChannels):
 
         # print([i.__dict__ for i in z])
         # print([i.__dict__ for i in dict_for_kook_id.values()])
-        for id, user in enumerate(k):
-            t: GuildUser = user
-            player: Player = dict_for_kook_id[t.id]
-            player_info = PlayerInfo({})
-            player_info.score = player.rank
-            player_info.user_id = t.id
-            player_info.kook_name = t.username
-            player_list.append(player_info)
-
-        # if len(player_list) % 2 != 0:
+        try:
+            for id, user in enumerate(k):
+                t: GuildUser = user
+                player: Player = dict_for_kook_id[t.id]
+                player_info = PlayerInfo({})
+                player_info.score = player.rank
+                player_info.user_id = t.id
+                player_info.kook_name = t.username
+                player_list.append(player_info)
+        except Exception as e:
+            print(t.kookId, t.kookName)
+            return
+            # if len(player_list) % 2 != 0:
         #     player_list.pop()
 
         divide_data: DivideData = MatchState.divide_player_ex(player_list)

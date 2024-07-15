@@ -7,7 +7,7 @@ import aiohttp_jinja2
 import jinja2
 import requests
 from aiohttp import web
-from khl import Bot, Message, Event, EventTypes
+from khl import Bot, Message, Event, EventTypes, PublicChannel, PublicVoiceChannel, GuildUser
 from khl.card import Card, Module, Struct, Element, Types, CardMessage
 
 from LogHelper import LogHelper
@@ -270,6 +270,11 @@ MVPs:{0}'''
 async def task5():
     condition = stateMachine.check_state()
     if condition == MatchCondition.WaitingJoin:
+        z: PublicVoiceChannel = es_channels.wait_channel
+        user_list: list = await z.fetch_user_list()
+        user_count = len(user_list)
+        if user_count >= 12:
+            pass
         # channel = await bot.client.fetch_public_channel(ChannelManager.command_channel)
         z = "当前状态为 等待玩家加入"
         # LogHelper.log(z)

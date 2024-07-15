@@ -126,7 +126,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='rtc', case_sensitive=False, aliases=['yc'])
     async def tojadx(msg: Message):
-        if msg.author_id != ChannelManager.es_user_id:
+        if msg.author_id != ChannelManager.es_user_id or msg.author_id in ChannelManager.manager_user_id:
             await msg.reply('禁止使用es指令')
             return
 

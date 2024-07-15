@@ -130,14 +130,14 @@ def init(bot: Bot, es_channels: EsChannels):
             await msg.reply('禁止使用es指令')
             return
 
-        channel: PublicVoiceChannel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
-        k = await channel.fetch_user_list()
+        k = await es_channels.wait_channel.fetch_user_list()
 
         if len(k) % 2 == 1:
             await msg.reply('人数异常')
             return
         player_list = []
 
+        session.commit()
         z = session.query(Player).filter(Player.kookId.in_([i.id for i in k])).all()
         dict_for_kook_id = {}
         for i in z:
@@ -156,7 +156,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 player_info.kook_name = t.username
                 player_list.append(player_info)
         except Exception as e:
-            print(t.id, t.username)
+            LogHelper.log(f"没有注册 {t.id} {t.username}")
             return
             # if len(player_list) % 2 != 0:
         #     player_list.pop()

@@ -183,8 +183,12 @@ async def show_match(msg: Message):
 async def task1():
     # 1s触发器
     # 检查是否有数据
-    if MatchConditionEx.state:
-        MatchConditionEx.state = False
+    if MatchConditionEx.end_game:
+        MatchConditionEx.end_game = False
+        # 移动大伙回来
+        await move_a_to_b(ChannelManager.match_attack_channel, ChannelManager.match_wait_channel)
+        await move_a_to_b(ChannelManager.match_defend_channel, ChannelManager.match_wait_channel)
+
         LogHelper.log("输出比赛数据")
         await es_channels.command_channel.send(CardMessage(
             Card(
@@ -264,6 +268,21 @@ MVPs:{0}'''
         # stateMachine.add_player_to_wait_list(t.id)
         pass
     pass
+
+
+async def move_a_to_b(a: str, b: str):
+    channel = await bot.client.fetch_public_channel(a)
+    channel_b = await bot.client.fetch_public_channel(b)
+    k = await channel.fetch_user_list()
+    for id, user in enumerate(k):
+        d: GuildUser = user
+        await channel_b.move_user(ChannelManager.match_wait_channel, d.id)
+
+
+async def move_a_to_b_ex(b: str, list_player: list):
+    channel_b = await bot.client.fetch_public_channel(b)
+    for id, user_id in enumerate(list_player):
+        await channel_b.move_user(b, user_id)
 
 
 @bot.task.add_interval(seconds=3)

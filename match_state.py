@@ -7,7 +7,7 @@ from LogHelper import LogHelper
 
 class MatchConditionEx:
     server_name = None
-    state: bool = False
+    end_game: bool = False
     data = None
     data2 = None
     round_count = 0

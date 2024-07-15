@@ -267,7 +267,7 @@ async def update_match_data2(request):
             LogHelper.log("多项-数据已保存")
             pass
         # 存放到 静态类中，让机器人输出
-        MatchConditionEx.state = True
+        MatchConditionEx.end_game = True
 
     if isinstance(t.tag, dict):
         t.tag = json.dumps(t.tag)

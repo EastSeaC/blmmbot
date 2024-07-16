@@ -9,7 +9,7 @@ from blmm_bot import EsChannels
 from init_db import get_session
 from kook.ChannelKit import ChannelManager
 from lib.basic import generate_numeric_code
-from match_state import PlayerInfo, MatchState, DivideData
+from match_state import PlayerBasicInfo, MatchState, DivideData
 from tables import *
 from tables.Admin import DBAdmin
 from tables.PlayerNames import DB_PlayerNames
@@ -150,7 +150,7 @@ def init(bot: Bot, es_channels: EsChannels):
             for id, user in enumerate(k):
                 t: GuildUser = user
                 player: Player = dict_for_kook_id[t.id]
-                player_info = PlayerInfo({})
+                player_info = PlayerBasicInfo({})
                 player_info.score = player.rank
                 player_info.user_id = t.id
                 player_info.kook_name = t.username

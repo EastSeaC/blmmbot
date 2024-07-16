@@ -8,7 +8,7 @@ from entity.BanType import BanType
 from init_db import get_session
 from lib.ServerGameConfig import GameConfig
 from lib.ServerManager import ServerManager
-from match_state import PlayerInfo
+from match_state import PlayerBasicInfo
 from tables.Ban import DB_Ban
 
 adminRouter = web.RouteTableDef()

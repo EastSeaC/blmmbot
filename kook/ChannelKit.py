@@ -29,6 +29,11 @@ class ChannelManager:
     command_channel = '1451138349000890'
     manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
 
+    @staticmethod
+    def is_common_user(kook_id: str):
+        return kook_id not in ChannelManager.manager_user_id
+
+
 
 class EsChannels:
     def __init__(self):

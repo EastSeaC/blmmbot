@@ -1,9 +1,10 @@
-from khl import Bot, Message
+from khl import Bot, Message, GuildUser
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
 
 from config import get_rank_name
 from init_db import get_session
-from kook.ChannelKit import EsChannels
+from kook.ChannelKit import EsChannels, ChannelManager
+from match_state import PlayerBasicInfo, DivideData, MatchState
 from tables import *
 
 sqlSession = get_session()
@@ -50,6 +51,60 @@ def init(bot: Bot, es_channels: EsChannels):
     async def reset_score(msg: Message, *args):
 
         pass
+
+    @bot.command(name='e', case_sensitive=False, aliases=['e'])
+    async def es_start_match(msg: Message):
+        if ChannelManager.is_common_user(msg.author_id):
+            await msg.reply('禁止使用es指令')
+            return
+
+        k = await es_channels.wait_channel.fetch_user_list()
+
+        if len(k) % 2 == 1 or len(k) == 0:
+            await msg.reply('人数异常')
+            return
+        player_list = []
+
+        z = sqlSession.query(Player).filter(Player.kookId.in_([i.id for i in k])).all()
+        dict_for_kook_id = {}
+        for i in z:
+            t: Player = i
+            dict_for_kook_id[t.kookId] = t
+
+        # print([i.__dict__ for i in z])
+        # print([i.__dict__ for i in dict_for_kook_id.values()])
+        for id, user in enumerate(k):
+            t: GuildUser = user
+            player: Player = dict_for_kook_id[t.id]
+            player_info = PlayerBasicInfo({})
+            player_info.score = player.rank
+            player_info.user_id = t.id
+            player_info.kook_name = t.username
+            player_list.append(player_info)
+
+        # if len(player_list) % 2 != 0:
+        #     player_list.pop()
+
+        divide_data: DivideData = MatchState.divide_player_ex(player_list)
+        print(divide_data.attacker_list)
+        print(divide_data.defender_list)
+        await move_a_to_b_ex(ChannelManager.match_attack_channel, divide_data.attacker_list)
+        await move_a_to_b_ex(ChannelManager.match_defend_channel, divide_data.defender_list)
+
+        await msg.reply('分配完毕!')
+
+    async def move_a_to_b(a: str, b: str):
+        channel = await bot.client.fetch_public_channel(a)
+        channel_b = await bot.client.fetch_public_channel(b)
+        k = await channel.fetch_user_list()
+        for id, user in enumerate(k):
+            d: GuildUser = user
+            await channel_b.move_user(ChannelManager.match_wait_channel, d.id)
+
+    async def move_a_to_b_ex(b: str, list_player: list):
+        channel_b = await bot.client.fetch_public_channel(b)
+        for id, user_id in enumerate(list_player):
+            await channel_b.move_user(b, user_id)
 
     @bot.command(name='score', case_sensitive=False, aliases=['s'])
     async def show_score(msg: Message, *args):

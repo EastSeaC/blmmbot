@@ -96,7 +96,7 @@ class MatchState:
     def divie_player(self):
         list_player = []
         for i in self.waitting_list.keys():
-            list_player.append(PlayerInfo(
+            list_player.append(PlayerBasicInfo(
                 {'score': randint(10, 20), 'user_id': i}))
         a, b = min_diff_partition(list_player)
         self.attack_list = a
@@ -112,20 +112,20 @@ class MatchState:
     @staticmethod
     def divide_player_test(self, a: list):
         for i in a:
-            k: PlayerInfo = i
+            k: PlayerBasicInfo = i
             print(k.score, k.user_id)
         print('a*' * 20)
         x, y = min_diff_partition(a)
         m = []
         for i in x:
-            k: PlayerInfo = i
+            k: PlayerBasicInfo = i
             m.append(k.user_id)
             print(k.score, k.user_id)
 
         print('*' * 20)
         n = []
         for i in y:
-            k: PlayerInfo = i
+            k: PlayerBasicInfo = i
             n.append(k.user_id)
             print(k.score, k.user_id)
         return m, n
@@ -137,7 +137,7 @@ class MatchState:
         """
 
         for i in a:
-            k: PlayerInfo = i
+            k: PlayerBasicInfo = i
             print(k.score, k.user_id)
         print('a*' * 20)
         x, y = min_diff_partition(a)
@@ -148,7 +148,7 @@ class MatchState:
         defender_score_temp = 0
         m = []
         for i in x:
-            k: PlayerInfo = i
+            k: PlayerBasicInfo = i
             m.append(k.user_id)
             attacker_score_temp += k.score
             attacker_names.append(k.user_name)
@@ -157,7 +157,7 @@ class MatchState:
         print('*' * 20)
         n = []
         for i in y:
-            k: PlayerInfo = i
+            k: PlayerBasicInfo = i
             n.append(k.user_id)
             defender_score_temp += k.score
             defender_names.append(k.user_name)
@@ -177,7 +177,7 @@ class MatchState:
         return self.state == 1
 
 
-class PlayerInfo:
+class PlayerBasicInfo:
     def __init__(self, player_dict: dict) -> None:
         self.score = player_dict.get('score', 0)
         self.user_id = player_dict.get('user_id', '62a')  # kook的用户id
@@ -214,7 +214,7 @@ def sorted_aux(player):
 
 
 def min_diff_partition(nums):
-    if isinstance(nums[0], PlayerInfo):
+    if isinstance(nums[0], PlayerBasicInfo):
         num_list = sorted(nums[:], key=sorted_aux)
         LogHelper.log('排序使用key')
     else:

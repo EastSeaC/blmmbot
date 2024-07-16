@@ -6,7 +6,7 @@ from sqlalchemy import desc
 
 from LogHelper import LogHelper
 from init_db import get_session
-from match_state import PlayerInfo, MatchState
+from match_state import PlayerBasicInfo, MatchState
 from tables import DB_PlayerData
 
 matchRouter = web.RouteTableDef()
@@ -26,7 +26,7 @@ async def divide_players_to_2_group(req):
     list_a = []
     for i in scores_list:
         z: DB_PlayerData = i
-        pm = PlayerInfo(z.__dict__)
+        pm = PlayerBasicInfo(z.__dict__)
         list_a.append(pm)
     MatchState.divide_player_ex(list_a)
     return Response(text='123')

@@ -58,6 +58,11 @@ def init(bot: Bot, es_channels: EsChannels):
         if ChannelManager.is_common_user(msg.author_id):
             await msg.reply('禁止使用es指令')
             return
+        try:
+            sqlSession.commit()
+        except Exception as e:
+            await msg.reply('数据库提交异常')
+            sqlSession.rollback()
 
         k = await es_channels.wait_channel.fetch_user_list()
         for i in k:

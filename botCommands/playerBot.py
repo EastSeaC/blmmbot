@@ -80,19 +80,26 @@ def init(bot: Bot, es_channels: EsChannels):
         try:
             for id, user in enumerate(k):
                 t: GuildUser = user
+                if t.id not in dict_for_kook_id:
+                    await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
+                    await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
                 player: Player = dict_for_kook_id[t.id]
                 player_info = PlayerBasicInfo({})
                 player_info.score = player.rank
                 player_info.user_id = t.id
                 player_info.kook_name = t.username
                 player_list.append(player_info)
+
         except Exception as e:
             LogHelper.log(f"没有注册 {t.id} {t.username}")
             await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
             await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
             return
 
-        # if len(player_list) % 2 != 0:
+        if len(player_list) != 12:
+            await es_channels.command_channel.send(f'注册人数不足12，请大伙先注册，/help可以提供支持')
+            return
+            # if len(player_list) % 2 != 0:
         #     player_list.pop()
 
         divide_data: DivideData = MatchState.divide_player_ex(player_list)

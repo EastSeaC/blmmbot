@@ -19,7 +19,7 @@ class ChannelManager:
     match_attack_channel = '4829289747409514'
     match_defend_channel = '1565042036823961'
 
-    match_set_channel = '7650865243361968'
+    match_set_channel = '6713919713207768'  # 淘汰休息室
     # 警告频道
     error_channel = '3489054506196442'
     es_user_id = '482714005'
@@ -32,7 +32,6 @@ class ChannelManager:
     @staticmethod
     def is_common_user(kook_id: str):
         return kook_id not in ChannelManager.manager_user_id
-
 
 
 class EsChannels:

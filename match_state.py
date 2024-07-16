@@ -33,26 +33,26 @@ class MatchState:
         self.defend_list = []
         self.need_num: int = 12  # 所需玩家数
 
-        self.waitting_list = {}
+        self.waiting_list = {}
 
         self.confirmed: bool = False  # 游戏已初始化，人数到齐.
         self.match_over: bool = False  # 比赛结束？
-        self.documentd: bool = False  # 归档完成?
+        self.documented: bool = False  # 归档完成?
 
         self.first_player_join_time: datetime
         pass
 
     # 添加玩家到等候列表
     def add_player_to_wait_list(self, user_id):
-        self.waitting_list[user_id] = True
+        self.waiting_list[user_id] = datetime.now()
         self.check_state()
 
     def remove_player_from_wait_list(self, user_id):
-        if user_id in self.waitting_list:
-            self.waitting_list.pop()
+        if user_id in self.waiting_list:
+            self.waiting_list.pop(user_id)
 
     def get_cur_player_num_in_wait_list(self):
-        return len(self.waitting_list)
+        return len(self.waiting_list)
 
     def add_player_num(self):
         self.player_number += 1
@@ -75,7 +75,7 @@ class MatchState:
         self.__init__()
 
     def check_state(self):
-        if len(self.waitting_list) == self.need_num:
+        if len(self.waiting_list) == self.need_num:
             self.state = MatchCondition.DividePlayer
         elif self.state == MatchCondition.DividePlayer:
             self.divie_player()
@@ -87,7 +87,7 @@ class MatchState:
             if self.match_over:
                 self.state = MatchCondition.Documenting
         elif self.state is MatchCondition.Documenting:
-            if self.documentd:
+            if self.documented:
                 self.state = MatchCondition.WaitingJoin
                 self.reset_match()
 
@@ -95,7 +95,7 @@ class MatchState:
 
     def divie_player(self):
         list_player = []
-        for i in self.waitting_list.keys():
+        for i in self.waiting_list.keys():
             list_player.append(PlayerBasicInfo(
                 {'score': randint(10, 20), 'user_id': i}))
         a, b = min_diff_partition(list_player)

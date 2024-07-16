@@ -1,6 +1,7 @@
 from khl import Bot, Message, GuildUser
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
 
+from LogHelper import LogHelper
 from config import get_rank_name
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
@@ -59,7 +60,10 @@ def init(bot: Bot, es_channels: EsChannels):
             return
 
         k = await es_channels.wait_channel.fetch_user_list()
-
+        for i in k:
+            z: GuildUser = i
+            print(z.__dict__)
+            print(convert_timestamp(z.active_time))
         if len(k) % 2 == 1 or len(k) == 0:
             await msg.reply('人数异常')
             return
@@ -73,14 +77,20 @@ def init(bot: Bot, es_channels: EsChannels):
 
         # print([i.__dict__ for i in z])
         # print([i.__dict__ for i in dict_for_kook_id.values()])
-        for id, user in enumerate(k):
-            t: GuildUser = user
-            player: Player = dict_for_kook_id[t.id]
-            player_info = PlayerBasicInfo({})
-            player_info.score = player.rank
-            player_info.user_id = t.id
-            player_info.kook_name = t.username
-            player_list.append(player_info)
+        try:
+            for id, user in enumerate(k):
+                t: GuildUser = user
+                player: Player = dict_for_kook_id[t.id]
+                player_info = PlayerBasicInfo({})
+                player_info.score = player.rank
+                player_info.user_id = t.id
+                player_info.kook_name = t.username
+                player_list.append(player_info)
+        except Exception as e:
+            LogHelper.log(f"没有注册 {t.id} {t.username}")
+            await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
+            await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
+            return
 
         # if len(player_list) % 2 != 0:
         #     player_list.pop()
@@ -162,3 +172,19 @@ def init(bot: Bot, es_channels: EsChannels):
             await msg.reply("请先注册")
 
         pass
+
+
+def convert_timestamp(timestamp):
+    from datetime import datetime
+    # 将毫秒时间戳转换为秒
+    seconds = timestamp / 1000
+    # 使用 datetime.fromtimestamp() 将秒级时间戳转换为 datetime 对象
+    dt_object = datetime.fromtimestamp(seconds)
+    # 格式化 datetime 对象为 24 小时制的字符串
+    formatted_time = dt_object.strftime('%Y-%m-%d %H:%M:%S')
+    return formatted_time
+
+
+if __name__ == '__main__':
+    timestamp = 1721137013547
+    print(convert_timestamp(timestamp))

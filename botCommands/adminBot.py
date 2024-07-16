@@ -126,7 +126,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='rtc', case_sensitive=False, aliases=['yc'])
     async def tojadx(msg: Message):
-        if check_admin(msg):
+        if ChannelManager.is_common_user(msg.author_id):
             await msg.reply('禁止使用es指令')
             return
 
@@ -157,6 +157,8 @@ def init(bot: Bot, es_channels: EsChannels):
                 player_list.append(player_info)
         except Exception as e:
             LogHelper.log(f"没有注册 {t.id} {t.username}")
+            await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
+            await move_a_to_b_ex(ChannelManager.match_wait_channel, [t.id])
             return
             # if len(player_list) % 2 != 0:
         #     player_list.pop()
@@ -245,6 +247,9 @@ def init(bot: Bot, es_channels: EsChannels):
             await channel_b.move_user(ChannelManager.match_wait_channel, d.id)
 
     async def move_a_to_b_ex(b: str, list_player: list):
+        """
+        @param:b :频道id
+        """
         channel_b = await bot.client.fetch_public_channel(b)
         for id, user_id in enumerate(list_player):
             await channel_b.move_user(b, user_id)

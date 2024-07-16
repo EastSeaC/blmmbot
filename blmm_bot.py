@@ -81,8 +81,10 @@ async def help_x(msg: Message):
     t = '''/help 查看所有指令
     /score_list /sl 查看分数榜单
     /score /s 查看自己的分数
+    **(font)/e 开启匹配(font)[success]**
+     
     **(font)注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：(font)[warning]**
-    /v [playerId] [code]  例如 /v 2.0.0.xxxxxxxxxx 600860
+    /v [playerId] [code]  例如 /v 2.0.0.76561198104994845 600860
     '''
     file_path = 'satic/img/reg-1.png'
     img_url = await bot.client.create_asset(file_path)
@@ -329,6 +331,8 @@ async def player_exit_channel(b: Bot, e: Event):
     user_id = e.body["user_id"]
 
     if channel_id == ChannelManager.match_wait_channel:
+        stateMachine.remove_player_from_wait_list(user_id=user_id)
+        await es_channels.command_channel.send('1名玩家 离开等候频道')
         pass
     elif (channel_id == ChannelManager.match_attack_channel) or (channel_id == ChannelManager.match_defend_channel):
         warning_state, times = guard.add_warning_times(user_id)

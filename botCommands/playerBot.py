@@ -143,9 +143,9 @@ def init(bot: Bot, es_channels: EsChannels):
                 if change_names_obj.left_times > 0:
                     change_names_obj.lastKookName = new_name
                     player.kookName = new_name
-
+                    change_names_obj.left_times -= 1
                     sqlSession.commit()
-                    await msg.reply(f'名称更新成功, ->{new_name}')
+                    await msg.reply(f'名称更新成功, ->{new_name}, 剩余次数:{change_names_obj.left_times}')
                 else:
                     await msg.reply(f'名称更新失败 。 次数用尽')
                     return

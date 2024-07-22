@@ -7,6 +7,7 @@ from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
 from match_state import PlayerBasicInfo, DivideData, MatchState
 from tables import *
+from tables.PlayerChangeName import DB_PlayerChangeNames
 
 sqlSession = get_session()
 g_channels: EsChannels
@@ -135,9 +136,29 @@ def init(bot: Bot, es_channels: EsChannels):
         t: Player = sqlSession.query(Player).filter(Player.kookId == msg.author_id).first()
         if t:
             player: Player = t
-            player.kookName = new_name
-            sqlSession.commit()
-            await msg.reply(f'名称更新成功, ->{new_name}')
+            player_change_names_obj = sqlSession.query(DB_PlayerChangeNames).filter(
+                DB_PlayerChangeNames.kookId == msg.author_id).first()
+            if player_change_names_obj:
+                change_names_obj: DB_PlayerChangeNames = player_change_names_obj
+                if change_names_obj.left_times > 0:
+                    change_names_obj.lastKookName = new_name
+                    player.kookName = new_name
+
+                    sqlSession.commit()
+                    await msg.reply(f'名称更新成功, ->{new_name}')
+                else:
+                    await msg.reply(f'名称更新失败 。 次数用尽')
+                    return
+                    pass
+            else:
+                x = DB_PlayerChangeNames()
+                x.kookId = player.kookId
+                x.kookName = player.kookName
+                x.lastKookName = player.kookName
+                x.playerId = player.playerId
+                sqlSession.add(x)
+                sqlSession.commit()
+                await msg.reply(f'名称更新失败 。 次数用尽')
         else:
             await msg.reply('你还未注册，该指令不生效')
 

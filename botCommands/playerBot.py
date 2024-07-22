@@ -128,6 +128,19 @@ def init(bot: Bot, es_channels: EsChannels):
         for id, user_id in enumerate(list_player):
             await channel_b.move_user(b, user_id)
 
+    @bot.command(name='change_name', case_sensitive=False, aliases=['cn'])
+    async def change_name(msg: Message, new_name: str, *args):
+        # 处理玩家随便输入的时候， 在函数原型中加入 , *args
+        sqlSession.commit()
+        t: Player = sqlSession.query(Player).filter(Player.kookId == msg.author_id).first()
+        if t:
+            player: Player = t
+            player.kookName = new_name
+            sqlSession.commit()
+            await msg.reply(f'名称更新成功, ->{new_name}')
+        else:
+            await msg.reply('你还未注册，该指令不生效')
+
     @bot.command(name='score', case_sensitive=False, aliases=['s'])
     async def show_score(msg: Message, *args):
         # 处理玩家随便输入的时候， 在函数原型中加入 , *args

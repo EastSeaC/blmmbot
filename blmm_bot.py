@@ -332,7 +332,7 @@ async def player_exit_channel(b: Bot, e: Event):
 
     if channel_id == ChannelManager.match_wait_channel:
         stateMachine.remove_player_from_wait_list(user_id=user_id)
-        await es_channels.command_channel.send('1名玩家 离开等候频道')
+        await es_channels.command_channel.send(f'1名玩家 离开等候频道，还剩下{stateMachine.get_match_num}')
         pass
     elif (channel_id == ChannelManager.match_attack_channel) or (channel_id == ChannelManager.match_defend_channel):
         warning_state, times = guard.add_warning_times(user_id)

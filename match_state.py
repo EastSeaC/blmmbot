@@ -173,6 +173,10 @@ class MatchState:
         return div
 
     @property
+    def get_match_num(self):
+        return len(self.waiting_list)
+
+    @property
     def is_start_match(self):
         return self.state == 1
 

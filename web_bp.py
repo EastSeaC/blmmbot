@@ -80,18 +80,18 @@ async def get_player_info(request):
 @bp.get('/get_reg/{player_id}')
 async def get_reg(req):
     player_id = req.match_info['player_id']
-    session.commit()
-    query = session.query(Verify).filter(Verify.playerId == player_id)
-    z = query.count()
-    very = Verify()
-    if z == 0:
-        very.code = generate_numeric_code()
-        very.playerId = player_id
-        session.add(very)
-        session.commit()
-    elif z == 1:
-        very: Verify = query.first()
-    LogHelper.log(f"{player_id}, 验证码{very.code}")
+    with get_session() as session:
+        query = session.query(Verify).filter(Verify.playerId == player_id)
+        z = query.count()
+        very = Verify()
+        if z == 0:
+            very.code = generate_numeric_code()
+            very.playerId = player_id
+            session.add(very)
+            session.commit()
+        elif z == 1:
+            very: Verify = query.first()
+        LogHelper.log(f"{player_id}, 验证码{very.code}")
     return Response(text=very.code)
 
 
@@ -109,14 +109,15 @@ async def reg_player(request):
 
 @bp.get('/GetVerifyCode')
 async def get_verify_code(request):
-    session.commit()
-    result = session.query(Verify).filter(
-        Verify.until_time >= datetime.now()).all()
-    list = {}
-    for i in result:
-        u: Verify = i
-        list[u.playerId] = u.code
-    return web.Response(text=json.dumps(list))
+
+    with get_session() as session:
+        result = session.query(Verify).filter(
+            Verify.until_time >= datetime.now()).all()
+        list = {}
+        for i in result:
+            u: Verify = i
+            list[u.playerId] = u.code
+        return web.Response(text=json.dumps(list))
 
 
 @bp.get('/add_player_name/{player_id}/{name}')

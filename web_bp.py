@@ -208,6 +208,7 @@ async def update_match_data2(request):
     ###### 提前保存，防止数据异常
 
     t.tag = json.dumps(t.tag)
+    print('属性判定', isinstance(t.tag, dict))
     session = get_session()
     session.add(t)
     session.commit()

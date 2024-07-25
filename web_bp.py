@@ -237,6 +237,7 @@ async def update_match_data2(request):
         else:
             # 加起来这些数据
             # 根据 RoundCount 取 n 个比赛数据
+            print('round_count', round_count)
             result = (session.query(DB_Matchs).filter(DB_Matchs.server_name == t.server_name)
                       .order_by(desc(DB_Matchs.time_match))
                       .limit(round_count).all())

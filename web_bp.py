@@ -109,7 +109,6 @@ async def reg_player(request):
 
 @bp.get('/GetVerifyCode')
 async def get_verify_code(request):
-
     with get_session() as session:
         result = session.query(Verify).filter(
             Verify.until_time >= datetime.now()).all()
@@ -168,6 +167,7 @@ async def add_player_name(request):
 
 
 async def admin_add_player_name(player_id: str, name: str):
+    session = get_session()
     LogHelper.log(f"player_id:{player_id} name{name}")
     z1 = session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId == player_id).count()
     if z1 == 0:
@@ -194,7 +194,6 @@ async def update_match_data2(request):
     #     print(f"Key: {key}, Value: {value}")
     if not isinstance(data, dict):
         data = json.loads(data)
-    session.commit()
     t = DB_Matchs()
     t.left_scores = data["AttackScores"]
     t.right_scores = data["DefendScores"]
@@ -209,6 +208,7 @@ async def update_match_data2(request):
     ###### 提前保存，防止数据异常
 
     t.tag = json.dumps(t.tag)
+    session = get_session()
     session.add(t)
     session.commit()
 

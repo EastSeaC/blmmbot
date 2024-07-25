@@ -14,7 +14,8 @@ def confirm(msg: str):
 
 
 def get_session():
-    engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8')
+    engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8',
+                           pool_recycle=1000, )
     engine.connect()
     Session = sessionmaker(bind=engine)
     session = Session()

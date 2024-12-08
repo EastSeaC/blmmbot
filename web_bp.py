@@ -222,53 +222,6 @@ async def update_match_data2(request):
         is_match_ending = False
 
     if is_match_ending:
-        if round_count == 1:
-            playerData_2: dict = playerData
-            print('数据只有一项', '*' * 65)
-
-            show_data = []
-            for j in playerData_2.values():
-                k = TPlayerMatchData(j)
-                show_data.append(k)
-                pass
-            # 保存数据到静态 , 转为有比赛结果
-            MatchConditionEx.round_count = round_count
-            MatchConditionEx.data = show_data
-            LogHelper.log("数据已保存")
-        else:
-            # 加起来这些数据
-            # 根据 RoundCount 取 n 个比赛数据
-            print('round_count', round_count)
-            result = (session.query(DB_Matchs).filter(DB_Matchs.server_name == t.server_name)
-                      .order_by(desc(DB_Matchs.time_match))
-                      .limit(round_count).all())
-            show_data = []
-            # 初始化数据
-            first_match_obj: DB_Matchs = result[0]
-            player_data_ex_cx: dict = first_match_obj.raw
-            player_data_ex: dict = {}
-            for k1, v1 in player_data_ex_cx.items():
-                player_data_ex[k1] = TPlayerMatchData(v1)
-
-            for i in result[1:]:
-                match_obj: DB_Matchs = i
-                # match_obj.raw 直接就是dict
-                playerData_2: dict = match_obj.raw
-                print(playerData_2)
-                print('+' * 65)
-                for j in playerData_2.values():
-                    k = TPlayerMatchData(j)
-                    if k.player_id in player_data_ex:
-                        cur_player_data = player_data_ex[k.player_id]
-                        player_data_ex[k.player_id] = cur_player_data + k
-                    else:
-                        player_data_ex[k.player_id] = k
-                    # 名字补全
-                    await admin_add_player_name(k.player_id, k.player_name)
-            MatchConditionEx.data = list(player_data_ex.values())
-            MatchConditionEx.server_info = t.server_name
-            LogHelper.log("多项-数据已保存")
-            pass
         # 存放到 静态类中，让机器人输出
         MatchConditionEx.end_game = True
 
@@ -278,12 +231,24 @@ async def update_match_data2(request):
     player_ids = list(playerData.keys())
     print(type(player_ids))
     print(player_ids)
+
+    """
+    保存数据
+    """
+
+    playerData_2: dict = playerData
+    print('数据只有一项', '*' * 65)
+
+    show_data = []
+
+    # 搜索玩家数据
     result = session.query(DB_PlayerData).filter(DB_PlayerData.playerId.in_(player_ids))
 
     result_player_ids = []
     for i in result:
         oldData: DB_PlayerData = i
         result_player_ids.append(oldData.playerId)
+    #     找到之前没有数据的玩家
     missing_data = [value for key, value in playerData.items() if key not in result_player_ids]
 
     # print('u0', playerData.keys(), result)
@@ -293,9 +258,9 @@ async def update_match_data2(request):
         k = TPlayerMatchData(playerData[oldData.playerId])
         ## 计分系统
         if k.win_rounds >= 3:
-            oldData.rank += 40
+            oldData.rank += WIN_REWARD_SCORE
         else:
-            oldData.rank -= 40
+            oldData.rank -= LOSE_PENALTY_SCORE
         oldData.playerName = k.player_name
         oldData.match += 1
         oldData.win += k.win
@@ -319,6 +284,9 @@ async def update_match_data2(request):
         oldData.death += k.death
         oldData.assist += k.assist
         # oldData.horse_kill+=k.ho
+
+        k.set_new_score(oldData.rank)
+        show_data.append(k)
 
     for i in missing_data:
         # print('test123')
@@ -352,10 +320,18 @@ async def update_match_data2(request):
         newData.death = k.death
         newData.assist = k.assist
 
+        k.set_new_score(newData.rank)
+        show_data.append(k)
         session.add(newData)
     pass
 
     session.commit()
+
+    # 保存数据到静态 , 转为有比赛结果
+    MatchConditionEx.server_name = t.server_name
+    MatchConditionEx.round_count = round_count
+    MatchConditionEx.data = show_data
+    LogHelper.log("数据已保存")
 
     return web.Response(text='123')
 
@@ -546,7 +522,53 @@ if __name__ == '__main__':
         }
     }
     '''
-    k = json.loads(t)
-    players = k["_players"]
-    for k, v in players.items():
-        print(v)
+    # k = json.loads(t)
+    # players = k["_players"]
+    # for k, v in players.items():
+    #     print(v)
+    #
+    #    if round_count == 1:
+    #         playerData_2: dict = playerData
+    #         print('数据只有一项', '*' * 65)
+    #
+    #         show_data = []
+    #         for j in playerData_2.values():
+    #             k = TPlayerMatchData(j)
+    #             show_data.append(k)
+    #             pass
+    #         # 保存数据到静态 , 转为有比赛结果
+    #         MatchConditionEx.round_count = round_count
+    #         MatchConditionEx.data = show_data
+    #         LogHelper.log("数据已保存")
+    #     else:
+    #         # 加起来这些数据
+    #         # 根据 RoundCount 取 n 个比赛数据
+    #         print('round_count', round_count)
+    #         result = (session.query(DB_Matchs).filter(DB_Matchs.server_name == t.server_name)
+    #                   .order_by(desc(DB_Matchs.time_match))
+    #                   .limit(round_count).all())
+    #         show_data = []
+    #         # 初始化数据
+    #         first_match_obj: DB_Matchs = result[0]
+    #         player_data_ex_cx: dict = first_match_obj.raw
+    #         player_data_ex: dict = {}
+    #         for k1, v1 in player_data_ex_cx.items():
+    #             player_data_ex[k1] = TPlayerMatchData(v1)
+    #
+    #         for i in result[1:]:
+    #             match_obj: DB_Matchs = i
+    #             # match_obj.raw 直接就是dict
+    #             playerData_2: dict = match_obj.raw
+    #             print(playerData_2)
+    #             print('+' * 65)
+    #             for j in playerData_2.values():
+    #                 k = TPlayerMatchData(j)
+    #                 if k.player_id in player_data_ex:
+    #                     cur_player_data = player_data_ex[k.player_id]
+    #                     player_data_ex[k.player_id] = cur_player_data + k
+    #                 else:
+    #                     player_data_ex[k.player_id] = k
+    #                 # 名字补全
+    #                 await admin_add_player_name(k.player_id, k.player_name)
+
+    #         pass

@@ -27,9 +27,15 @@ class TPlayerMatchData:
         self.horse_damage = data.get("horse_damage", 0)
         self.horse_tk = data.get("TKHorse1", 0)
 
+        self.new_score = 0
+
+    def set_new_score(self, score: int):
+        self.new_score = score
+
     '''
     这个函数不会改变self的值
     '''
+
     def __add__(self, other):
         if not isinstance(other, TPlayerMatchData):
             return NotImplemented

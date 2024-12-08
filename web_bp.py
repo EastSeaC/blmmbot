@@ -260,8 +260,10 @@ async def update_match_data2(request):
         print(f"{k.player_id}: {k.win_rounds}")
         if k.win_rounds >= 3:
             oldData.rank += WIN_REWARD_SCORE
+            k.set_is_lose(False)
         else:
             oldData.rank += LOSE_PENALTY_SCORE
+            k.set_is_lose(True)
         # print(f"{oldData.rank}")
         oldData.playerName = k.player_name
         oldData.match += 1

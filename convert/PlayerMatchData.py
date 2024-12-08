@@ -28,9 +28,13 @@ class TPlayerMatchData:
         self.horse_tk = data.get("TKHorse1", 0)
 
         self.new_score = 0
+        self.is_lose = False
 
     def set_new_score(self, score: int):
         self.new_score = score
+
+    def set_is_lose(self, lose: bool):
+        self.is_lose = lose
 
     '''
     这个函数不会改变self的值

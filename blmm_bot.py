@@ -359,7 +359,7 @@ async def bot_init(bot1: Bot):
 
 # 开跑
 # 同时运行app和bot
-HOST, PORT = 'localhost', 14725
+HOST, PORT = '0.0.0.0', 14725
 if __name__ == '__main__':
     app.router.add_static('/satic', 'satic')
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('satic'))

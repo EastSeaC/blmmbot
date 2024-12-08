@@ -233,7 +233,7 @@ MVPs:{0}'''
                         3,
                         Element.Text(kill_info, type=Types.Text.KMD),
                         Element.Text(game_info, type=Types.Text.KMD),
-                        Element.Text(f"位阶:\n{get_rank_name(1000)}", type=Types.Text.KMD),
+                        Element.Text(f"位阶:\n{get_rank_name(player.new_score)}", type=Types.Text.KMD),
                     )
                 )
             )

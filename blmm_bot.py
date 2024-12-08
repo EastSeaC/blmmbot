@@ -226,7 +226,7 @@ MVPs:{0}'''
             c1 = Card(
                 Module.Header(f"名称:{player.player_name}\tUID:{player.player_id}"),
                 Module.Context(
-                    f"得分: (font){+40}(font)[{'error' if player.is_lose else 'success'}] 最终分:(font){player.new_score}(font)[success]"
+                    f"得分: (font){+40}(font)[{'warning' if player.is_lose else 'success'}] 最终分:(font){player.new_score}(font)[success]"
                 ),
                 Module.Section(
                     Struct.Paragraph(

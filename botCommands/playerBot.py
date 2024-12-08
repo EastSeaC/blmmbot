@@ -169,6 +169,12 @@ def init(bot: Bot, es_channels: EsChannels):
         t = sqlSession.query(Player).filter(Player.kookId == msg.author_id)
         if t.count() == 1:
             player: Player = t.first()
+
+            db_playerdata = sqlSession.query(DB_PlayerData).filter(DB_PlayerData.playerId == player.playerId)
+            if db_playerdata.count() >= 1:
+                db_player: DB_PlayerData = db_playerdata.first()
+                player.rank = db_player.rank
+
             cm = CardMessage()
             c1 = Card(
                 Module.Header("基本信息"),

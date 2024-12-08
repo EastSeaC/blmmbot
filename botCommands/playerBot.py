@@ -184,7 +184,7 @@ def init(bot: Bot, es_channels: EsChannels):
                         3,
                         Element.Text(f"名字:\n{player.kookName}", type=Types.Text.KMD),
                         Element.Text(f"分数:\n{player.rank}", type=Types.Text.KMD),
-                        Element.Text(f"位阶:\n{get_rank_name(player.rank)}", type=Types.Text.KMD),
+                        Element.Text(f"位阶:\n(font){get_rank_name(player.rank)}(font)[pink]", type=Types.Text.KMD),
                     )
                 )
             )

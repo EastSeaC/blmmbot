@@ -254,6 +254,7 @@ async def update_match_data2(request):
         k = TPlayerMatchData(playerData[oldData.playerId])
         ## 计分系统
         print(f"{k.player_id}: {k.win_rounds}")
+        k.set_old_score(oldData.rank)
         if k.win_rounds >= 3 or k.win >= 3:
             oldData.rank += WIN_REWARD_SCORE
             k.set_is_lose(False)
@@ -294,10 +295,13 @@ async def update_match_data2(request):
         newData = DB_PlayerData()
         # 积分
         newData.rank = INITIAL_SCORE
+        k.set_old_score(newData.rank)
         if k.win_rounds >= 3:
             newData.rank += WIN_REWARD_SCORE
+            k.set_is_lose(False)
         else:
             newData.rank += LOSE_PENALTY_SCORE
+            k.set_is_lose(True)
         # 积分
         newData.playerId = k.player_id
         newData.playerName = k.player_name

@@ -258,7 +258,7 @@ async def update_match_data2(request):
         k = TPlayerMatchData(playerData[oldData.playerId])
         ## 计分系统
         print(f"{k.player_id}: {k.win_rounds}")
-        if k.win_rounds >= 3:
+        if k.win_rounds >= 3 or k.win >= 3:
             oldData.rank += WIN_REWARD_SCORE
             k.set_is_lose(False)
         else:

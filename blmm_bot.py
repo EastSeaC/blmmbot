@@ -207,7 +207,7 @@ async def task1():
         kill_info = 'KDA:'
         for i in z:
             player: TPlayerMatchData = i
-            name_str += f'\n{player.player_name}'
+            name_str += f'\n{player.truncate_name()}'
             game_info += f'\n{player.get_score_info_2}'
             kill_info += f'\n{player.get_kill_info_2}'
 

@@ -46,6 +46,13 @@ class TPlayerMatchData:
     def set_is_lose(self, lose: bool):
         self.is_lose = lose
 
+    def truncate_name(self):
+        s = self.player_name
+        # 如果字符串的长度大于10，截取前8个字符并添加两个点
+        if len(s) > 10:
+            return s[:9] + '...'
+        return s
+
     '''
     这个函数不会改变self的值
     '''

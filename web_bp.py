@@ -218,11 +218,13 @@ async def update_match_data2(request):
     t.tag = json.loads(t.tag)
     if isinstance(t.tag, dict):
         is_match_ending = t.tag["IsMatchEnding"]
-        round_count = t.tag["RoundCount"]
+        round_count = int(t.tag["RoundCount"])
     else:
-        round_count = False
+        round_count = 0
         is_match_ending = False
-
+    if round_count < 3:
+        LogHelper.log("未满3局")
+        return
     if isinstance(t.tag, dict):
         t.tag = json.dumps(t.tag)
     # session.add(t)

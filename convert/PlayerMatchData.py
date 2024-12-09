@@ -144,6 +144,10 @@ KD: {self.kill / max(self.death, 1)}
         '''
 
     @property
+    def get_kill_info_2(self):
+        return f'''{self.kill}/{self.assist}/{self.death}'''
+
+    @property
     def get_game_info(self):
         return f'''**游戏**
 对局数:{self.match}
@@ -156,3 +160,7 @@ MVPs:{0}'''
     @property
     def get_score_info(self):
         return f"得分: (font){LOSE_PENALTY_SCORE}(font)['warning'] 最终分:(font){self.get_old_score()} -> {self.new_score}(font)[{'purple'}]" if self.is_lose else f"得分: (font){WIN_REWARD_SCORE}(font)[{'success'}] 最终分:(font){self.get_old_score()} -> {self.new_score}(font)[{'success'}]"
+
+    @property
+    def get_score_info_2(self):
+        return f"(font){self.get_old_score()} -> {self.new_score}(font)[{'purple'}]" if self.is_lose else f"(font){self.get_old_score()} -> {self.new_score}(font)[{'success'}]"

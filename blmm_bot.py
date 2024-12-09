@@ -198,32 +198,30 @@ async def task1():
                 Module.Header(f'服务器名称:{MatchConditionEx.server_name}'),
                 # Module.Context(f'比赛时间为{MatchConditionEx}'),
                 Module.Divider(),
-
+                Module.Header(f'时间:{get_time_str()}'),
             )))
         z = MatchConditionEx.data
 
-        score_str = ''
-        KD_str = ''
         name_str = '姓名:'
+        game_info = '分数:'
+        kill_info = 'KDA:'
         for i in z:
             player: TPlayerMatchData = i
             name_str += f'\n{player.player_name}'
-            kill_info = player.get_kill_info
-            game_info = player.get_game_info
+            game_info += f'\n{player.get_score_info_2}'
+            kill_info += f'\n{player.get_kill_info_2}'
 
-            c1 = Card(
-                Module.Header(f"名称:{player.player_name}\tUID:{player.player_id}"),
-                Module.Context(player.get_score_info),
-                Module.Section(
-                    Struct.Paragraph(
-                        3,
-                        Element.Text(kill_info, type=Types.Text.KMD),
-                        Element.Text(game_info, type=Types.Text.KMD),
-                        Element.Text(f"位阶:\n{get_rank_name(player.new_score)}", type=Types.Text.KMD),
-                    )
+        c1 = Card(
+            Module.Section(
+                Struct.Paragraph(
+                    3,
+                    Element.Text(name_str, type=Types.Text.KMD),
+                    Element.Text(kill_info, type=Types.Text.KMD),
+                    Element.Text(game_info, type=Types.Text.KMD),
                 )
             )
-            await es_channels.command_channel.send(CardMessage(c1))
+        )
+        await es_channels.command_channel.send(CardMessage(c1))
         # 添加名字
         #
         # c1 = Card(

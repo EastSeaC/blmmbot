@@ -221,10 +221,6 @@ async def update_match_data2(request):
         round_count = False
         is_match_ending = False
 
-    if is_match_ending:
-        # 存放到 静态类中，让机器人输出
-        MatchConditionEx.end_game = True
-
     if isinstance(t.tag, dict):
         t.tag = json.dumps(t.tag)
     # session.add(t)
@@ -335,6 +331,9 @@ async def update_match_data2(request):
     MatchConditionEx.server_name = t.server_name
     MatchConditionEx.round_count = round_count
     MatchConditionEx.data = show_data
+    if is_match_ending:
+        # 存放到 静态类中，让机器人输出
+        MatchConditionEx.end_game = True
     LogHelper.log("数据已保存")
 
     return web.Response(text='123')

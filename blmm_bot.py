@@ -12,7 +12,7 @@ from khl.card import Card, Module, Struct, Element, Types, CardMessage
 
 from LogHelper import LogHelper
 from botCommands import adminBot, regBot, playerBot
-from config import get_rank_name
+from config import get_rank_name, WIN_REWARD_SCORE, LOSE_PENALTY_SCORE
 from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
@@ -208,26 +208,12 @@ async def task1():
         for i in z:
             player: TPlayerMatchData = i
             name_str += f'\n{player.player_name}'
-            kill_info = \
-                f'''战场表现:
-Kills:{player.kill}
-Deaths:{player.death}
-KDA:{(player.kill + player.assist) / max(player.death, 1)}
-KD: {player.kill / max(player.death, 1)}
-伤害/TK: {player.damage}/{player.team_damage}
-'''
-            game_info = f'''**游戏**
-对局数:{player.match}
-胜场:{player.win}
-败场:{player.lose}
-平局:{player.draw}
-胜/败:{player.win / max(player.lose, 1)}
-MVPs:{0}'''
+            kill_info = player.get_kill_info
+            game_info = player.get_game_info
+
             c1 = Card(
                 Module.Header(f"名称:{player.player_name}\tUID:{player.player_id}"),
-                Module.Context(
-                    f"得分: (font){+40}(font)[{'warning' if player.is_lose else 'success'}] 最终分:(font){player.new_score}(font)[{'purple' if player.is_lose else 'success'}]"
-                ),
+                Module.Context(player.get_score_info),
                 Module.Section(
                     Struct.Paragraph(
                         3,

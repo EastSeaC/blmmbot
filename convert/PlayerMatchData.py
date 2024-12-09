@@ -1,3 +1,6 @@
+from config import LOSE_PENALTY_SCORE, WIN_REWARD_SCORE
+
+
 class TPlayerMatchData:
     def __init__(self, data: dict):
         self.player_id = data.get("player_id", "invalid")
@@ -27,8 +30,15 @@ class TPlayerMatchData:
         self.horse_damage = data.get("horse_damage", 0)
         self.horse_tk = data.get("TKHorse1", 0)
 
+        self.__old_score = 0
         self.new_score = 0
         self.is_lose = False
+
+    def set_old_score(self, score: int):
+        self.__old_score = score
+
+    def get_old_score(self):
+        return self.__old_score
 
     def set_new_score(self, score: int):
         self.new_score = score
@@ -122,3 +132,27 @@ class TPlayerMatchData:
             self.horse_damage,
             self.horse_tk
         ]
+
+    @property
+    def get_kill_info(self):
+        return f'''战场表现:
+Kills:{self.kill}
+Deaths:{self.death}
+KDA:{(self.kill + self.assist) / max(self.death, 1)}
+KD: {self.kill / max(self.death, 1)}
+伤害/TK: {self.damage}/{self.team_damage}
+        '''
+
+    @property
+    def get_game_info(self):
+        return f'''**游戏**
+对局数:{self.match}
+胜场:{self.win}
+败场:{self.lose}
+平局:{self.draw}
+胜/败:{self.win / max(self.lose, 1)}
+MVPs:{0}'''
+
+    @property
+    def get_score_info(self):
+        return f"得分: (font){LOSE_PENALTY_SCORE}(font)['warning'] 最终分:(font){self.get_old_score()} -> {self.new_score}(font)[{'purple'}]" if self.is_lose else f"得分: (font){WIN_REWARD_SCORE}(font)[{'success'}] 最终分:(font){self.get_old_score()} -> {self.new_score}(font)[{'success'}]"

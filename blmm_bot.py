@@ -11,7 +11,7 @@ from khl import Bot, Message, Event, EventTypes, PublicVoiceChannel, GuildUser
 from khl.card import Card, Module, Struct, Element, Types, CardMessage
 
 from LogHelper import LogHelper
-from botCommands import adminBot, regBot, playerBot
+from botCommands import adminBot, regBot, playerBot, configBot
 from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
@@ -338,6 +338,7 @@ async def bot_init(bot1: Bot):
     adminBot.init(bot1, es_channels)
     regBot.init(bot1, es_channels)
     playerBot.init(bot1, es_channels)
+    configBot.init(bot1, es_channels)
 
 
 # 开跑

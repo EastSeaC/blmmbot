@@ -221,19 +221,7 @@ async def task1():
             )
         )
         await es_channels.command_channel.send(CardMessage(c1))
-        # 添加名字
-        #
-        # c1 = Card(
-        #     Module.Header("胜者组"),
-        #     Module.Section(
-        #         Struct.Paragraph(
-        #             3,
-        #             Element.Text(f"名字:\n{}",type=Types.Text.KMD),
-        #             Element.Text(f"分数:\n{player.rank}", type=Types.Text.KMD),
-        #             Element.Text(f"位阶:\n{get_rank_name(player.rank)}", type=Types.Text.KMD),
-        #         )
-        #     )
-        # )
+
 
     # 定时器
     condition = stateMachine.check_state()

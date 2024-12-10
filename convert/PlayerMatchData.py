@@ -66,8 +66,6 @@ class TPlayerMatchData:
 
         total_width = 0
         result = []
-        if wcwidth(self.player_name) <= max_width:
-            return self.player_name
 
         for char in self.player_name:
             char_width = wcwidth(char)  # 获取字符的显示宽度

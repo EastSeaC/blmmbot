@@ -30,7 +30,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 await reset_aux()
                 reset_player.is_reset = True
 
-                session.merge(reset_record)
+                session.merge(reset_player)
 
         session.commit()
 

@@ -1,6 +1,4 @@
-from random import randint
-
-from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel, PublicVoiceChannel
+from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import literal, desc, text
 

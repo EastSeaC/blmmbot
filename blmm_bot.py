@@ -7,12 +7,11 @@ import aiohttp_jinja2
 import jinja2
 import requests
 from aiohttp import web
-from khl import Bot, Message, Event, EventTypes, PublicChannel, PublicVoiceChannel, GuildUser
+from khl import Bot, Message, Event, EventTypes, PublicVoiceChannel, GuildUser
 from khl.card import Card, Module, Struct, Element, Types, CardMessage
 
 from LogHelper import LogHelper
 from botCommands import adminBot, regBot, playerBot
-from config import get_rank_name, WIN_REWARD_SCORE, LOSE_PENALTY_SCORE
 from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager

@@ -1,8 +1,8 @@
 from khl import Bot
 
 from LogHelper import LogHelper
-from blmm_bot import EsChannels
 from init_db import get_session
+from kook.ChannelKit import EsChannels
 from tables import *
 
 session = get_session()

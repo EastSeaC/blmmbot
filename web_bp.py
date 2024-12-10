@@ -189,7 +189,6 @@ async def update_match_data2(request):
 
     data = await request.json()
     print(data)
-    json_str = json.dumps(data)
 
     print('*' * 45)
     # for key, value in data.items():
@@ -206,7 +205,7 @@ async def update_match_data2(request):
     t.server_name = data["ServerName"]
     t.tag = data["Tag"]
     playerData = data["_players"]
-    t.raw = json_str
+    t.raw = data
     ###### 提前保存，防止数据异常
 
     t.tag = json.dumps(t.tag)

@@ -1,4 +1,5 @@
 from config import LOSE_PENALTY_SCORE, WIN_REWARD_SCORE
+from wcwidth import wcwidth
 
 
 class TPlayerMatchData:
@@ -52,6 +53,29 @@ class TPlayerMatchData:
         if len(s) > 10:
             return s[:9] + '...'
         return s
+
+    def truncate_by_width(self):
+        """
+        根据字符的显示宽度截取字符串。
+
+        :param s: 输入的字符串
+        :param max_width: 最大显示宽度
+        :return: 截取后的字符串
+        """
+        max_width = 10
+
+        total_width = 0
+        result = []
+
+        for char in self.player_name:
+            char_width = wcwidth(char)  # 获取字符的显示宽度
+            if total_width + char_width > max_width:
+                break  # 一旦总宽度超过最大宽度，停止添加字符
+            result.append(char)
+            total_width += char_width  # 累加当前字符的显示宽度
+
+        return "".join(result)  # 返回截取后的字符串
+
 
     '''
     这个函数不会改变self的值

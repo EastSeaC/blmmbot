@@ -250,20 +250,22 @@ async def update_match_data2(request):
     #     找到之前没有数据的玩家
     missing_data = [value for key, value in playerData.items() if key not in result_player_ids]
 
-    # print('u0', playerData.keys(), result)
     for i in result:
-        # print('u2')
         oldData: DB_PlayerData = i
         k = TPlayerMatchData(playerData[oldData.playerId])
         ## 计分系统
         print(f"{k.player_id}: {k.win_rounds}")
-        k.set_old_score(oldData.rank)
-        if k.win_rounds >= 3 or k.win >= 3:
-            oldData.rank += WIN_REWARD_SCORE
-            k.set_is_lose(False)
-        else:
-            oldData.rank += LOSE_PENALTY_SCORE
-            k.set_is_lose(True)
+        if not k.is_spectator_by_score():
+            k.set_old_score(oldData.rank)
+            if k.win_rounds >= 3 or k.win >= 3:
+                oldData.rank += WIN_REWARD_SCORE
+                k.set_is_lose(False)
+            else:
+                oldData.rank += LOSE_PENALTY_SCORE
+                k.set_is_lose(True)
+            k.set_new_score(oldData.rank)
+            show_data.append(k)
+
         # print(f"{oldData.rank}")
         oldData.playerName = k.player_name
         oldData.match += 1
@@ -289,9 +291,6 @@ async def update_match_data2(request):
         oldData.assist += k.assist
         # oldData.horse_kill+=k.ho
 
-        k.set_new_score(oldData.rank)
-        show_data.append(k)
-
     for i in missing_data:
         # print('test123')
         k = TPlayerMatchData(i)
@@ -299,12 +298,15 @@ async def update_match_data2(request):
         # 积分
         newData.rank = INITIAL_SCORE
         k.set_old_score(newData.rank)
-        if k.win_rounds >= 3:
-            newData.rank += WIN_REWARD_SCORE
-            k.set_is_lose(False)
-        else:
-            newData.rank += LOSE_PENALTY_SCORE
-            k.set_is_lose(True)
+        if not k.is_spectator_by_score():
+            if k.win_rounds >= 3:
+                newData.rank += WIN_REWARD_SCORE
+                k.set_is_lose(False)
+            else:
+                newData.rank += LOSE_PENALTY_SCORE
+                k.set_is_lose(True)
+            k.set_new_score(newData.rank)
+            show_data.append(k)
         # 积分
         newData.playerId = k.player_id
         newData.playerName = k.player_name
@@ -327,8 +329,6 @@ async def update_match_data2(request):
         newData.death = k.death
         newData.assist = k.assist
 
-        k.set_new_score(newData.rank)
-        show_data.append(k)
         session.add(newData)
     pass
 

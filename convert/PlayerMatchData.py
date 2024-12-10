@@ -78,6 +78,9 @@ class TPlayerMatchData:
 
         return "".join(result)  # 返回截取后的字符串
 
+    def is_spectator_by_score(self):
+        return self.kill is 0 and self.death is 0 and self.assist is 0 and self.damage is 0
+
     '''
     这个函数不会改变self的值
     '''

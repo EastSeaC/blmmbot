@@ -62,7 +62,7 @@ class TPlayerMatchData:
         :param max_width: 最大显示宽度
         :return: 截取后的字符串
         """
-        max_width = 10
+        max_width = 12
 
         total_width = 0
         result = []

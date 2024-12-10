@@ -1,16 +1,9 @@
-from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel
-from khl.card import Card, Module, Element, Types, CardMessage, Struct
-from sqlalchemy import literal, desc, text
+from khl import Bot
 
 from LogHelper import LogHelper
 from blmm_bot import EsChannels
 from init_db import get_session
-from kook.ChannelKit import ChannelManager
-from lib.basic import generate_numeric_code
-from match_state import PlayerBasicInfo, MatchState, DivideData
 from tables import *
-from tables.Admin import DBAdmin
-from tables.PlayerNames import DB_PlayerNames
 
 session = get_session()
 g_channels: EsChannels

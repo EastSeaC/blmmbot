@@ -16,7 +16,7 @@ def init(bot: Bot, es_channels: EsChannels):
     global g_channels
     g_channels = es_channels
 
-    @bot.task.add_cron(minute=45)
+    @bot.task.add_cron(minute=49)
     async def reset_all_player_data():
         reset_record = session.query(DB_ResetPlayer).all()
         if not reset_record:

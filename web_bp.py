@@ -265,6 +265,8 @@ async def update_match_data2(request):
                 k.set_is_lose(True)
             k.set_new_score(oldData.rank)
             show_data.append(k)
+        else:
+            LogHelper.log("跳过")
 
         # print(f"{oldData.rank}")
         oldData.playerName = k.player_name

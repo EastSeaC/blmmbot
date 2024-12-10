@@ -78,7 +78,7 @@ class TPlayerMatchData:
 
     def is_spectator_by_score(self):
         print(f'{self.player_name}  {self.kill} {self.death} {self.assist} {self.damage}')
-        v = self.kill == 0 and self.death == 0 and self.assist == 0 and (self.damage - 0) < 1e-5
+        v = self.kill == 0 and self.death == 0 and self.assist == 0
         print(v)
         return v
 

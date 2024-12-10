@@ -13,7 +13,7 @@ def init(bot: Bot, es_channels: EsChannels):
     global g_channels
     g_channels = es_channels
 
-    @bot.task.add_interval(days=1)
+    @bot.task.add_cron(month=12, day=10)
     async def reset_all_player_data():
         some_records = session.query(DB_PlayerData).all()
 

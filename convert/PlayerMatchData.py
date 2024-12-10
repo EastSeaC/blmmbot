@@ -77,8 +77,10 @@ class TPlayerMatchData:
         return "".join(result)  # 返回截取后的字符串
 
     def is_spectator_by_score(self):
-        print(f'{self.player_name}  {self.kill == 0 and self.death == 0 and self.assist == 0 and self.damage == 0}')
-        return self.kill == 0 and self.death == 0 and self.assist == 0 and self.damage == 0
+        print(f'{self.player_name}  {self.kill} {self.death} {self.assist} {self.damage}')
+        v = self.kill == 0 and self.death == 0 and self.assist == 0 and (self.damage - 0) < 1e-5
+        print(v)
+        return v
 
     '''
     这个函数不会改变self的值
@@ -179,7 +181,7 @@ KD: {self.kill / max(self.death, 1)}
 
     @property
     def get_kill_info_2(self):
-        return f'''{self.kill}/{self.assist}/{self.death}'''
+        return f'''{self.kill}/{self.assist}/{self.death}/{self.damage}'''
 
     @property
     def get_game_info(self):

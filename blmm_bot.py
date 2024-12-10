@@ -203,7 +203,7 @@ async def task1():
 
         name_str = '姓名:'
         game_info = '分数:'
-        kill_info = 'KDA:'
+        kill_info = 'KDA伤:'
         for i in z:
             player: TPlayerMatchData = i
             name_str += f'\n{player.truncate_by_width()}'

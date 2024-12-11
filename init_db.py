@@ -7,6 +7,7 @@ from tables import *
 engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8')
 engine.connect()
 
+
 def confirm(msg: str):
     print(msg, end="")
     word = input("(y或yes表示是，其他表示否) ")

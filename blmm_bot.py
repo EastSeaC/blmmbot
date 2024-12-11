@@ -79,8 +79,8 @@ def get_time_str():
 async def help_x(msg: Message):
     t = '''/help 或 /h 查看所有指令
     /score_list 或 /sl 查看分数榜单
-    /score /s 查看自己的分数
-    /change_name /cn 修改名字
+    /score 或 /s 查看自己的分数
+    /change_name 或 /cn 修改名字
     **(font)/e 开启匹配(font)[success]**
      
     **(font)注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：(font)[warning]**

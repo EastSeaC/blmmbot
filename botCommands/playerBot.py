@@ -1,7 +1,7 @@
 from khl import Bot, Message, GuildUser
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
 
-from LogHelper import LogHelper
+from LogHelper import LogHelper, get_time_str
 from config import get_rank_name
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
@@ -54,8 +54,13 @@ def init(bot: Bot, es_channels: EsChannels):
 
         pass
 
+    """
+    开启匹配指令
+    is_no_move: 1 表示 不移动玩家，仅用作测试
+    """
+
     @bot.command(name='e', case_sensitive=False, aliases=['e'])
-    async def es_start_match(msg: Message):
+    async def es_start_match(msg: Message, is_no_move: int):
         if ChannelManager.is_common_user(msg.author_id):
             await msg.reply('禁止使用es指令')
             return
@@ -70,8 +75,9 @@ def init(bot: Bot, es_channels: EsChannels):
             z: GuildUser = i
             print(z.__dict__)
             print(convert_timestamp(z.active_time))
-        if len(k) % 2 == 1 or len(k) == 0:
-            await msg.reply('人数异常')
+        number_of_user = len(k)
+        if number_of_user % 2 == 1 or number_of_user == 0:
+            await msg.reply(f'人数异常, 当前人数为 {len(k)} , 必须为非0偶数')
             return
         player_list = []
 
@@ -109,8 +115,32 @@ def init(bot: Bot, es_channels: EsChannels):
         #     player_list.pop()
 
         divide_data: DivideData = MatchState.divide_player_ex(player_list)
-        print(divide_data.attacker_list)
-        print(divide_data.defender_list)
+        # print(divide_data.attacker_list)
+        # print(divide_data.defender_list)
+        await msg.reply(CardMessage(
+            Card(
+                Module.Header('分队情况表'),
+                Module.Divider(),
+                Module.Header(f'时间:{get_time_str()}'),
+                Module.Section(
+                    Struct.Paragraph(
+                        3,
+                        Element.Text(divide_data.get_attacker_names(), type=Types.Text.KMD),
+                        Element.Text(divide_data.get_attacker_scores(), type=Types.Text.KMD),
+                        Element.Text('game_info', type=Types.Text.KMD),
+                    )
+                ),
+                Module.Divider(),
+                Module.Section(
+                    Struct.Paragraph(
+                        3,
+                        Element.Text(divide_data.get_defender_names(), type=Types.Text.KMD),
+                        Element.Text(divide_data.get_defender_scores(), type=Types.Text.KMD),
+                        Element.Text('game_info', type=Types.Text.KMD),
+                    )
+                ),
+            )
+        ))
         await move_a_to_b_ex(ChannelManager.match_attack_channel, divide_data.attacker_list)
         await move_a_to_b_ex(ChannelManager.match_defend_channel, divide_data.defender_list)
 

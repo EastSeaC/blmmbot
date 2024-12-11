@@ -135,6 +135,7 @@ class MatchState:
         """
         用于分组, 第一组是 攻击者的 user_id， 第二组是 防御者的 userid
         """
+        div = DivideData()
 
         for i in a:
             k: PlayerBasicInfo = i
@@ -152,7 +153,10 @@ class MatchState:
             m.append(k.user_id)
             attacker_score_temp += k.score
             attacker_names.append(k.user_name)
+
             print(k.score, k.user_id)
+
+            div.add_attacker_info(k.user_name, k.score)  # 添加 积分块
 
         print('*' * 20)
         n = []
@@ -163,7 +167,8 @@ class MatchState:
             defender_names.append(k.user_name)
             print(k.score, k.user_id)
 
-        div = DivideData()
+            div.add_defender_info(k.user_name, k.score)  # 添加 积分块
+
         div.attacker_list = m
         div.attacker_names = attacker_names
         div.defender_list = n
@@ -209,8 +214,29 @@ class DivideData:
         self.attacker_names = []
         self.defender_names = []
 
+        self.attacker_info_block = []
+        self.defender_info_block = []
+
     def __str__(self):
         return f"attacker_names:{self.attacker_names} defender_names:{self.defender_names}, list:{self.attacker_list},{self.defender_list}, attacker_scores:{self.attacker_scores}, defend_scores:{self.defend_scores}, diff {self.attacker_scores - self.defend_scores}"
+
+    def add_attacker_info(self, attacker_name: str, score: int):
+        self.attacker_info_block.append([attacker_name, score])
+
+    def add_defender_info(self, defender_name: str, score: int):
+        self.defender_info_block.append([defender_name, score])
+
+    def get_attacker_names(self):
+        return '\n'.join([defender_info[0] for defender_info in self.attacker_info_block])
+
+    def get_attacker_scores(self):
+        return '\n'.join([defender_info[1] for defender_info in self.attacker_info_block])
+
+    def get_defender_names(self):
+        return '\n'.join([defender_info[0] for defender_info in self.defender_info_block])
+
+    def get_defender_scores(self):
+        return '\n'.join([defender_info[1] for defender_info in self.defender_info_block])
 
 
 def sorted_aux(player):

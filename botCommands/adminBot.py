@@ -122,53 +122,6 @@ def init(bot: Bot, es_channels: EsChannels):
         await msg.reply('成功！')
         pass
 
-    @bot.command(name='rtc', case_sensitive=False, aliases=['yc'])
-    async def tojadx(msg: Message):
-        if ChannelManager.is_common_user(msg.author_id):
-            await msg.reply('禁止使用es指令')
-            return
-
-        k = await es_channels.wait_channel.fetch_user_list()
-
-        if len(k) % 2 == 1:
-            await msg.reply('人数异常')
-            return
-        player_list = []
-
-        session.commit()
-        z = session.query(Player).filter(Player.kookId.in_([i.id for i in k])).all()
-        dict_for_kook_id = {}
-        for i in z:
-            t: Player = i
-            dict_for_kook_id[t.kookId] = t
-
-        # print([i.__dict__ for i in z])
-        # print([i.__dict__ for i in dict_for_kook_id.values()])
-        try:
-            for id, user in enumerate(k):
-                t: GuildUser = user
-                player: Player = dict_for_kook_id[t.id]
-                player_info = PlayerBasicInfo({})
-                player_info.score = player.rank
-                player_info.user_id = t.id
-                player_info.kook_name = t.username
-                player_list.append(player_info)
-        except Exception as e:
-            LogHelper.log(f"没有注册 {t.id} {t.username}")
-            await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
-            await move_a_to_b_ex(ChannelManager.match_wait_channel, [t.id])
-            return
-            # if len(player_list) % 2 != 0:
-        #     player_list.pop()
-
-        divide_data: DivideData = MatchState.divide_player_ex(player_list)
-        print(divide_data.attacker_list)
-        print(divide_data.defender_list)
-        await move_a_to_b_ex(ChannelManager.match_attack_channel, divide_data.attacker_list)
-        await move_a_to_b_ex(ChannelManager.match_defend_channel, divide_data.defender_list)
-
-        await msg.reply('分配完毕!')
-
     @bot.command(name='move_set_to_wait', case_sensitive=False, aliases=['msw'])
     async def worldO(msg: Message):
         if not check_admin(msg):

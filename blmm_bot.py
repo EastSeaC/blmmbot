@@ -11,7 +11,7 @@ from khl import Bot, Message, Event, EventTypes, PublicVoiceChannel, GuildUser
 from khl.card import Card, Module, Struct, Element, Types, CardMessage
 
 from LogHelper import LogHelper
-from botCommands import adminBot, regBot, playerBot, configBot
+from botCommands import adminBot, regBot, playerBot, configBot, matchBot
 from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
@@ -77,8 +77,8 @@ def get_time_str():
 
 @bot.command(name='help', case_sensitive=False, aliases=['h'])
 async def help_x(msg: Message):
-    t = '''/help 查看所有指令
-    /score_list /sl 查看分数榜单
+    t = '''/help 或 /h 查看所有指令
+    /score_list 或 /sl 查看分数榜单
     /score /s 查看自己的分数
     /change_name /cn 修改名字
     **(font)/e 开启匹配(font)[success]**
@@ -104,81 +104,6 @@ async def help_x(msg: Message):
 async def show_player_numbers_in_waiting_channel(msg: Message):
     # 查看在等候频道里的玩家
     await msg.reply('当前等候频道里的玩家有:' + str(stateMachine.player_number))
-
-
-@bot.command(name='reset_state_machine', case_sensitive=False, aliases=['rsm'])
-async def reset_state_machine(mgs: Message):
-    if mgs.author_id == ChannelManager.es_user_id:
-        global stateMachine
-        stateMachine = MatchState()
-        await mgs.reply('已重置状态机' + str(stateMachine.__dict__))
-    else:
-        await mgs.reply('[Warning]:do not use es command!')
-    pass
-
-
-@bot.command(name='state', case_sensitive=False, aliases=['st'])
-async def state_command(msg: Message, action: str = ''):
-    result_str = ''
-    if msg.author_id == ChannelManager.es_user_id:
-        if action == 'reset':
-            global stateMachine
-            stateMachine = MatchState()
-            result_str = '初始化成功'
-        elif action == 'sx':
-
-            pass
-        else:
-            await msg.reply('[Warning]:字符串为空')
-        pass
-    else:
-        await msg.reply('[Warning]:do not use es command!')
-
-
-@bot.command(name='reac', case_sensitive=False)
-async def worldO(msg: Message):
-    # 公告区
-    ch = await bot.client.fetch_public_channel(ChannelManager.announcement)
-    # 使用channel对象的send
-    ret = await ch.send("这是一个测试信息,使用了ch.send")  # 方法1
-
-    # 往其他频道发送信息
-    # 使用bot对象的client.send
-    # ret = await bot.client.send(ch, "这是一个测试信息，使用了bot.client.send")  # 方法2
-    # print(f"bot.client.send | msg_id {ret['msg_id']}")  # 方法2 发送消息的id
-    # await msg.reply('')
-
-    # data = {'target_id': ChannelManager.match_set_channel, 'array': json.dumps(list_t)}
-    # requests.post(UrlHelper.move_user, data)
-    # await msg.reply('移动成功')
-    # pass
-    # guild = await bot.client.fetch_guild(ChannelManager.sever)
-    # rolse = await guild.fetch_roles()
-    # for i in rolse:
-    #     print(i.name)
-
-
-@bot.command(name='uca', case_sensitive=False, aliases=['ca', 'xa'])
-async def worldO(msg: Message):
-    if msg.author_id != ChannelManager.es_user_id:
-        await msg.reply('禁止使用es 指令')
-        return
-        # guild = await bot.client.fetch_guild(ChannelManager.sever)
-    r = requests.post(UrlHelper.delete_message,
-                      headers={
-                          f'Authorization': f"Bot {config['token']}",
-                      },
-                      params={
-                          'msg_id': '8477c586-9111-4312-bc38-a9664d75b32c',
-                      })
-    print(r.text)
-    print(UrlHelper.delete_message)
-    z = await es_channels.command_channel.list_messages()
-
-
-@bot.command(name='show_match', case_sensitive=False, aliases=['sm'])
-async def show_match(msg: Message):
-    pass
 
 
 @bot.task.add_interval(seconds=1)
@@ -221,7 +146,6 @@ async def task1():
             )
         )
         await es_channels.command_channel.send(CardMessage(c1))
-
 
     # 定时器
     condition = stateMachine.check_state()
@@ -280,44 +204,6 @@ async def task5():
     pass
 
 
-@bot.on_event(EventTypes.JOINED_CHANNEL)
-async def player_join_channel(b: Bot, e: Event):
-    # 事件，玩家加入频道
-    channel_id = e.body["channel_id"]
-    user_id = e.body["user_id"]
-    guild = await bot.client.fetch_guild(ChannelManager.sever)
-    user = await guild.fetch_user(user_id)
-
-    if channel_id == ChannelManager.match_wait_channel:
-        stateMachine.add_player_to_wait_list(user_id)
-        z = f"{user.username}加入候选室成功, 当前人数{stateMachine.get_cur_player_num_in_wait_list()}"
-        LogHelper.log(z)
-
-        pass
-    pass
-
-
-@bot.on_event(EventTypes.EXITED_CHANNEL)
-async def player_exit_channel(b: Bot, e: Event):
-    channel_id = e.body["channel_id"]
-    user_id = e.body["user_id"]
-
-    if channel_id == ChannelManager.match_wait_channel:
-        stateMachine.remove_player_from_wait_list(user_id=user_id)
-        await es_channels.command_channel.send(f'1名玩家 离开等候频道，还剩下{stateMachine.get_match_num}')
-        pass
-    elif (channel_id == ChannelManager.match_attack_channel) or (channel_id == ChannelManager.match_defend_channel):
-        warning_state, times = guard.add_warning_times(user_id)
-        if warning_state:
-            pass
-        warning_text = f'(met){user_id}(met): 请注意,你已离开比赛频道{times}次'
-        # 获取指定频道
-        ch = await bot.client.fetch_public_channel(ChannelManager.announcement)
-        ret = await ch.send(warning_text)  # 方法1
-        # LogHelper.log(f" {ret['msg_id']}")  # 方法1 发送消息的id
-        pass
-
-
 @bot.on_startup
 async def bot_init(bot1: Bot):
     if not es_channels.ready:
@@ -327,6 +213,7 @@ async def bot_init(bot1: Bot):
     regBot.init(bot1, es_channels)
     playerBot.init(bot1, es_channels)
     configBot.init(bot1, es_channels)
+    matchBot.init(bot1, es_channels)
 
 
 # 开跑

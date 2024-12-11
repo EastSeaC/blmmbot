@@ -77,9 +77,9 @@ class TPlayerMatchData:
         return "".join(result)  # 返回截取后的字符串
 
     def is_spectator_by_score(self):
-        print(f'{self.player_name}  {self.kill} {self.death} {self.assist} {self.damage}')
+        # print(f'{self.player_name}  {self.kill} {self.death} {self.assist} {self.damage}')
         v = self.kill == 0 and self.death == 0 and self.assist == 0
-        print(v)
+        # print(v)
         return v
 
     '''

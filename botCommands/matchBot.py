@@ -3,9 +3,9 @@ from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import literal, desc, text
 
 from LogHelper import LogHelper
-from blmm_bot import EsChannels, guard, move_a_to_b_ex
+from blmm_bot import guard, move_a_to_b_ex
 from init_db import get_session
-from kook.ChannelKit import ChannelManager
+from kook.ChannelKit import ChannelManager, EsChannels
 from lib.basic import generate_numeric_code
 from match_state import PlayerBasicInfo, MatchState, DivideData
 from tables import *

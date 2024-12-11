@@ -60,7 +60,7 @@ def init(bot: Bot, es_channels: EsChannels):
     """
 
     @bot.command(name='e', case_sensitive=False, aliases=['e'])
-    async def es_start_match(msg: Message, is_no_move: int):
+    async def es_start_match(msg: Message, is_no_move: int = 0):
         if ChannelManager.is_common_user(msg.author_id):
             await msg.reply('禁止使用es指令')
             return
@@ -108,10 +108,13 @@ def init(bot: Bot, es_channels: EsChannels):
             await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
             return
 
-        if len(player_list) != 12:
-            await es_channels.command_channel.send(f'注册人数不足12，请大伙先注册，/help可以提供支持')
+        if len(player_list) < 12:
+            await msg.reply(f'注册人数不足12，请大伙先注册，/help可以提供支持')
             return
-            # if len(player_list) % 2 != 0:
+        # 说明注册人数 >=12
+        if len(player_list) % 2 != 0:
+            await msg.reply(f'人数非奇数！')
+            return
         #     player_list.pop()
 
         divide_data: DivideData = MatchState.divide_player_ex(player_list)
@@ -141,8 +144,11 @@ def init(bot: Bot, es_channels: EsChannels):
                 ),
             )
         ))
-        await move_a_to_b_ex(ChannelManager.match_attack_channel, divide_data.attacker_list)
-        await move_a_to_b_ex(ChannelManager.match_defend_channel, divide_data.defender_list)
+        if is_no_move != 1:
+            await move_a_to_b_ex(ChannelManager.match_attack_channel, divide_data.attacker_list)
+            await move_a_to_b_ex(ChannelManager.match_defend_channel, divide_data.defender_list)
+        else:
+            LogHelper.log("不移动")
 
         await msg.reply('分配完毕!')
 

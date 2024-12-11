@@ -9,6 +9,7 @@ from tables import *
 
 session = get_session()
 g_channels: EsChannels
+stateMachine: MatchState
 
 
 def init(bot: Bot, es_channels: EsChannels):
@@ -20,6 +21,7 @@ def init(bot: Bot, es_channels: EsChannels):
         channel_b = await bot.client.fetch_public_channel(b)
         for id, user_id in enumerate(list_player):
             await channel_b.move_user(b, user_id)
+
     @bot.command(name='reset_state_machine', case_sensitive=False, aliases=['rsm'])
     async def reset_state_machine(mgs: Message):
         if mgs.author_id == ChannelManager.es_user_id:

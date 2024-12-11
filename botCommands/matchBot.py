@@ -1,16 +1,11 @@
-from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel
-from khl.card import Card, Module, Element, Types, CardMessage, Struct
-from sqlalchemy import literal, desc, text
+from khl import Bot, Message, EventTypes, Event, GuildUser
 
 from LogHelper import LogHelper
-from blmm_bot import guard, move_a_to_b_ex
 from init_db import get_session
 from kook.ChannelKit import ChannelManager, EsChannels
-from lib.basic import generate_numeric_code
+from match_guard import MatchGuard
 from match_state import PlayerBasicInfo, MatchState, DivideData
 from tables import *
-from tables.Admin import DBAdmin
-from tables.PlayerNames import DB_PlayerNames
 
 session = get_session()
 g_channels: EsChannels
@@ -19,7 +14,12 @@ g_channels: EsChannels
 def init(bot: Bot, es_channels: EsChannels):
     global g_channels
     g_channels = es_channels
+    guard = MatchGuard()
 
+    async def move_a_to_b_ex(b: str, list_player: list):
+        channel_b = await bot.client.fetch_public_channel(b)
+        for id, user_id in enumerate(list_player):
+            await channel_b.move_user(b, user_id)
     @bot.command(name='reset_state_machine', case_sensitive=False, aliases=['rsm'])
     async def reset_state_machine(mgs: Message):
         if mgs.author_id == ChannelManager.es_user_id:

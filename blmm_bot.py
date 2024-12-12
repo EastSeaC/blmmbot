@@ -5,9 +5,8 @@ import json
 import aiohttp
 import aiohttp_jinja2
 import jinja2
-import requests
 from aiohttp import web
-from khl import Bot, Message, Event, EventTypes, PublicVoiceChannel, GuildUser
+from khl import Bot, Message, GuildUser
 from khl.card import Card, Module, Struct, Element, Types, CardMessage
 
 from LogHelper import LogHelper
@@ -16,7 +15,7 @@ from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
 from match_guard import MatchGuard
-from match_state import MatchState, MatchCondition, MatchConditionEx
+from match_state import MatchConditionEx
 from webBlueprint.adminRouter import adminRouter
 from web_bp import bp
 

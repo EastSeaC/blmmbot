@@ -9,7 +9,7 @@ from tables import *
 
 session = get_session()
 g_channels: EsChannels
-stateMachine: MatchState
+stateMachine: MatchState = MatchState()
 
 
 def init(bot: Bot, es_channels: EsChannels):

@@ -25,7 +25,7 @@ sqlSession = get_session()
 app = web.Application()
 app.add_routes(bp)
 app.add_routes(adminRouter)
-stateMachine = MatchState()
+
 guard = MatchGuard()
 
 baseUrl = "https://www.kookapp.cn/api/v3/"
@@ -100,12 +100,6 @@ async def help_x(msg: Message):
     )))
 
 
-@bot.command(name='show_player_numbers_in_waiting_channel', case_sensitive=False, aliases=['spniwc', 'spn'])
-async def show_player_numbers_in_waiting_channel(msg: Message):
-    # 查看在等候频道里的玩家
-    await msg.reply('当前等候频道里的玩家有:' + str(stateMachine.player_number))
-
-
 @bot.task.add_interval(seconds=1)
 async def task1():
     # 1s触发器
@@ -147,26 +141,6 @@ async def task1():
         )
         await es_channels.command_channel.send(CardMessage(c1))
 
-    # 定时器
-    condition = stateMachine.check_state()
-    if condition == MatchCondition.DividePlayer:
-        pass
-        # await bot.client.move_user(
-        #     target_id=ChannelManager.match_attack_channel, user_ids=stateMachine.attack_list)
-        # await bot.client.move_user(
-        #     target_id=ChannelManager.match_defend_channel, user_ids=stateMachine.defend_list)
-    elif condition == MatchCondition.WaitingJoin:
-        channel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
-        k = await channel.fetch_user_list()
-        number = len(k)
-        # stateMachine.player_number = number
-        # for i in k:
-        #     t: GuildUser = i
-        #     print(t.id, t.joined_at)
-        # stateMachine.add_player_to_wait_list(t.id)
-        pass
-    pass
-
 
 async def move_a_to_b(a: str, b: str):
     channel = await bot.client.fetch_public_channel(a)
@@ -181,27 +155,6 @@ async def move_a_to_b_ex(b: str, list_player: list):
     channel_b = await bot.client.fetch_public_channel(b)
     for id, user_id in enumerate(list_player):
         await channel_b.move_user(b, user_id)
-
-
-@bot.task.add_interval(seconds=3)
-async def task5():
-    condition = stateMachine.check_state()
-    if condition == MatchCondition.WaitingJoin:
-        z: PublicVoiceChannel = es_channels.wait_channel
-        user_list: list = await z.fetch_user_list()
-        user_count = len(user_list)
-        if user_count >= 12:
-            pass
-        # channel = await bot.client.fetch_public_channel(ChannelManager.command_channel)
-        z = "当前状态为 等待玩家加入"
-        # LogHelper.log(z)
-        # await  es_channels.command_channel.send(z)
-    elif condition == MatchCondition.DividePlayer:
-        z = "当前状态为 划分玩家状态"
-        # LogHelper.log(z)
-
-        # await es_channels.command_channel.send(z)
-    pass
 
 
 @bot.on_startup

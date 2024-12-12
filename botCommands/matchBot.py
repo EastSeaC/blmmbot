@@ -1,10 +1,10 @@
-from khl import Bot, Message, EventTypes, Event, GuildUser
+from khl import Bot, Message, EventTypes, Event, GuildUser, PublicVoiceChannel
 
 from LogHelper import LogHelper
 from init_db import get_session
 from kook.ChannelKit import ChannelManager, EsChannels
 from match_guard import MatchGuard
-from match_state import PlayerBasicInfo, MatchState, DivideData
+from match_state import PlayerBasicInfo, MatchState, DivideData, MatchCondition
 from tables import *
 
 session = get_session()
@@ -31,6 +31,11 @@ def init(bot: Bot, es_channels: EsChannels):
         else:
             await mgs.reply('[Warning]:do not use es command!')
         pass
+
+    @bot.command(name='show_player_numbers_in_waiting_channel', case_sensitive=False, aliases=['spniwc', 'spn'])
+    async def show_player_numbers_in_waiting_channel(msg: Message):
+        # 查看在等候频道里的玩家
+        await msg.reply('当前等候频道里的玩家有:' + str(stateMachine.player_number))
 
     @bot.command(name='state', case_sensitive=False, aliases=['st'])
     async def state_command(msg: Message, action: str = ''):
@@ -131,3 +136,46 @@ def init(bot: Bot, es_channels: EsChannels):
             ret = await ch.send(warning_text)  # 方法1
             # LogHelper.log(f" {ret['msg_id']}")  # 方法1 发送消息的id
             pass
+
+    @bot.task.add_interval(seconds=1)
+    async def task_for_match():
+        # 定时器
+        global stateMachine
+        condition = stateMachine.check_state()
+        if condition == MatchCondition.DividePlayer:
+            pass
+            # await bot.client.move_user(
+            #     target_id=ChannelManager.match_attack_channel, user_ids=stateMachine.attack_list)
+            # await bot.client.move_user(
+            #     target_id=ChannelManager.match_defend_channel, user_ids=stateMachine.defend_list)
+        elif condition == MatchCondition.WaitingJoin:
+            channel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
+            k = await channel.fetch_user_list()
+            number = len(k)
+            # stateMachine.player_number = number
+            # for i in k:
+            #     t: GuildUser = i
+            #     print(t.id, t.joined_at)
+            # stateMachine.add_player_to_wait_list(t.id)
+            pass
+        pass
+
+    @bot.task.add_interval(seconds=3)
+    async def task5():
+        condition = stateMachine.check_state()
+        if condition == MatchCondition.WaitingJoin:
+            z: PublicVoiceChannel = es_channels.wait_channel
+            user_list: list = await z.fetch_user_list()
+            user_count = len(user_list)
+            if user_count >= 12:
+                pass
+            # channel = await bot.client.fetch_public_channel(ChannelManager.command_channel)
+            z = "当前状态为 等待玩家加入"
+            # LogHelper.log(z)
+            # await  es_channels.command_channel.send(z)
+        elif condition == MatchCondition.DividePlayer:
+            z = "当前状态为 划分玩家状态"
+            # LogHelper.log(z)
+
+            # await es_channels.command_channel.send(z)
+        pass

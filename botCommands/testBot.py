@@ -1,10 +1,10 @@
 import requests
-from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel
+from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel, PublicVoiceChannel
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import literal, desc, text
 
 from LogHelper import LogHelper
-from blmm_bot import EsChannels, UrlHelper, config
+from kook.ChannelKit import EsChannels
 from init_db import get_session
 from kook.ChannelKit import ChannelManager
 from lib.basic import generate_numeric_code
@@ -23,19 +23,26 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='uca', case_sensitive=False, aliases=['ca', 'xa'])
     async def worldO(msg: Message):
+        print("123")
+        print(msg.author_id)
         if msg.author_id != ChannelManager.es_user_id:
             await msg.reply('禁止使用es 指令')
-            return
+
             # guild = await bot.client.fetch_guild(ChannelManager.sever)
-        r = requests.post(UrlHelper.delete_message,
-                          headers={
-                              f'Authorization': f"Bot {config['token']}",
-                          },
-                          params={
-                              'msg_id': '8477c586-9111-4312-bc38-a9664d75b32c',
-                          })
-        print(r.text)
-        print(UrlHelper.delete_message)
+        wait_channel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
+        wait_channel: PublicVoiceChannel = wait_channel
+        user_list = await wait_channel.fetch_user_list()
+        for i in user_list:
+            print(i.id)
+        # r = requests.post(UrlHelper.delete_message,
+        #                   headers={
+        #                       f'Authorization': f"Bot {config['token']}",
+        #                   },
+        #                   params={
+        #                       'msg_id': '8477c586-9111-4312-bc38-a9664d75b32c',
+        #                   })
+        # print(r.text)
+        # print(UrlHelper.delete_message)
         z = await es_channels.command_channel.list_messages()
 
     @bot.command(name='show_match', case_sensitive=False, aliases=['sm'])

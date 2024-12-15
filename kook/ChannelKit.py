@@ -5,7 +5,7 @@ from LogHelper import LogHelper
 
 class ChannelManager:
     # 服务器
-    sever = '9019084812125033'
+    sever = '2784764957685998'
     # 公告区
     announcement = '7368706706716074'
     # 集结频道ID
@@ -13,20 +13,20 @@ class ChannelManager:
     # 休息室
     sleep_room_channel = '2602141163900435'
     # 比赛分组
-    match_group = '8867447588765353'
+    match_group = '3182448324425808'
     # 候选频道语音
-    match_wait_channel = '9263713909740224'
-    match_attack_channel = '4829289747409514'
-    match_defend_channel = '1565042036823961'
+    match_wait_channel = '7483461728419145'
+    match_attack_channel = '4855555618242776'
+    match_defend_channel = '7704290253382922'
 
-    match_set_channel = '6713919713207768'  # 淘汰休息室
+    match_set_channel = '9152989485766507'  # 淘汰休息室
     # 警告频道
     error_channel = '3489054506196442'
     es_user_id = '482714005'
 
     # 通用 人类提示频道
     common_channel = '3137719365146347'
-    command_channel = '1451138349000890'
+    command_channel = '3971225977704461'
     manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
 
     @staticmethod

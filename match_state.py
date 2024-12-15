@@ -136,10 +136,11 @@ class MatchState:
         用于分组, 第一组是 攻击者的 user_id， 第二组是 防御者的 userid
         """
         div = DivideData()
-
+        print('[divide_player_ex|out]-shift')
         for i in a:
+            # print(i.score, i.user_id, i.user_name)
             k: PlayerBasicInfo = i
-            print(k.score, k.user_id)
+            # print(k.score, k.user_id, k.user_name)
         print('a*' * 20)
         x, y = min_diff_partition(a)
 
@@ -190,7 +191,7 @@ class PlayerBasicInfo:
     def __init__(self, player_dict: dict) -> None:
         self.score = player_dict.get('score', 0)
         self.user_id = player_dict.get('user_id', '62a')  # kook的用户id
-        self.user_name = player_dict.get('kook_name', 'baga')
+        self.user_name = player_dict.get('username', 'baga')
         self.player_id = player_dict.get('playerId')  # 游戏Id
         self.kill = player_dict.get('kill', 0)
         self.death = player_dict.get('death', 0)
@@ -227,16 +228,16 @@ class DivideData:
         self.defender_info_block.append([defender_name, score])
 
     def get_attacker_names(self):
-        return '\n'.join([defender_info[0] for defender_info in self.attacker_info_block])
+        return '玩家名称\n' + '\n'.join([defender_info[0] for defender_info in self.attacker_info_block])
 
     def get_attacker_scores(self):
-        return '\n'.join([defender_info[1] for defender_info in self.attacker_info_block])
+        return '当前分数\n' + '\n'.join([str(defender_info[1]) for defender_info in self.attacker_info_block])
 
     def get_defender_names(self):
-        return '\n'.join([defender_info[0] for defender_info in self.defender_info_block])
+        return '玩家名称\n' + '\n'.join([defender_info[0] for defender_info in self.defender_info_block])
 
     def get_defender_scores(self):
-        return '\n'.join([defender_info[1] for defender_info in self.defender_info_block])
+        return '当前分数\n' + '\n'.join([str(defender_info[1]) for defender_info in self.defender_info_block])
 
 
 def sorted_aux(player):

@@ -17,6 +17,8 @@ from kook.ChannelKit import EsChannels, ChannelManager
 from match_guard import MatchGuard
 from match_state import MatchConditionEx
 from webBlueprint.adminRouter import adminRouter
+from webBlueprint.matchRouter import matchRouter
+
 from web_bp import bp
 
 sqlSession = get_session()
@@ -24,6 +26,7 @@ sqlSession = get_session()
 app = web.Application()
 app.add_routes(bp)
 app.add_routes(adminRouter)
+app.add_routes(matchRouter)
 
 guard = MatchGuard()
 

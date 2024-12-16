@@ -18,8 +18,10 @@ from match_state import MatchConditionEx
 from tables import *
 from tables.PlayerNames import DB_PlayerNames
 
+
 # 创建一个蓝图
 bp = web.RouteTableDef()
+
 
 # 定义处理程序
 session = get_session()

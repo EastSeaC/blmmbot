@@ -157,7 +157,7 @@ class MatchState:
 
             print(k.score, k.user_id)
 
-            div.add_attacker_info(k.user_name, k.score)  # 添加 积分块
+            div.add_attacker_info(k.user_name, k.score, k.player_id)  # 添加 积分块
 
         print('*' * 20)
         n = []
@@ -168,7 +168,7 @@ class MatchState:
             defender_names.append(k.user_name)
             print(k.score, k.user_id)
 
-            div.add_defender_info(k.user_name, k.score)  # 添加 积分块
+            div.add_defender_info(k.user_name, k.score, k.player_id)  # 添加 积分块
 
         div.attacker_list = m
         div.attacker_names = attacker_names
@@ -221,11 +221,17 @@ class DivideData:
     def __str__(self):
         return f"attacker_names:{self.attacker_names} defender_names:{self.defender_names}, list:{self.attacker_list},{self.defender_list}, attacker_scores:{self.attacker_scores}, defend_scores:{self.defend_scores}, diff {self.attacker_scores - self.defend_scores}"
 
-    def add_attacker_info(self, attacker_name: str, score: int):
-        self.attacker_info_block.append([attacker_name, score])
+    def add_attacker_info(self, attacker_name: str, score: int, player_id: str):
+        self.attacker_info_block.append([attacker_name, score, player_id])
 
-    def add_defender_info(self, defender_name: str, score: int):
-        self.defender_info_block.append([defender_name, score])
+    def add_defender_info(self, defender_name: str, score: int, player_id: str):
+        self.defender_info_block.append([defender_name, score, player_id])
+
+    def get_first_team_player_ids(self):
+        return [defender_info[2] for defender_info in self.attacker_info_block]
+
+    def get_second_team_player_ids(self):
+        return [defender_info[2] for defender_info in self.defender_info_block]
 
     def get_attacker_names(self):
         return '玩家名称\n' + '\n'.join([defender_info[0] for defender_info in self.attacker_info_block])

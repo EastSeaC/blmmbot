@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from aiohttp import web
@@ -17,25 +18,28 @@ sqlSession = get_session()
 player_id_list = []
 
 
-@matchRouter.get('/get-match-obj')
+@matchRouter.get('/get-match-obj/{server_name}')
 async def get_match_obj(req):
     server_name = req.match_info['server_name']
-
+    print('服务器请求数据' + server_name)
     if server_name is not None and server_name:
-        result = (sqlSession.query(DB_WillMatchs)
-                  .filter(DB_WillMatchs.server_name == server_name,
-                          DB_WillMatchs.is_cancel == False,
-                          func.timestampdiff(func.MINUTE,
-                                             DB_WillMatchs.time_match,
-                                             func.now()) <= 5).limit(1).first())
+        with get_session() as sqlSession:
+            result = (sqlSession.query(DB_WillMatchs)
+                      .filter(DB_WillMatchs.server_name == server_name,
+                              DB_WillMatchs.is_cancel == False,
+                              DB_WillMatchs.time_match >= datetime.datetime.now() - datetime.timedelta(minutes=5))
+                      .limit(1)
+                      .first())
 
-        will_match: DB_WillMatchs
-        if result:
-            will_match = result
-            print(will_match.first_team_player_ids)
-            return web.json_response(ControllerResponse.success_response(will_match))
-        else:
-            return web.json_response(ControllerResponse.error_response(-1, "找不到匹配对局"))
+            will_match: DB_WillMatchs
+            if result:
+                will_match = result
+                # print(will_match.first_team_player_ids)
+                return web.json_response(ControllerResponse.success_response(will_match.to_dict()))
+            else:
+                return web.json_response(ControllerResponse.error_response(-1, "找不到匹配对局"))
+    else:
+        return web.json_response(ControllerResponse.error_response(-1, "没有提交服务器名称"))
     pass
 
 

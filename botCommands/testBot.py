@@ -1,16 +1,22 @@
+import datetime
+import uuid
+
 import requests
 from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel, PublicVoiceChannel
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
-from sqlalchemy import literal, desc, text
+from sqlalchemy import literal, desc, text, select
 
 from LogHelper import LogHelper, get_time_str
 from kook.ChannelKit import EsChannels
 from init_db import get_session
 from kook.ChannelKit import ChannelManager
+from lib.ServerGameConfig import get_random_faction_2
 from lib.basic import generate_numeric_code
 from match_state import PlayerBasicInfo, MatchState, DivideData
 from tables import *
+from tables import DB_WillMatch
 from tables.Admin import DBAdmin
+from tables.DB_WillMatch import DB_WillMatchs
 from tables.PlayerNames import DB_PlayerNames
 
 sqlSession = get_session()
@@ -104,14 +110,89 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='show_match', case_sensitive=False, aliases=['sm'])
     async def show_match(msg: Message):
+        user_list = ['482714005', '1555061634', '1932416737', '3006824740', '3484257139', '180475151', '3394658957',
+                     '2806603494', '1384765669', '1510300409', '828555933', '3784439652']
+        print('123')
+        z = sqlSession.execute(select(Player).where(Player.kookId.in_(user_list))).scalars()
+        # z = sqlSession.query(Player).filter(Player.kookId.in_(user_list)).all()
+        dict_for_kook_id = {}
+        for i in z:
+            t: Player = i
+            dict_for_kook_id[t.kookId] = t
+
+        player_list = []
+        for id, user in enumerate(user_list):
+            player: Player = dict_for_kook_id[user]
+            player_info = PlayerBasicInfo({'username': player.kookName})
+            player_info.score = player.rank
+            player_info.user_id = player.kookId
+            player_info.username = player.kookName
+            player_info.player_id = player.playerId
+            # print(player_info.username)
+            player_list.append(player_info)
+
+        if len(player_list) < 12:
+            await msg.reply(f'注册人数不足12，请大伙先注册，/help可以提供支持')
+        if len(player_list) % 2 != 0:
+            await msg.reply(f'人数非奇数！')
+            return
+        divide_data: DivideData = MatchState.divide_player_ex(player_list)
+
+        will_match_data = DB_WillMatchs()
+        will_match_data.time_match = datetime.datetime.now()
+        will_match_data.match_id = str(uuid.uuid4())
+        will_match_data.set_first_team_player_ids(divide_data.get_first_team_player_ids())
+        will_match_data.set_second_team_player_ids(divide_data.get_second_team_player_ids())
+
+        first_faction, second_faction = get_random_faction_2()
+        will_match_data.first_team_culture = first_faction
+        will_match_data.second_team_culture = second_faction
+
+        will_match_data.match_type = 'Match66'
+        will_match_data.is_cancel = False
+        will_match_data.is_finished = False
+        will_match_data.server_name = 'CN_BTL_NINGBO_1'
+        try:
+            sqlSession.add(will_match_data)
+        except Exception as e:
+            print(e.with_traceback())
+            sqlSession.rollback()
+        else:
+            sqlSession.commit()
+
+        await msg.reply(CardMessage(
+            Card(
+                Module.Header('分队情况表'),
+                Module.Divider(),
+                Module.Header(f'时间:{get_time_str()}'),
+                Module.Section(
+                    Struct.Paragraph(
+                        3,
+                        Element.Text(divide_data.get_attacker_names(), type=Types.Text.KMD),
+                        Element.Text(divide_data.get_attacker_scores(), type=Types.Text.KMD),
+                        Element.Text('game_info', type=Types.Text.KMD),
+                    )
+                ),
+                Module.Divider(),
+                Module.Section(
+                    Struct.Paragraph(
+                        3,
+                        Element.Text(divide_data.get_defender_names(), type=Types.Text.KMD),
+                        Element.Text(divide_data.get_defender_scores(), type=Types.Text.KMD),
+                        Element.Text('game_info', type=Types.Text.KMD),
+                    )
+                ),
+            )
+        ))
         pass
 
     @bot.command(name='reac', case_sensitive=False)
     async def worldO(msg: Message):
         # 公告区
         ch = await bot.client.fetch_public_channel(ChannelManager.announcement)
+        print('123')
         # 使用channel对象的send
-        ret = await ch.send("这是一个测试信息,使用了ch.send")  # 方法1
+        # ret = await ch.send("这是一个测试信息,使用了ch.send")  # 方法1
 
         # 往其他频道发送信息
         # 使用bot对象的client.send

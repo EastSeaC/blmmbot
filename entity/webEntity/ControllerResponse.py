@@ -1,5 +1,6 @@
 import json
 
+
 class ControllerResponse:
     def __init__(self, code=None, message=None, data=None):
         self.code = code
@@ -8,18 +9,19 @@ class ControllerResponse:
 
     @classmethod
     def error_response(cls, code, message):
-        return cls(code=code, message=message, data=None)
+        return cls(code=code, message=message, data=None).to_json()
 
     @classmethod
     def success_response(cls, data):
-        return cls(code=0, message="", data=data)
+        return cls(code=0, message="", data=data).to_json()
 
     def to_json(self):
-        return json.dumps({
+        return {
             'code': self.code,
             'message': self.message,
             'data': self.data
-        })
+        }
+
 
 if __name__ == '__main__':
     # 示例：

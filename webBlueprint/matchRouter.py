@@ -24,7 +24,7 @@ async def get_match_obj(req):
     print('服务器请求数据' + server_name)
     if server_name is not None and server_name:
         with get_session() as sqlSession:
-            result = (sqlSession.query(DB_WillMatchs)
+            result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
                       .filter(DB_WillMatchs.server_name == server_name,
                               DB_WillMatchs.is_cancel == False,
                               DB_WillMatchs.time_match >= datetime.datetime.now() - datetime.timedelta(minutes=5))

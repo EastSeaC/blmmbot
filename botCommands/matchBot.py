@@ -165,7 +165,7 @@ def init(bot: Bot, es_channels: EsChannels):
         condition = stateMachine.check_state()
         if condition == MatchCondition.WaitingJoin:
             z: PublicVoiceChannel = es_channels.wait_channel
-            user_list: list = await z.fetch_user_list()
+            user_list= await z.fetch_user_list()
             user_count = len(user_list)
             if user_count >= 12:
                 pass

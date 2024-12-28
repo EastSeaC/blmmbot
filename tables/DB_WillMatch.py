@@ -31,6 +31,8 @@ class DB_WillMatchs(Base):
     match_id = Column(String(255), nullable=True)  # 对应 C# 的 matchId
     server_name = Column(String(255), nullable=True)  # 对应 C# 的 ServerName
 
+    match_id_2 = Column(INT, nullable=False, default=0)
+
     # 方法：转换 JSON 字符串为 Python 列表
     def get_first_team_player_ids(self) -> List[str]:
         return json.loads(self.first_team_player_ids) if self.first_team_player_ids else []

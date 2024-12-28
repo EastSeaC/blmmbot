@@ -1,4 +1,5 @@
 import datetime
+import random
 import uuid
 
 import requests
@@ -7,6 +8,7 @@ from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import literal, desc, text, select
 
 from LogHelper import LogHelper, get_time_str
+from entity.WillMatchType import WillMatchType
 from kook.ChannelKit import EsChannels
 from init_db import get_session
 from kook.ChannelKit import ChannelManager
@@ -113,6 +115,8 @@ def init(bot: Bot, es_channels: EsChannels):
         user_list = ['482714005', '1555061634', '1932416737', '3006824740', '3484257139', '180475151', '3394658957',
                      '2806603494', '1384765669', '1510300409', '828555933', '3784439652']
         print('123')
+        global sqlSession
+        sqlSession = get_session()
         z = sqlSession.execute(select(Player).where(Player.kookId.in_(user_list))).scalars()
         # z = sqlSession.query(Player).filter(Player.kookId.in_(user_list)).all()
         dict_for_kook_id = {}
@@ -140,7 +144,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
         will_match_data = DB_WillMatchs()
         will_match_data.time_match = datetime.datetime.now()
-        will_match_data.match_id = str(uuid.uuid4())
+        will_match_data.match_id = str(uuid.uuid1())
         will_match_data.set_first_team_player_ids(divide_data.get_first_team_player_ids())
         will_match_data.set_second_team_player_ids(divide_data.get_second_team_player_ids())
 
@@ -148,10 +152,25 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.first_team_culture = first_faction
         will_match_data.second_team_culture = second_faction
 
-        will_match_data.match_type = 'Match66'
+        will_match_data.match_type = WillMatchType.Match88
         will_match_data.is_cancel = False
         will_match_data.is_finished = False
         will_match_data.server_name = 'CN_BTL_NINGBO_1'
+
+        # 获取今天的日期并设置时间为 00:00:00
+        today_midnight = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+        result_temp = len(sqlSession.execute(
+            select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight)).all())
+        newest_data = sqlSession.execute(
+            select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight).order_by(
+                desc(DB_WillMatchs.time_match)).limit(1)).first()
+
+        last_match_number = random.randint(3, 10)
+        if newest_data is not None and len(newest_data) > 0:
+            last_match_number += newest_data[0].match_id_2
+
+        will_match_data.match_id_2 = last_match_number
+
         try:
             sqlSession.add(will_match_data)
         except Exception as e:
@@ -182,6 +201,8 @@ def init(bot: Bot, es_channels: EsChannels):
                         Element.Text('game_info', type=Types.Text.KMD),
                     )
                 ),
+                Module.Divider(),
+                Module.Header(f'比赛ID：{will_match_data.match_id_2}')
             )
         ))
         pass

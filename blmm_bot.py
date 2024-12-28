@@ -84,6 +84,7 @@ async def help_x(msg: Message):
     /score 或 /s 查看自己的分数
     /change_name 或 /cn 修改名字
     **(font)/e 开启匹配(font)[success]**
+    /cnm 【比赛ID】 取消比赛 ，例如 /cnm 10
      
     **(font)注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：(font)[warning]**
     /v [playerId] [code]  例如 /v 2.0.0.76561198104994845 600860

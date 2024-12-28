@@ -1,11 +1,16 @@
-from khl import Bot, Message, EventTypes, Event, GuildUser, PublicVoiceChannel
+from datetime import datetime
 
-from LogHelper import LogHelper
+from khl import Bot, Message, EventTypes, Event, GuildUser, PublicVoiceChannel
+from sqlalchemy import select
+
+from LogHelper import LogHelper, get_time_str
 from init_db import get_session
 from kook.ChannelKit import ChannelManager, EsChannels
 from match_guard import MatchGuard
 from match_state import PlayerBasicInfo, MatchState, DivideData, MatchCondition
 from tables import *
+from tables import DB_WillMatch
+from tables.DB_WillMatch import DB_WillMatchs
 
 session = get_session()
 g_channels: EsChannels
@@ -53,6 +58,41 @@ def init(bot: Bot, es_channels: EsChannels):
             pass
         else:
             await msg.reply('[Warning]:do not use es command!')
+
+    @bot.command(name='cancel_match', case_sensitive=False, aliases=['cnm'])
+    async def cancel_match(msg: Message, *args):
+        count = len(args)
+        if msg.author_id not in ChannelManager.manager_user_id:
+            await msg.reply('禁止使用管理员指令')
+
+        if count >= 1:
+            if str(args[0]).isdecimal():
+                match_id_2 = int(args[0])
+
+                sql_session = get_session()
+                today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+                z = sql_session.execute(select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight,
+                                                                    DB_WillMatchs.match_id_2 == match_id_2)).first()
+
+                # print(z)
+                if z is None or len(z) == 0:
+                    await msg.reply('比赛ID 错误')
+                    return
+                will_match: DB_WillMatchs = z[0]
+                if will_match.is_cancel is True or will_match.is_finished is True:
+                    await  msg.reply(f'比赛ID {will_match.match_id_2} 已结束或者取消， 不再接受操作')
+                else:
+                    will_match.is_cancel = True
+                    will_match.cancel_reason = f'管理员{msg.author.username}于{get_time_str()}取消'
+                    try:
+                        sql_session.add(will_match)
+                        sql_session.commit()
+                        await msg.reply(f'比赛ID:{will_match.match_id_2}被' + will_match.cancel_reason)
+                    except Exception as e:
+                        await msg.reply(f'比赛ID:{will_match.match_id_2} 无法取消，服务器异常，请联系管理员')
+                        sql_session.rollback()
+        else:
+            await msg.reply('指令异常')
 
     @bot.command(name='rtc', case_sensitive=False, aliases=['yc'])
     async def tojadx(msg: Message):
@@ -165,7 +205,7 @@ def init(bot: Bot, es_channels: EsChannels):
         condition = stateMachine.check_state()
         if condition == MatchCondition.WaitingJoin:
             z: PublicVoiceChannel = es_channels.wait_channel
-            user_list= await z.fetch_user_list()
+            user_list = await z.fetch_user_list()
             user_count = len(user_list)
             if user_count >= 12:
                 pass

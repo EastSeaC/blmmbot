@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from random import randint
 
-from LogHelper import LogHelper
+from lib.LogHelper import LogHelper
 
 
 class MatchConditionEx:

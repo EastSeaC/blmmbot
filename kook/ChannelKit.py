@@ -1,6 +1,6 @@
 from khl import PublicVoiceChannel, PublicTextChannel
 
-from LogHelper import LogHelper
+from lib.LogHelper import LogHelper
 
 
 class ChannelManager:

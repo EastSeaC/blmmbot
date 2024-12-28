@@ -2,24 +2,19 @@ import datetime
 import random
 import uuid
 
-import requests
-from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel, PublicVoiceChannel
+from khl import Bot, Message, GuildUser, PublicVoiceChannel
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
-from sqlalchemy import literal, desc, text, select
+from sqlalchemy import desc, select
 
-from LogHelper import LogHelper, get_time_str
+from lib.LogHelper import get_time_str
 from entity.WillMatchType import WillMatchType
 from kook.ChannelKit import EsChannels
 from init_db import get_session
 from kook.ChannelKit import ChannelManager
 from lib.ServerGameConfig import get_random_faction_2
-from lib.basic import generate_numeric_code
-from match_state import PlayerBasicInfo, MatchState, DivideData
+from lib.match_state import PlayerBasicInfo, MatchState, DivideData
 from tables import *
-from tables import DB_WillMatch
-from tables.Admin import DBAdmin
 from tables.DB_WillMatch import DB_WillMatchs
-from tables.PlayerNames import DB_PlayerNames
 
 sqlSession = get_session()
 g_channels: EsChannels

@@ -5,6 +5,10 @@ def get_time_str():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
+def get_midnight_time():
+    return datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+
+
 def display(s):
     LogHelper.log(s)
 

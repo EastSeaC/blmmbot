@@ -4,7 +4,7 @@ from random import randint
 from khl import Bot, Message, PrivateMessage
 from sqlalchemy import or_
 
-from LogHelper import LogHelper
+from lib.LogHelper import LogHelper
 from init_db import get_session
 from kook.ChannelKit import EsChannels
 from tables import *

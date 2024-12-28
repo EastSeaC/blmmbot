@@ -1,6 +1,6 @@
 import random
 
-from LogHelper import LogHelper
+from lib.LogHelper import LogHelper
 
 
 def get_random_faction_2():

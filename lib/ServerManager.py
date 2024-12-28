@@ -6,7 +6,7 @@ import time
 import win32con
 import win32gui
 
-from LogHelper import display, LogHelper
+from lib.LogHelper import display, LogHelper
 from lib.ServerGameConfig import GameConfig
 
 

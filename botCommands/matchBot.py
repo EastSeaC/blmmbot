@@ -3,13 +3,12 @@ from datetime import datetime
 from khl import Bot, Message, EventTypes, Event, GuildUser, PublicVoiceChannel
 from sqlalchemy import select
 
-from LogHelper import LogHelper, get_time_str
+from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
 from kook.ChannelKit import ChannelManager, EsChannels
-from match_guard import MatchGuard
-from match_state import PlayerBasicInfo, MatchState, DivideData, MatchCondition
+from lib.match_guard import MatchGuard
+from lib.match_state import PlayerBasicInfo, MatchState, DivideData, MatchCondition
 from tables import *
-from tables import DB_WillMatch
 from tables.DB_WillMatch import DB_WillMatchs
 
 session = get_session()

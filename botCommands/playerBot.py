@@ -1,11 +1,11 @@
 from khl import Bot, Message, GuildUser
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
 
-from LogHelper import LogHelper, get_time_str
+from lib.LogHelper import LogHelper, get_time_str
 from config import get_rank_name
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
-from match_state import PlayerBasicInfo, DivideData, MatchState
+from lib.match_state import PlayerBasicInfo, DivideData, MatchState
 from tables import *
 from tables.PlayerChangeName import DB_PlayerChangeNames
 

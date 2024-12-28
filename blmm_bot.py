@@ -9,13 +9,13 @@ from aiohttp import web
 from khl import Bot, Message, GuildUser
 from khl.card import Card, Module, Struct, Element, Types, CardMessage
 
-from LogHelper import LogHelper
+from lib.LogHelper import LogHelper
 from botCommands import adminBot, regBot, playerBot, configBot, matchBot, testBot
 from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
-from match_guard import MatchGuard
-from match_state import MatchConditionEx
+from lib.match_guard import MatchGuard
+from lib.match_state import MatchConditionEx
 from webBlueprint.adminRouter import adminRouter
 from webBlueprint.matchRouter import matchRouter
 

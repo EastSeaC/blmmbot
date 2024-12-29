@@ -234,10 +234,11 @@ def init(bot: Bot, es_channels: EsChannels):
         print(e.body, "\n")
         value = str(e.body['value'])
         user_id = e.body['user_id']
+        guild_id = e.body['guild_id']
 
         with get_session() as sql_session:
             t = sql_session.query(Player).filter(Player.kookId == user_id)
-            channel = await b.client.fetch_public_channel(ChannelManager.command_channel)
+            channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
 
             if t.count() == 1:
                 player: Player = t.first()

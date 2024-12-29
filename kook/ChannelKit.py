@@ -30,6 +30,13 @@ class ChannelManager:
     manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
 
     @staticmethod
+    def get_command_channel_id(guild_id: str):
+        if guild_id == '9019084812125033':
+            return "1451138349000890"
+        elif guild_id == '2784764957685998':
+            return "3971225977704461"
+
+    @staticmethod
     def is_common_user(kook_id: str):
         return kook_id not in ChannelManager.manager_user_id
 

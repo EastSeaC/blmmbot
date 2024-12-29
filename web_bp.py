@@ -18,10 +18,8 @@ from lib.match_state import MatchConditionEx
 from tables import *
 from tables.PlayerNames import DB_PlayerNames
 
-
 # 创建一个蓝图
 bp = web.RouteTableDef()
-
 
 # 定义处理程序
 session = get_session()
@@ -184,6 +182,11 @@ async def admin_add_player_name(player_id: str, name: str):
     pass
 
 
+"""
+积分系统/计分系统
+"""
+
+
 @bp.post('/UploadMatchData')
 async def update_match_data2(request):
     formatted_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -270,30 +273,9 @@ async def update_match_data2(request):
         else:
             LogHelper.log("跳过")
 
+        oldData.add_match_data(k)
         # print(f"{oldData.rank}")
         oldData.playerName = k.player_name
-        oldData.match += 1
-        oldData.win += k.win
-        oldData.lose += k.lose
-        oldData.draw += k.draw_rounds
-
-        oldData.infantry += k.Infantry
-        oldData.cavalry += k.Cavalry
-        oldData.archer += k.Archer
-
-        oldData.damage += k.damage
-        oldData.team_damage += k.team_damage
-
-        oldData.win_rounds += k.win_rounds
-        oldData.fail_rounds += k.lose_rounds
-        oldData.draw_rounds += k.draw_rounds
-
-        oldData.horse_damage += k.horse_damage
-
-        oldData.kill += k.kill
-        oldData.death += k.death
-        oldData.assist += k.assist
-        # oldData.horse_kill+=k.ho
 
     for i in missing_data:
         # print('test123')

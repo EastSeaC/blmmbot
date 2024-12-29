@@ -1,4 +1,4 @@
-from khl import Bot, Message, GuildUser
+from khl import Bot, Message, GuildUser, EventTypes, Event
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
 
 from lib.LogHelper import LogHelper, get_time_str
@@ -198,15 +198,84 @@ def init(bot: Bot, es_channels: EsChannels):
         else:
             await msg.reply('你还未注册，该指令不生效')
 
+    @bot.command(name='type', case_sensitive=False, aliases=['t'])
+    async def set_player_type(msg: Message, *args):
+        c8 = Card(
+            Module.Header('第一兵种选择'),
+            Module.ActionGroup(
+                Element.Button("步兵", value='f1', click=Types.Click.RETURN_VAL, theme=Types.Theme.INFO),
+                Element.Button("骑兵", value='f2', click=Types.Click.RETURN_VAL, theme=Types.Theme.DANGER),
+                Element.Button("射手", value='f3', click=Types.Click.RETURN_VAL, theme=Types.Theme.SECONDARY)
+            ),
+            Module.Divider(),
+            Module.Header('第二兵种选择'),
+            Module.ActionGroup(
+                Element.Button("步兵", value='s1', click=Types.Click.RETURN_VAL, theme=Types.Theme.INFO),
+                Element.Button("骑兵", value='s2', click=Types.Click.RETURN_VAL, theme=Types.Theme.DANGER),
+                Element.Button("射手", value='s3', click=Types.Click.RETURN_VAL, theme=Types.Theme.SECONDARY)
+            ),
+        )
+        await msg.reply(CardMessage(c8))
+
+    def get_troop_type_name(a: int):
+        if a == 1:
+            return "步兵"
+        elif a == 2:
+            return "骑兵"
+        elif a == 3:
+            return "射手"
+        else:
+            return "未选择"
+
+    @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
+    async def btn_click_event(b: Bot, e: Event):
+        """按钮点击事件"""
+        print(e.target_id)
+        print(e.body, "\n")
+        value = str(e.body['value'])
+        user_id = e.body['user_id']
+
+        with get_session() as sql_session:
+            t = sql_session.query(Player).filter(Player.kookId == user_id)
+            channel = b.client.fetch_public_channel(ChannelManager.command_channel)
+
+            if t.count() == 1:
+                player: Player = t.first()
+
+                is_first_troop = False
+                if value.startswith('f'):
+                    troop_type = int(value[1])
+                    player.first_troop = troop_type
+                    is_first_troop = True
+                elif value.startswith('s'):
+                    troop_type = int(value[1])
+                    player.second_troop = troop_type
+                troop_name = get_troop_type_name(troop_type)
+
+                try:
+                    sql_session.merge(player)
+                    sql_session.commit()
+                    await channel.send(
+                        f'(met){user_id}(met) 你设置了你的第{1 if is_first_troop else 2}兵种为{troop_name}')
+                except Exception as e:
+                    await channel.send(
+                        f'(met){user_id}(met) 机器人异常，联系管理员')
+                    sql_session.rollback()
+
+            else:
+                await channel.send(
+                    f'(met){user_id}(met) 你没有注册，请先注册')
+
     @bot.command(name='score', case_sensitive=False, aliases=['s'])
     async def show_score(msg: Message, *args):
         # 处理玩家随便输入的时候， 在函数原型中加入 , *args
-        sqlSession.commit()
-        t = sqlSession.query(Player).filter(Player.kookId == msg.author_id)
+        sql_session = get_session()
+        sql_session.commit()
+        t = sql_session.query(Player).filter(Player.kookId == msg.author_id)
         if t.count() == 1:
             player: Player = t.first()
 
-            db_playerdata = sqlSession.query(DB_PlayerData).filter(DB_PlayerData.playerId == player.playerId)
+            db_playerdata = sql_session.query(DB_PlayerData).filter(DB_PlayerData.playerId == player.playerId)
             if db_playerdata.count() >= 1:
                 db_player: DB_PlayerData = db_playerdata.first()
                 player.rank = db_player.rank

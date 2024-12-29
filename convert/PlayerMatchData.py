@@ -30,6 +30,7 @@ class TPlayerMatchData:
 
         self.horse_damage = data.get("horse_damage", 0)
         self.horse_tk = data.get("TKHorse1", 0)
+        self.spawn_times = data.get('spawn_times', 0)
 
         self.__old_score = 0
         self.new_score = 0

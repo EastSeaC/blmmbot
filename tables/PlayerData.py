@@ -54,6 +54,8 @@ class DB_PlayerData(Base):
     horse_tk = Column(Integer, nullable=False, default=0)
     horse_tk_val = Column(Integer, nullable=False, default=0)
 
+
+
     def add_match_data(self, match_data: TPlayerMatchData):
         self.win += match_data.win
         self.lose += match_data.lose
@@ -75,6 +77,7 @@ class DB_PlayerData(Base):
         self.kill += match_data.kill
         self.death += match_data.death
         self.assist += match_data.assist
+        self.match += 1
         pass
 
     def refresh_data(self):

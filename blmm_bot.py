@@ -8,6 +8,7 @@ import jinja2
 from aiohttp import web
 from khl import Bot, Message, GuildUser
 from khl.card import Card, Module, Struct, Element, Types, CardMessage
+from sqlalchemy import select
 
 from lib.LogHelper import LogHelper
 from botCommands import adminBot, regBot, playerBot, configBot, matchBot, testBot
@@ -16,6 +17,7 @@ from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
 from lib.match_guard import MatchGuard
 from lib.match_state import MatchConditionEx
+from tables.ScoreLimit import DB_ScoreLimit
 from webBlueprint.adminRouter import adminRouter
 from webBlueprint.matchRouter import matchRouter
 
@@ -79,9 +81,10 @@ def get_time_str():
 
 @bot.command(name='help', case_sensitive=False, aliases=['h'])
 async def help_x(msg: Message):
-    t = '''/help 或 /h 查看所有指令
+    t = '''    /help 或 /h 查看所有指令
     /score_list 或 /sl 查看分数榜单
     /score 或 /s 查看自己的分数
+    **(font)/t 或 /type 修改自己的 第一兵种，第二兵种(font)[warning]**
     /change_name 或 /cn 修改名字
     **(font)/e 开启匹配(font)[success]**
     /cnm 【比赛ID】 取消比赛 ，例如 /cnm 10
@@ -160,6 +163,19 @@ async def move_a_to_b_ex(b: str, list_player: list):
         await channel_b.move_user(b, user_id)
 
 
+async def CheckDataBase():
+    with  get_session() as sql_session:
+        result = sql_session.execute(select(DB_ScoreLimit).where(DB_ScoreLimit.score_type == 'default')).first()
+
+        if result is None or len(result) == 0:
+            x: DB_ScoreLimit = DB_ScoreLimit()
+            sql_session.add(x)
+            try:
+                sql_session.commit()
+            except Exception as e:
+                sql_session.rollback()
+
+
 @bot.on_startup
 async def bot_init(bot1: Bot):
     if not es_channels.ready:
@@ -170,8 +186,9 @@ async def bot_init(bot1: Bot):
     playerBot.init(bot1, es_channels)
     configBot.init(bot1, es_channels)
     matchBot.init(bot1, es_channels)
-    testBot.init(bot1,  es_channels)
+    testBot.init(bot1, es_channels)
 
+    await CheckDataBase()
 
 # 开跑
 # 同时运行app和bot

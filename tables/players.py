@@ -5,6 +5,9 @@ from sqlalchemy import *
 from .base import Base
 
 
+
+
+
 class Player(Base):
     __tablename__ = "players"
 
@@ -40,6 +43,9 @@ class Player(Base):
 
     damage = Column(Integer, nullable=False, default=0)
     team_damage = Column(Integer, nullable=False, default=0)
+
+    first_troop = Column(Integer, nullable=True, default=0)
+    second_troop = Column(Integer, nullable=True, default=0)
 
     def is_banned(self):
         return self.ban_until_time is not None and self.ban_until_time > datetime.datetime.now()

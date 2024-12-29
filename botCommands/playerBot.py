@@ -287,7 +287,9 @@ def init(bot: Bot, es_channels: EsChannels):
                 Module.Section(
                     Struct.Paragraph(
                         3,
-                        Element.Text(f"名字:\n{player.kookName}", type=Types.Text.KMD),
+                        Element.Text(
+                            f"名字:\n{player.kookName}\n第一兵种:\n{get_troop_type_name(player.first_troop)}\n第二兵种:\n{get_troop_type_name(player.second_troop)}",
+                            type=Types.Text.KMD),
                         Element.Text(f"分数:\n{player.rank}", type=Types.Text.KMD),
                         Element.Text(f"位阶:\n(font){get_rank_name(player.rank)}(font)[pink]", type=Types.Text.KMD),
                     )

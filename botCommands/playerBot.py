@@ -237,7 +237,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
         with get_session() as sql_session:
             t = sql_session.query(Player).filter(Player.kookId == user_id)
-            channel = b.client.fetch_public_channel(ChannelManager.command_channel)
+            channel = await b.client.fetch_public_channel(ChannelManager.command_channel)
 
             if t.count() == 1:
                 player: Player = t.first()

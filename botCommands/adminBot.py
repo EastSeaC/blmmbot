@@ -78,29 +78,29 @@ def init(bot: Bot, es_channels: EsChannels):
         '''
         await msg.reply(t)
 
-    @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
-    async def btn_click_event(b: Bot, e: Event):
-        """按钮点击事件"""
-        print(e.target_id)
-        print('*' * 45)
-        print(e.body, "\n")
-
-        kook_id = e.body['user_id']
-        value = e.body['value']
-
-        q = session.query(DBAdmin).filter(DBAdmin.kookId == kook_id)
-        z = session.query(literal(True)).filter(q.exists()).scalar()
-        print(z)
-        if not z:
-            await es_channels.command_channel.send("你不是管理员")
-            return
-
-        if value == AdminButtonValue.Refresh_All_VerifyCode:
-            z = RefreshAllPlayerVerifyCode()
-            if z:
-                await es_channels.command_channel.send('刷新所有人验证码成功')
-        elif value == AdminButtonValue.Show_Last_Match:
-            await ShowLastMatch()
+    # @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
+    # async def btn_click_event(b: Bot, e: Event):
+    #     """按钮点击事件"""
+    #     print(e.target_id)
+    #     print('*' * 45)
+    #     print(e.body, "\n")
+    #
+    #     kook_id = e.body['user_id']
+    #     value = e.body['value']
+    #
+    #     q = session.query(DBAdmin).filter(DBAdmin.kookId == kook_id)
+    #     z = session.query(literal(True)).filter(q.exists()).scalar()
+    #     print(z)
+    #     if not z:
+    #         await es_channels.command_channel.send("你不是管理员")
+    #         return
+    #
+    #     if value == AdminButtonValue.Refresh_All_VerifyCode:
+    #         z = RefreshAllPlayerVerifyCode()
+    #         if z:
+    #             await es_channels.command_channel.send('刷新所有人验证码成功')
+    #     elif value == AdminButtonValue.Show_Last_Match:
+    #         await ShowLastMatch()
 
     @bot.command(name='test_move_old_wait_channel_to_bot_channel', case_sensitive=False, aliases=['test_mowctbc'])
     async def move_from_old_wait_channel_to_x(msg: Message, custom_channel_id: str = ''):

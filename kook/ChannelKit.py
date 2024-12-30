@@ -40,7 +40,7 @@ class ChannelManager:
     def get_emoji_id():
         return "ScZtMJaGPk0b40b4"
 
-    __base_emoji = "(emj){{}}(emj)[{}]"
+    __base_emoji = "(emj){}(emj)[{}]"
 
     emoji_farmer = __base_emoji.format('农民', '2784764957685998/ScZtMJaGPk0b40b4')
     emoji_joker = __base_emoji.format('小丑', '2784764957685998/3xeNeLlxjz0b40b4')

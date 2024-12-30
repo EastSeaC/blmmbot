@@ -4,7 +4,7 @@ from khl.card import CardMessage, Card, Module, Struct, Element, Types
 from lib.LogHelper import LogHelper, get_time_str
 from config import get_rank_name
 from init_db import get_session
-from kook.ChannelKit import EsChannels, ChannelManager
+from kook.ChannelKit import EsChannels, ChannelManager, kim, get_troop_type_image
 from lib.match_state import PlayerBasicInfo, DivideData, MatchState
 from tables import *
 from tables.PlayerChangeName import DB_PlayerChangeNames
@@ -275,7 +275,6 @@ def init(bot: Bot, es_channels: EsChannels):
     async def show_score(msg: Message, *args):
         # 处理玩家随便输入的时候， 在函数原型中加入 , *args
         sql_session = get_session()
-        sql_session.commit()
         t = sql_session.query(Player).filter(Player.kookId == msg.author_id)
         if t.count() == 1:
             player: Player = t.first()
@@ -294,18 +293,36 @@ def init(bot: Bot, es_channels: EsChannels):
                     Struct.Paragraph(
                         3,
                         Element.Text(
-                            f"名字:\n{player.kookName}\n第一兵种:\n{get_troop_type_name(player.first_troop)}\n第二兵种:\n{get_troop_type_name(player.second_troop)}",
+                            f"名字:\n{player.kookName}",
                             type=Types.Text.KMD),
                         Element.Text(f"分数:\n{player.rank}", type=Types.Text.KMD),
-                        Element.Text(f"位阶:\n{ChannelManager.emoji_farmer}(font){rank_name}(font)[pink]",
+                        Element.Text(f"位阶:\n(font){rank_name}(font)[pink]",
                                      type=Types.Text.KMD),
                     )
+                ),
+                # ChannelManager.emoji_farmer
+                Module.Divider(),
+                Module.Section(
+                    Element.Text(f'(font){rank_name}(font)[pink]({player.rank})', type=Types.Text.KMD),
+                    Element.Image(src=kim(rank_name), size=Types.Size.LG),
+                    mode=Types.SectionMode.LEFT
+                ),
+                Module.Divider(),
+                Module.Section(
+                    Element.Text(f'第(font)一(font)[pink]兵种', type=Types.Text.KMD),
+                    Element.Image(src=get_troop_type_image(player.first_troop), size=Types.Size.LG),
+                    mode=Types.SectionMode.LEFT
+                ),
+                Module.Section(
+                    Element.Text(f'第(font)2(font)[warning]兵种', type=Types.Text.KMD),
+                    Element.Image(src=get_troop_type_image(player.second_troop), size=Types.Size.LG),
+                    mode=Types.SectionMode.LEFT
                 )
             )
             Kill_Info = f'''**Kill Info**
-    Kills:{player.kill}
-    Deaths:{player.death}
-    Assists:{player.assist}
+    击杀:{player.kill}
+    死亡:{player.death}
+    助攻:{player.assist}
     KDA:{(player.kill + player.assist) / max(player.death, 1)}
     KD: {player.kill / max(player.death, 1)}
     伤害:

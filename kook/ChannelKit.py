@@ -5,6 +5,7 @@ from lib.LogHelper import LogHelper
 
 class ChannelManager:
     # 服务器
+    image_knight = None
     sever = '2784764957685998'
     # 公告区
     announcement = '7368706706716074'
@@ -45,9 +46,60 @@ class ChannelManager:
     emoji_farmer = __base_emoji.format('农民', '2784764957685998/ScZtMJaGPk0b40b4')
     emoji_joker = __base_emoji.format('小丑', '2784764957685998/3xeNeLlxjz0b40b4')
 
+    image_joker = 'https://img.kookapp.cn/assets/2024-12/30/amsrdVMzVI0b40b4.png'
+    image_farmer = 'https://img.kookapp.cn/assets/2024-12/30/jxTLdruutF0b40b4.png'
+    image_big_knight = 'https://img.kookapp.cn/assets/2024-12/30/4Nnslswg3g0b40b4.png'
+    image_big_knight_2 = 'https://img.kookapp.cn/assets/2024-12/30/U0bx0f56nw01s01s.png'
+    image_follower = 'https://img.kookapp.cn/assets/2024-12/30/aXfKXOO9Q90b40b4.png'
+    image_guard = 'https://img.kookapp.cn/assets/2024-12/30/V5Nx6soV1J0b40b4.png'
+    image_lord = 'https://img.kookapp.cn/assets/2024-12/30/ZUAQnICKXb0e80e8.png'
+    image_duke = 'https://img.kookapp.cn/assets/2024-12/30/XlFk0gAFp201s01s.png'
+    image_prince = 'https://img.kookapp.cn/assets/2024-12/30/um0wBP2AxU01s01s.png'
+    image_king = 'https://img.kookapp.cn/assets/2024-12/30/nD4S34VrVb01s01s.png'
+    image_empire = 'https://img.kookapp.cn/assets/2024-12/30/ryDINs0i7k01s01s.png'
+
+    image_type_archer = 'https://img.kookapp.cn/assets/2024-12/30/jCU7Ajes1Q01700u.png'
+    image_type_knight = 'https://img.kookapp.cn/assets/2024-12/30/3N44Nt0Cdl01900u.png'
+    image_type_infantry = 'https://img.kookapp.cn/assets/2024-12/30/oqsiqW1Pfj0m80sv.png'
+
     @staticmethod
     def is_common_user(kook_id: str):
         return kook_id not in ChannelManager.manager_user_id
+
+
+def get_troop_type_image(a: int):
+    if a is None or a < 2:
+        return ChannelManager.image_type_infantry
+    elif a == 2:
+        return ChannelManager.image_type_knight
+    elif a == 3:
+        return ChannelManager.image_type_archer
+
+
+def kim(rank_name: str):
+    if rank_name == '小丑' or rank_name == 'joker':
+        return ChannelManager.image_joker
+    elif rank_name == '农民' or rank_name == 'farmer':
+        return ChannelManager.image_farmer
+
+    elif rank_name == '侍从':
+        return ChannelManager.image_follower
+    elif rank_name == '守卫':
+        return ChannelManager.image_guard
+    elif rank_name == '骑士':
+        return ChannelManager.image_knight
+    elif rank_name == '大骑士' or rank_name == 'bigknight':
+        return ChannelManager.image_big_knight_2
+    elif rank_name == '领主':
+        return ChannelManager.image_lord
+    elif rank_name == '公爵':
+        return ChannelManager.image_duke
+    elif rank_name == '王子':
+        return ChannelManager.image_prince
+    elif rank_name == '国王':
+        return ChannelManager.image_king
+    elif rank_name == '皇帝':
+        return ChannelManager.image_empire
 
 
 class EsChannels:

@@ -37,6 +37,15 @@ class ChannelManager:
             return "3971225977704461"
 
     @staticmethod
+    def get_emoji_id():
+        return "ScZtMJaGPk0b40b4"
+
+    __base_emoji = "(emj){{}}(emj)[{}]"
+
+    emoji_farmer = __base_emoji.format('农民', 'ScZtMJaGPk0b40b4')
+    emoji_joker = __base_emoji.format('小丑', '3xeNeLlxjz0b40b4')
+
+    @staticmethod
     def is_common_user(kook_id: str):
         return kook_id not in ChannelManager.manager_user_id
 

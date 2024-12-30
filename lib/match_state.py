@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 from enum import Enum
 from random import randint
@@ -110,7 +111,7 @@ class MatchState:
         pass
 
     @staticmethod
-    def divide_player_test(self, a: list):
+    def divide_player_test(a: list):
         for i in a:
             k: PlayerBasicInfo = i
             print(k.score, k.user_id)
@@ -141,13 +142,14 @@ class MatchState:
             # print(i.score, i.user_id, i.user_name)
             k: PlayerBasicInfo = i
             # print(k.score, k.user_id, k.user_name)
-        print('a*' * 20)
+        # print('*' * 20)
         x, y = min_diff_partition(a)
 
         attacker_names = []
         attacker_score_temp = 0
         defender_names = []
         defender_score_temp = 0
+
         m = []
         for i in x:
             k: PlayerBasicInfo = i
@@ -169,6 +171,9 @@ class MatchState:
             print(k.score, k.user_id)
 
             div.add_defender_info(k.user_name, k.score, k.player_id)  # 添加 积分块
+
+        # while div.not_balance():
+        #     div.balance()
 
         div.attacker_list = m
         div.attacker_names = attacker_names
@@ -196,14 +201,144 @@ class PlayerBasicInfo:
         self.kill = player_dict.get('kill', 0)
         self.death = player_dict.get('death', 0)
         self.assist = player_dict.get('assist', 0)  # 辅助
+
+        self.first_troop = player_dict.get('first_troop', 0)
+        self.second_troop = player_dict.get('second_troop', 0)
         pass
 
     def __lt__(self, other):
         return self.score < other.score
 
+    @property
+    def is_knight_only(self):
+        return (self.first_troop == 2 and self.second_troop < 2) or (
+                self.first_troop < 2 and self.second_troop == 2)
+
+    @property
+    def is_archer_only(self):
+        return (self.first_troop == 3 and self.second_troop < 2) or (
+                self.first_troop < 2 and self.second_troop == 3)
+
+    @property
+    def is_both_knight_and_archer(self):
+        return self.first_troop + self.second_troop == 5
+
+    @property
+    def is_infantry(self):
+        return self.first_troop < 2 and self.second_troop < 2
+
+    @property
+    def is_contain_knight(self):
+        return self.first_troop == 2 or self.second_troop == 2
+
+    @property
+    def is_contain_archer(self):
+        return self.first_troop == 3 or self.second_troop == 3
+
+    @property
+    def knight_count(self):
+        return 1 if self.is_contain_knight else 0
+
     @staticmethod
     def convert(self, z):
         pass
+
+    def count_knight_archer(self):
+        # 返回一个元组，分别是骑兵数量和射手数量
+        knight_count = 0
+        archer_count = 0
+
+        if self.first_troop == 2 or self.second_troop == 2:
+            knight_count += 1
+        if self.first_troop == 3 or self.second_troop == 3:
+            archer_count += 1
+
+        return knight_count, archer_count
+
+
+# 分割列表的函数
+def split_players(players: list):
+    # 按照骑兵和射手类型分类
+    knights = []
+    archers = []
+    others = []
+
+    # 统计玩家的骑兵、射手数量，并按类型分组
+    for player in players:
+        knight_count, archer_count = player.count_knight_archer()
+        if knight_count > 0:
+            knights.append(player)
+        if archer_count > 0:
+            archers.append(player)
+        if knight_count == 0 and archer_count == 0:
+            others.append(player)
+
+    # 确保分配时，骑兵和射手的数量平衡
+    team1 = []
+    team2 = []
+    score_team1 = 0
+    score_team2 = 0
+    knight_team1 = 0
+    knight_team2 = 0
+    archer_team1 = 0
+    archer_team2 = 0
+
+    # 贪心分配骑兵
+    for player in knights:
+        if knight_team1 <= knight_team2:
+            team1.append(player)
+            knight_team1 += 1
+            score_team1 += player.score
+        else:
+            team2.append(player)
+            knight_team2 += 1
+            score_team2 += player.score
+
+    # 贪心分配射手
+    for player in archers:
+        if archer_team1 <= archer_team2:
+            team1.append(player)
+            archer_team1 += 1
+            score_team1 += player.score
+        else:
+            team2.append(player)
+            archer_team2 += 1
+            score_team2 += player.score
+
+    # 分配其他玩家
+    for player in others:
+        if len(team1) < 6:
+            team1.append(player)
+            score_team1 += player.score
+        elif len(team2) < 6:
+            team2.append(player)
+            score_team2 += player.score
+
+    # 如果两队人数不等，尝试平衡分数
+    while len(team1) < 6 or len(team2) < 6:
+        # 剩余的没有分配的玩家
+        remaining_players = [p for p in players if p not in team1 and p not in team2]
+
+        # 确保剩余玩家没有重复
+        remaining_players_set = set(remaining_players)
+
+        # 排序剩余玩家，优先考虑平衡两队的分数差
+        remaining_players_sorted = sorted(remaining_players_set, key=lambda p: abs(score_team1 - score_team2), reverse=True)
+
+        for player in remaining_players_sorted:
+            if len(team1) < 6:
+                team1.append(player)
+                score_team1 += player.score
+            elif len(team2) < 6:
+                team2.append(player)
+                score_team2 += player.score
+
+    return team1, team2, score_team1, score_team2
+
+
+
+def contain_both_type(a: list):
+    return any(p.is_both_knight_and_archer for p in a)
 
 
 class DivideData:
@@ -217,9 +352,17 @@ class DivideData:
 
         self.attacker_info_block = []
         self.defender_info_block = []
+        self.first_team = []
+        self.second_team = []
 
     def __str__(self):
         return f"attacker_names:{self.attacker_names} defender_names:{self.defender_names}, list:{self.attacker_list},{self.defender_list}, attacker_scores:{self.attacker_scores}, defend_scores:{self.defend_scores}, diff {self.attacker_scores - self.defend_scores}"
+
+    def add_first_team(self, s: PlayerBasicInfo):
+        self.first_team.append(s)
+
+    def add_second_team(self, s: PlayerBasicInfo):
+        self.second_team.append(s)
 
     def add_attacker_info(self, attacker_name: str, score: int, player_id: str):
         self.attacker_info_block.append([attacker_name, score, player_id])
@@ -244,6 +387,60 @@ class DivideData:
 
     def get_defender_scores(self):
         return '当前分数\n' + '\n'.join([str(defender_info[1]) for defender_info in self.defender_info_block])
+
+    def not_balance(self):
+        first_sum_knight = sum(p.knight_count for p in self.first_team)
+        second_sum_knight = sum(p.knight_count for p in self.second_team)
+
+        first_sum_archer = sum(p.archer_count for p in self.first_team)
+        second_sum_archer = sum(p.archer_count for p in self.second_team)
+
+        if abs(first_sum_archer - second_sum_archer) > 1 or abs(first_sum_knight - second_sum_knight) > 1:
+            return True
+        return False
+        pass
+
+    def exchange_player(self, a: list):
+        for index, p in a:
+            temp_one = self.first_team[index]
+            self.first_team[index] = self.second_team[index]
+            self.second_team[index] = temp_one
+
+            LogHelper.log('*' * 10 + f'exchange {index}' + '*' * 10)
+
+    def balance(self):
+        first_sum_knight = sum(p.knight_count for p in self.first_team)
+        second_sum_knight = sum(p.knight_count for p in self.second_team)
+
+        first_sum_archer = sum(p.archer_count for p in self.first_team)
+        second_sum_archer = sum(p.archer_count for p in self.second_team)
+
+        if abs(first_sum_archer - second_sum_archer) > 1 and abs(first_sum_knight - second_sum_knight) > 1:
+            if first_sum_archer > second_sum_archer:
+                matching_elements = [(index, p) for index, p in enumerate(self.first_team) if
+                                     p.is_both_knight_and_archer]
+                count_of_matching_elements = len(matching_elements)
+                if count_of_matching_elements == 0:  # 说明没有 骑兵|射手， 选择单一兵种
+                    matching_elements = [(index, p) for index, p in enumerate(self.first_team) if
+                                         p.is_contain_archer]
+                    count_of_matching_elements = len(matching_elements)
+                    picked_matching_elements = random.sample(matching_elements, k=count_of_matching_elements // 2)
+                    self.exchange_player(picked_matching_elements)
+                    # 交换部分骑兵
+                    matching_elements = [(index, p) for index, p in enumerate(self.first_team) if
+                                         p.is_contain_knight]
+                    count_of_matching_elements = len(matching_elements)
+                    picked_matching_elements = random.sample(matching_elements, k=count_of_matching_elements // 2)
+                    pass
+                else:
+                    # 采样出不重复的 一小半
+                    picked_matching_elements = random.sample(matching_elements, k=count_of_matching_elements // 2)
+                    self.exchange_player(picked_matching_elements)
+            else:
+                matching_elements = [(index, p) for index, p in enumerate(self.second_team) if
+                                     p.is_both_knight_and_archer]
+
+        pass
 
 
 def sorted_aux(player):

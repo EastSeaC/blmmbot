@@ -100,6 +100,10 @@ def init(bot: Bot, es_channels: EsChannels):
                 player_info.score = player.rank
                 player_info.user_id = t.id
                 player_info.kook_name = t.username
+
+                player_info.first_troop = player.first_troop
+                player_info.second_troop = player.second_troop
+
                 player_list.append(player_info)
 
         except Exception as e:
@@ -282,6 +286,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 player.rank = db_player.rank
 
             cm = CardMessage()
+            rank_name = get_rank_name(player.rank)
             c1 = Card(
                 Module.Header("基本信息"),
                 Module.Context(f'playerId:{player.playerId}'),
@@ -292,7 +297,8 @@ def init(bot: Bot, es_channels: EsChannels):
                             f"名字:\n{player.kookName}\n第一兵种:\n{get_troop_type_name(player.first_troop)}\n第二兵种:\n{get_troop_type_name(player.second_troop)}",
                             type=Types.Text.KMD),
                         Element.Text(f"分数:\n{player.rank}", type=Types.Text.KMD),
-                        Element.Text(f"位阶:\n(font){get_rank_name(player.rank)}(font)[pink]", type=Types.Text.KMD),
+                        Element.Text(f"位阶:\n{ChannelManager.emoji_farmer}(font){rank_name}(font)[pink]",
+                                     type=Types.Text.KMD),
                     )
                 )
             )

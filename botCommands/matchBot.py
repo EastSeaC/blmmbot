@@ -123,6 +123,10 @@ def init(bot: Bot, es_channels: EsChannels):
                 player_info.score = player.rank
                 player_info.user_id = t.id
                 player_info.kook_name = t.username
+
+                player_info.first_troop = player.first_troop
+                player_info.second_troop = player.second_troop
+
                 player_list.append(player_info)
         except Exception as e:
             LogHelper.log(f"没有注册 {t.id} {t.username}")

@@ -42,8 +42,8 @@ class ChannelManager:
 
     __base_emoji = "(emj){{}}(emj)[{}]"
 
-    emoji_farmer = __base_emoji.format('农民', 'ScZtMJaGPk0b40b4')
-    emoji_joker = __base_emoji.format('小丑', '3xeNeLlxjz0b40b4')
+    emoji_farmer = __base_emoji.format('农民', '2784764957685998/ScZtMJaGPk0b40b4')
+    emoji_joker = __base_emoji.format('小丑', '2784764957685998/3xeNeLlxjz0b40b4')
 
     @staticmethod
     def is_common_user(kook_id: str):

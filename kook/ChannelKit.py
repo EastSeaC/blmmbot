@@ -60,7 +60,7 @@ class ChannelManager:
 
     image_type_archer = 'https://img.kookapp.cn/assets/2024-12/30/jCU7Ajes1Q01700u.png'
     image_type_knight = 'https://img.kookapp.cn/assets/2024-12/30/3N44Nt0Cdl01900u.png'
-    image_type_infantry = 'https://img.kookapp.cn/assets/2024-12/30/oqsiqW1Pfj0m80sv.png'
+    image_type_infantry = 'https://img.kookapp.cn/assets/2024-12/31/lWP0puaPuH074074.png'
 
     @staticmethod
     def is_common_user(kook_id: str):

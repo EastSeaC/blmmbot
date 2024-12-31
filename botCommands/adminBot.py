@@ -60,7 +60,7 @@ def init(bot: Bot, es_channels: EsChannels):
         cm.append(c8)
         await es_channels.command_channel.send(cm)
 
-    @bot.command(name='es2', case_sensitive=False)
+    @bot.command(name='admin_help', case_sensitive=False, aliases=['adh'])
     async def es2(msg: Message):
         t = '''    /reset_state_machine
     
@@ -76,6 +76,7 @@ def init(bot: Bot, es_channels: EsChannels):
         4.ku kook的用户名        例如  /ban ku 2123
     
     /unban [PlayerId]
+    /reset_player_score [KookId] 重置玩家分数
         '''
         await msg.reply(t)
 

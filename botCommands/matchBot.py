@@ -180,7 +180,7 @@ def init(bot: Bot, es_channels: EsChannels):
             # LogHelper.log(f" {ret['msg_id']}")  # 方法1 发送消息的id
             pass
 
-    @bot.task.add_interval(seconds=1)
+    # @bot.task.add_interval(seconds=1)
     async def task_for_match():
         # 定时器
         global stateMachine
@@ -192,9 +192,10 @@ def init(bot: Bot, es_channels: EsChannels):
             # await bot.client.move_user(
             #     target_id=ChannelManager.match_defend_channel, user_ids=stateMachine.defend_list)
         elif condition == MatchCondition.WaitingJoin:
-            channel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
-            k = await channel.fetch_user_list()
-            number = len(k)
+
+            # channel = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
+            # k = await channel.fetch_user_list()
+            # number = len(k)
             # stateMachine.player_number = number
             # for i in k:
             #     t: GuildUser = i

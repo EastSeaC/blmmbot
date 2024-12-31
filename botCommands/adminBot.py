@@ -1,7 +1,8 @@
 from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
-from sqlalchemy import literal, desc, text
+from sqlalchemy import literal, desc, text, select
 
+from config import INITIAL_SCORE
 from lib.LogHelper import LogHelper
 from blmm_bot import EsChannels
 from init_db import get_session
@@ -78,6 +79,32 @@ def init(bot: Bot, es_channels: EsChannels):
         '''
         await msg.reply(t)
 
+    @bot.command(name='reset_player_score', case_sensitive=False, aliases=['rps'])
+    async def reset_player_score(msg: Message, user_id: str):
+        with get_session() as sql_session:
+            result = sql_session.execute(select(Player).where(Player.kookId == user_id)).first()
+            if result is None or len(result) == 0:
+                await msg.reply(f'该账号{user_id}未注册')
+                return ""
+
+            player: Player = result[0]
+            db_player_data = sql_session.query(DB_PlayerData).filter(DB_PlayerData.playerId == player.playerId).first()
+            print(db_player_data)
+            if db_player_data.count() >= 1:
+                db_player: DB_PlayerData = db_player_data.first()
+                db_player.rank = INITIAL_SCORE
+                player.rank = INITIAL_SCORE
+
+                try:
+                    sql_session.merge(db_player)
+                    sql_session.merge(player)
+                    sql_session.commit()
+                    await msg.reply(f'重置{user_id} {player.kookName}分数为{INITIAL_SCORE}')
+                except Exception as e:
+                    sql_session.rollback()
+                    await msg.reply(f'重置 {player.kookName}分数失败')
+            else:
+                print('wat')
     # @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
     # async def btn_click_event(b: Bot, e: Event):
     #     """按钮点击事件"""

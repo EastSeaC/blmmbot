@@ -82,6 +82,9 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='reset_player_score', case_sensitive=False, aliases=['rps'])
     async def reset_player_score(msg: Message, user_id: str):
+        if msg.author_id not in ChannelManager.manager_user_id:
+            await msg.reply("禁止使用管理员指令")
+            return
         with get_session() as sql_session:
             result = sql_session.execute(select(Player).where(Player.kookId == user_id)).first()
             if result is None or len(result) == 0:

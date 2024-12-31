@@ -88,7 +88,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 return ""
 
             player: Player = result[0]
-            db_player_data = sql_session.query(DB_PlayerData).filter(DB_PlayerData.playerId == player.playerId).first()
+            db_player_data = sql_session.query(DB_PlayerData).filter(DB_PlayerData.playerId == player.playerId)
             print(db_player_data)
             if db_player_data.count() >= 1:
                 db_player: DB_PlayerData = db_player_data.first()

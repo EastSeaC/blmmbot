@@ -14,6 +14,7 @@ from config import INITIAL_SCORE, WIN_REWARD_SCORE, LOSE_PENALTY_SCORE
 from convert.PlayerMatchData import TPlayerMatchData
 from entity.PlayerRegInfo import PlayerInfo
 from init_db import get_session
+from lib.ScoreMaster import calculate_score
 from lib.match_state import MatchConditionEx
 from tables import *
 from tables.PlayerNames import DB_PlayerNames
@@ -210,6 +211,7 @@ async def update_match_data2(request):
     t.server_name = data["ServerName"]
     t.tag = data["Tag"]
     playerData = data["_players"]
+    t.player_data = playerData
     t.raw = data
     ###### 提前保存，防止数据异常
 
@@ -255,19 +257,19 @@ async def update_match_data2(request):
     #     找到之前没有数据的玩家
     missing_data = [value for key, value in playerData.items() if key not in result_player_ids]
 
+    match_total_sum = t.get_total_data
     for i in result:
         oldData: DB_PlayerData = i
         k = TPlayerMatchData(playerData[oldData.playerId])
         ## 计分系统
-        print(f"{k.player_id}: {k.win_rounds}")
+        # print(f"{k.player_id}: {k.win_rounds}")
         if not k.is_spectator_by_score():
             k.set_old_score(oldData.rank)
             if k.win_rounds >= 3 or k.win >= 3:
-                oldData.rank += WIN_REWARD_SCORE
                 k.set_is_lose(False)
             else:
-                oldData.rank += LOSE_PENALTY_SCORE
                 k.set_is_lose(True)
+            oldData.rank += calculate_score(match_total_sum, k)
             k.set_new_score(oldData.rank)
             show_data.append(k)
         else:
@@ -280,40 +282,23 @@ async def update_match_data2(request):
     for i in missing_data:
         # print('test123')
         k = TPlayerMatchData(i)
+        # print(k.__dict__)
         newData = DB_PlayerData()
+        newData.clear_data()
+        newData.playerId = k.player_id
+        newData.playerName = k.player_name
         # 积分
-        newData.rank = INITIAL_SCORE
         k.set_old_score(newData.rank)
         if not k.is_spectator_by_score():
             if k.win_rounds >= 3:
-                newData.rank += WIN_REWARD_SCORE
                 k.set_is_lose(False)
             else:
-                newData.rank += LOSE_PENALTY_SCORE
                 k.set_is_lose(True)
+            newData.rank += calculate_score(match_total_sum, k)
             k.set_new_score(newData.rank)
             show_data.append(k)
         # 积分
-        newData.playerId = k.player_id
-        newData.playerName = k.player_name
-        newData.match = 1
-
-        newData.infantry = k.Infantry
-        newData.cavalry = k.Cavalry
-        newData.archer = k.Archer
-
-        newData.damage = k.damage
-        newData.team_damage = k.team_damage
-
-        newData.win_rounds = k.win_rounds
-        newData.fail_rounds = k.lose_rounds
-        newData.draw_rounds = k.draw_rounds
-
-        newData.horse_damage = k.horse_damage
-
-        newData.kill = k.kill
-        newData.death = k.death
-        newData.assist = k.assist
+        newData.add_match_data(k)
 
         session.add(newData)
     pass

@@ -1,5 +1,7 @@
 from sqlalchemy import *
 
+from convert.PlayerMatchData import TPlayerMatchData
+from lib.BannerlordTeam import BannerlordTeam
 from .base import Base
 
 
@@ -24,7 +26,7 @@ class DB_Matchs(Base):
     tag = Column(VARCHAR(50), nullable=True, default='Test')
 
     raw = Column(JSON, nullable=False, default='{}')
-
+    player_data = Column(JSON, nullable=False, default='')
     server_name = Column(VARCHAR(30), nullable=True, default='btl1')
 
     def get_data(self):
@@ -40,3 +42,62 @@ class DB_Matchs(Base):
             'mvp_player': self.mvp_player,
             'tag': self.tag,
         }
+
+    def get_player_team(self, player_id: str):
+        if player_id in self.left_players:
+            return BannerlordTeam.FirstTeam
+        elif player_id in self.right_players:
+            return BannerlordTeam.SecondTeam
+        else:
+            return BannerlordTeam.Invalid
+        pass
+
+    # def get_enemy_team_spawn_times(self, player_id: str):
+    #     PlayerTeam = self.get_player_team(player_id)
+    #     if PlayerTeam == BannerlordTeam.FirstTeam:
+    #         return self.right_players_spawn_times
+    #     elif PlayerTeam == BannerlordTeam.SecondTeam:
+    #         return self.left_players_spawn_times
+    #     else:
+    #         raise ValueError
+    #     pass
+
+    @property
+    def get_total_data(self):
+        match_sum_data = MatchSumData()
+        # print('123X-tesrt')
+        # print(self.player_data.values())
+        all_player_data = [TPlayerMatchData(i) for i in self.player_data.values()]
+
+        match_sum_data.first_team_total_spawn_times = sum(
+            [i.spawn_times for i in all_player_data if i.player_id in self.left_players])
+        print(match_sum_data.first_team_total_spawn_times)
+        match_sum_data.first_team_total_death_times = sum(
+            [i.death for i in all_player_data if i.player_id in self.left_players]
+        )
+        match_sum_data.first_team_total_assist_times = sum(
+            [i.assist for i in all_player_data if i.player_id in self.left_players]
+        )
+
+        match_sum_data.second_team_total_spawn_times = sum(
+            [i.spawn_times for i in all_player_data if i.player_id in self.right_players])
+        match_sum_data.second_team_total_death_times = sum(
+            [i.death for i in all_player_data if i.player_id in self.right_players]
+        )
+        match_sum_data.second_team_total_assist_times = sum(
+            [i.assist for i in all_player_data if i.player_id in self.right_players]
+        )
+
+        return match_sum_data
+
+
+class MatchSumData:
+    def __init__(self):
+        self.first_team_total_spawn_times = 0
+        self.second_team_total_spawn_times = 0
+
+        self.first_team_total_death_times = 0
+        self.second_team_total_death_times = 0
+
+        self.first_team_total_assist_times = 0
+        self.second_team_total_assist_times = 0

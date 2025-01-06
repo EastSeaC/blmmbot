@@ -34,3 +34,5 @@ class DB_ScoreLimit(Base):
     min_cordbreak_score = Column(INT, nullable=False, default=0)
 
     failed_minus = Column(INT, nullable=False, default=40)
+
+    per_round_damage = Column(INT, nullable=False, default=1266)

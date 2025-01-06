@@ -55,8 +55,6 @@ class DB_PlayerData(Base):
     horse_tk = Column(Integer, nullable=False, default=0)
     horse_tk_val = Column(Integer, nullable=False, default=0)
 
-
-
     def add_match_data(self, match_data: TPlayerMatchData):
         self.win += match_data.win
         self.lose += match_data.lose
@@ -82,8 +80,39 @@ class DB_PlayerData(Base):
         pass
 
     def refresh_data(self):
-        self.rank = (self.rank - INITIAL_SCORE)/2
-        self.rank_33 = (self.rank_33 - INITIAL_SCORE)/2
+        self.rank = (self.rank - INITIAL_SCORE) / 2
+        self.rank_33 = (self.rank_33 - INITIAL_SCORE) / 2
+        self.preference = 0
+
+        self.kill = 0
+        self.death = 0
+        self.assist = 0
+        # match 为比赛次数
+        self.match = 0
+        self.win = 0
+        self.lose = 0
+        self.draw = 0
+        self.even = 0
+
+        self.infantry = 0
+        self.cavalry = 0
+        self.archer = 0
+
+        self.damage = 0
+        self.team_damage = 0
+
+        self.win_rounds = 0
+        self.fail_rounds = 0
+        self.draw_rounds = 0
+
+        self.horse_damage = 0
+        self.horse_kill = 0
+        self.horse_tk = 0
+        self.horse_tk_val = 0
+
+    def clear_data(self):
+        self.rank = INITIAL_SCORE
+        self.rank_33 = INITIAL_SCORE
         self.preference = 0
 
         self.kill = 0

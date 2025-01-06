@@ -1,6 +1,8 @@
 from config import LOSE_PENALTY_SCORE, WIN_REWARD_SCORE
 from wcwidth import wcwidth
 
+from lib.BannerlordTeam import BannerlordTeam
+
 
 class TPlayerMatchData:
     def __init__(self, data: dict):
@@ -30,7 +32,8 @@ class TPlayerMatchData:
 
         self.horse_damage = data.get("horse_damage", 0)
         self.horse_tk = data.get("TKHorse1", 0)
-        self.spawn_times = data.get('spawn_times', 0)
+        self.spawn_times = data.get('spawn_times', 0)  # 复活次数
+        self.team = 0
 
         self.__old_score = 0
         self.new_score = 0
@@ -47,6 +50,9 @@ class TPlayerMatchData:
 
     def set_is_lose(self, lose: bool):
         self.is_lose = lose
+
+    def set_team(self, team_a: BannerlordTeam):
+        self.team = team_a
 
     def truncate_name(self):
         s = self.player_name

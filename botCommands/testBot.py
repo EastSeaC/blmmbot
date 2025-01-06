@@ -1,4 +1,5 @@
 import datetime
+import json
 import random
 import uuid
 
@@ -8,11 +9,12 @@ from sqlalchemy import desc, select
 
 from lib.LogHelper import get_time_str
 from entity.WillMatchType import WillMatchType
-from kook.ChannelKit import EsChannels
+from kook.ChannelKit import EsChannels, OldGuildChannel
 from init_db import get_session
 from kook.ChannelKit import ChannelManager
+from lib.SelectMatchData import SelectPlayerMatchData
 from lib.ServerGameConfig import get_random_faction_2
-from lib.match_state import PlayerBasicInfo, MatchState, DivideData
+from lib.match_state import PlayerBasicInfo, MatchState, DivideData, MatchConditionEx
 from tables import *
 from tables.DB_WillMatch import DB_WillMatchs
 
@@ -104,6 +106,84 @@ def init(bot: Bot, es_channels: EsChannels):
         # print(r.text)
         # print(UrlHelper.delete_message)
         # z = await es_channels.command_channel.list_messages()
+
+    @bot.command(name='testSelect', case_sensitive=False, aliases=['test-sm'])
+    async def test_select(msg: Message, *args):
+
+        user_list = ['482714005', '1555061634', '1932416737', '3006824740', '3484257139', '180475151', '3394658957',
+                     '2806603494', '1384765669', '1510300409', '828555933', '3784439652']
+        first_team_o = '482714005'
+        second_team_o = '1555061634'
+        remove_team_manager_user_list = [i for i in user_list if i != first_team_o or i != second_team_o]
+
+        with get_session() as z_session:
+            z = z_session.execute(select(Player).where(Player.kookId.in_(user_list))).all()
+            dict_for_kook_id = {}
+            for i in z:
+                t: Player = i[0]
+                print(f"ZX{t.kookName},{t.rank} ")
+                dict_for_kook_id[t.kookId] = t
+
+            player_list = []
+            print(dict_for_kook_id)
+            for id, user in enumerate(user_list):
+                player: Player = dict_for_kook_id[user]
+                player_info = PlayerBasicInfo({'username': player.kookName})
+                player_info.score = player.rank
+                player_info.user_id = player.kookId
+                player_info.username = player.kookName
+                player_info.player_id = player.playerId
+                # print(player_info.username)
+                player_list.append(player_info)
+
+            if len(player_list) < 12:
+                await msg.reply(f'注册人数不足12，请大伙先注册，/help可以提供支持')
+            if len(player_list) % 2 != 0:
+                await msg.reply(f'人数非奇数！')
+                return
+            divide_data: DivideData = MatchState.divide_player_ex(player_list)
+
+            will_match_data = DB_WillMatchs()
+            will_match_data.time_match = datetime.datetime.now()
+            will_match_data.match_id = str(uuid.uuid1())
+            will_match_data.set_first_team_player_ids(divide_data.get_first_team_player_ids())
+            # will_match_data.set_second_team_player_ids(divide_data.get_second_team_player_ids())
+
+            first_faction, second_faction = get_random_faction_2()
+            will_match_data.first_team_culture = first_faction
+            will_match_data.second_team_culture = second_faction
+
+            will_match_data.match_type = WillMatchType.Match88
+            will_match_data.is_cancel = False
+            will_match_data.is_finished = False
+            will_match_data.server_name = 'CN_BTL_NINGBO_1'
+
+            card8 = Card(Module.Header(text='服务器: [font]CN_BTL_NINGBO_1[font](success)'), Module.Divider(), )
+            for i in z:
+                t: Player = i[0]
+                print(f"{t.kookName},{t.rank} ")
+                if t.kookId == first_team_o or t.kookId == second_team_o:
+                    continue
+                card8.append(Module.Section(
+                    Element.Text(f"{t.kookName}({t.rank}) ", type=Types.Text.KMD),
+                    Element.Button(
+                        "选取",
+                        value=json.dumps({'type': 'match_select_players', 'kookId': t.kookId, 'match_id': '9'}),
+                        click=Types.Click.RETURN_VAL,
+                        theme=Types.Theme.INFO,
+                    ),
+                ))
+                card8.append(Module.Divider())
+            z_select = SelectPlayerMatchData()
+            z_select.need_to_select = remove_team_manager_user_list
+            MatchConditionEx.blmm_1 = z_select
+
+            CommandChannel = await bot.client.fetch_public_channel(OldGuildChannel.command_channel)
+            await CommandChannel.send(f'(met){first_team_o}(met) 第1队伍队长')
+            await CommandChannel.send(f'(met){second_team_o}(met) 第2队伍队长')
+
+            await msg.reply(CardMessage(card8))
+        pass
 
     @bot.command(name='show_match', case_sensitive=False, aliases=['sm'])
     async def show_match(msg: Message):

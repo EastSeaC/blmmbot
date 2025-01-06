@@ -13,6 +13,10 @@ class MatchConditionEx:
     data2 = None
     round_count = 0
 
+    blmm_1 = None
+    blmm_2 = None
+    blmm_3 = None
+
 
 class MatchCondition(Enum):
     NoPlayer = 0
@@ -158,7 +162,7 @@ class MatchState:
             attacker_names.append(k.user_name)
 
             print(k.score, k.user_id)
-
+            div.add_first_team(k)
             div.add_attacker_info(k.user_name, k.score, k.player_id)  # 添加 积分块
 
         print('*' * 20)
@@ -170,6 +174,7 @@ class MatchState:
             defender_names.append(k.user_name)
             print(k.score, k.user_id)
 
+            div.add_second_team(k)
             div.add_defender_info(k.user_name, k.score, k.player_id)  # 添加 积分块
 
         # while div.not_balance():
@@ -238,6 +243,10 @@ class PlayerBasicInfo:
     @property
     def knight_count(self):
         return 1 if self.is_contain_knight else 0
+
+    @property
+    def archer_count(self):
+        return 1 if self.is_contain_archer else 0
 
     @staticmethod
     def convert(self, z):
@@ -323,7 +332,8 @@ def split_players(players: list):
         remaining_players_set = set(remaining_players)
 
         # 排序剩余玩家，优先考虑平衡两队的分数差
-        remaining_players_sorted = sorted(remaining_players_set, key=lambda p: abs(score_team1 - score_team2), reverse=True)
+        remaining_players_sorted = sorted(remaining_players_set, key=lambda p: abs(score_team1 - score_team2),
+                                          reverse=True)
 
         for player in remaining_players_sorted:
             if len(team1) < 6:
@@ -334,7 +344,6 @@ def split_players(players: list):
                 score_team2 += player.score
 
     return team1, team2, score_team1, score_team2
-
 
 
 def contain_both_type(a: list):

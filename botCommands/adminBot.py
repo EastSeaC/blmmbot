@@ -80,7 +80,12 @@ def init(bot: Bot, es_channels: EsChannels):
         '''
         await msg.reply(t)
 
-    @bot.command(name='reset_player_score', case_sensitive=False, aliases=['rps'])
+    @bot.command(name='reset_server', case_sensitive=False, aliases=['reset'])
+    async def reset_game_server(msg: Message, force: str):
+
+        pass
+
+    @bot.command(name='reset_player_score', case_sensitive=False, aliases=['rps']) # 重置玩家分数
     async def reset_player_score(msg: Message, user_id: str):
         if msg.author_id not in ChannelManager.manager_user_id:
             await msg.reply("禁止使用管理员指令")
@@ -109,6 +114,7 @@ def init(bot: Bot, es_channels: EsChannels):
                     await msg.reply(f'重置 {player.kookName}分数失败')
             else:
                 print('wat')
+
     # @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
     # async def btn_click_event(b: Bot, e: Event):
     #     """按钮点击事件"""

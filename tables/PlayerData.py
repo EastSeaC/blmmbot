@@ -4,6 +4,7 @@
 
 from sqlalchemy import *
 
+from config import INITIAL_SCORE
 from convert.PlayerMatchData import TPlayerMatchData
 from .base import Base
 
@@ -81,8 +82,8 @@ class DB_PlayerData(Base):
         pass
 
     def refresh_data(self):
-        self.rank = 1000
-        self.rank_33 = 1000
+        self.rank = (self.rank - INITIAL_SCORE)/2
+        self.rank_33 = (self.rank_33 - INITIAL_SCORE)/2
         self.preference = 0
 
         self.kill = 0

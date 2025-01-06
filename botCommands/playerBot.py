@@ -1,3 +1,5 @@
+import json
+
 from khl import Bot, Message, GuildUser, EventTypes, Event
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
 
@@ -5,7 +7,8 @@ from lib.LogHelper import LogHelper, get_time_str
 from config import get_rank_name
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager, kim, get_troop_type_image
-from lib.match_state import PlayerBasicInfo, DivideData, MatchState
+from lib.SelectMatchData import SelectPlayerMatchData
+from lib.match_state import PlayerBasicInfo, DivideData, MatchState, MatchConditionEx
 from tables import *
 from tables.PlayerChangeName import DB_PlayerChangeNames
 
@@ -240,36 +243,50 @@ def init(bot: Bot, es_channels: EsChannels):
         user_id = e.body['user_id']
         guild_id = e.body['guild_id']
 
-        with get_session() as sql_session:
-            t = sql_session.query(Player).filter(Player.kookId == user_id)
-            channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
+        btn_value_dict: dict = json.loads(value)
+        if 'type' in btn_value_dict.keys():
+            type = str(btn_value_dict.get('type', 'invalid'))
+            selected_players = btn_value_dict.get('kookId')
+            if type == 'match_select_players':
+                selectPlayerMatchData: SelectPlayerMatchData = MatchConditionEx.blmm_1
+                if user_id in '482714005':
+                    selectPlayerMatchData.first_team_player_ids.append(selected_players)
+                elif user_id in '1555061634':
+                    selectPlayerMatchData.second_team_player_ids.append(selected_players)
+                else:
+                    print('你不是队长，禁止选取队员')
+                selectPlayerMatchData.need_to_select = selectPlayerMatchData.need_to_select.remove(selected_players)
+        else:
+            with get_session() as sql_session:
+                t = sql_session.query(Player).filter(Player.kookId == user_id)
+                channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
 
-            if t.count() == 1:
-                player: Player = t.first()
+                if t.count() == 1:
+                    player: Player = t.first()
 
-                is_first_troop = False
-                if value.startswith('f'):
-                    troop_type = int(value[1])
-                    player.first_troop = troop_type
-                    is_first_troop = True
-                elif value.startswith('s'):
-                    troop_type = int(value[1])
-                    player.second_troop = troop_type
-                troop_name = get_troop_type_name(troop_type)
+                    is_first_troop = False
+                    if value.startswith('f'):
+                        troop_type = int(value[1])
+                        player.first_troop = troop_type
+                        is_first_troop = True
+                    elif value.startswith('s'):
+                        troop_type = int(value[1])
+                        player.second_troop = troop_type
+                    troop_name = get_troop_type_name(troop_type)
 
-                try:
-                    sql_session.merge(player)
-                    sql_session.commit()
+                    try:
+                        sql_session.merge(player)
+                        sql_session.commit()
+                        await channel.send(
+                            f'(met){user_id}(met) 你设置了你的第{1 if is_first_troop else 2}兵种为{troop_name}')
+                    except Exception as e:
+                        await channel.send(
+                            f'(met){user_id}(met) 机器人异常，联系管理员')
+                        sql_session.rollback()
+
+                else:
                     await channel.send(
-                        f'(met){user_id}(met) 你设置了你的第{1 if is_first_troop else 2}兵种为{troop_name}')
-                except Exception as e:
-                    await channel.send(
-                        f'(met){user_id}(met) 机器人异常，联系管理员')
-                    sql_session.rollback()
-
-            else:
-                await channel.send(
-                    f'(met){user_id}(met) 你没有注册，请先注册')
+                        f'(met){user_id}(met) 你没有注册，请先注册')
 
     @bot.command(name='score', case_sensitive=False, aliases=['s'])
     async def show_score(msg: Message, *args):
@@ -320,22 +337,22 @@ def init(bot: Bot, es_channels: EsChannels):
                 )
             )
             Kill_Info = f'''**Kill Info**
-    击杀:{player.kill}
-    死亡:{player.death}
-    助攻:{player.assist}
-    KDA:{(player.kill + player.assist) / max(player.death, 1)}
-    KD: {player.kill / max(player.death, 1)}
-    伤害:
-    '''
+        击杀:{player.kill}
+        死亡:{player.death}
+        助攻:{player.assist}
+        KDA:{(player.kill + player.assist) / max(player.death, 1)}
+        KD: {player.kill / max(player.death, 1)}
+        伤害:
+        '''
 
             game_info = f'''**游戏**
-    对局数:{player.match}
-    胜场:{player.win}
-    败场:{player.lose}
-    平局:{player.draw}
-    胜/败:{player.win / max(player.lose, 1)}
-    MVPs:{0}
-            '''
+        对局数:{player.match}
+        胜场:{player.win}
+        败场:{player.lose}
+        平局:{player.draw}
+        胜/败:{player.win / max(player.lose, 1)}
+        MVPs:{0}
+                '''
             c2 = Card(
                 Module.Section(
                     Struct.Paragraph(

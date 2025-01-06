@@ -37,6 +37,16 @@ class DB_WillMatchs(Base):
     def get_first_team_player_ids(self) -> List[str]:
         return json.loads(self.first_team_player_ids) if self.first_team_player_ids else []
 
+    def add_first_team_player_ids(self, player_id: str):
+        player_ids = json.loads(self.first_team_player_ids) if self.first_team_player_ids else []
+        player_ids.append(player_id)
+        self.first_team_player_ids = json.dumps(player_ids)
+
+    def add_second_team_player_ids(self, player_id: str):
+        player_ids = json.loads(self.second_team_player_ids) if self.second_team_player_ids else []
+        player_ids.append(player_id)
+        self.second_team_player_ids = json.dumps(player_ids)
+
     def set_first_team_player_ids(self, player_ids: List[str]):
         self.first_team_player_ids = json.dumps(player_ids)
 

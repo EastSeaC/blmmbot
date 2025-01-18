@@ -12,7 +12,8 @@ from tables.ScoreLimit import DB_ScoreLimit
 
 
 def clamp(value, lower_bound, upper_bound, score_name: str = ''):
-    # print(f"value : {value} {score_name}")
+    if score_name != '':
+        print(f"value : {value} {score_name}")
     return max(lower_bound, min(value, upper_bound))
 
 
@@ -37,9 +38,11 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
                            score_limit.max_kill_score)
 
         death_score = clamp(
-            score_limit.max_death_score * ((player_data.spawn_times - player_data.death) // player_data.spawn_times),
+            score_limit.max_death_score * ((player_data.spawn_times - player_data.death + 1) / player_data.spawn_times),
             score_limit.min_death_score,
-            score_limit.max_death_score)
+            score_limit.max_death_score,
+            # 'death_score'
+        )
 
         assist_score = clamp(
             score_limit.max_assist_score * player_data.assist / ally_total_assist_times,
@@ -52,16 +55,20 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
                     player_data.damage / (score_limit.per_round_damage * player_data.total_rounds)),
             score_limit.min_damage_score,
             score_limit.max_damage_score,
-            'damage'
+            # 'damage'
         )
 
-        sum_score = ceil(kill_score + death_score + assist_score + damage_score)
+        match_lose_minus = score_limit.failed_minus if player_data.is_lose else 0
+        sum_score = ceil(kill_score + death_score + assist_score + damage_score) - match_lose_minus
         score_dick = {
+            'player_id': player_data.player_id,
             'player_name': player_data.player_name,
             'kill_score': kill_score,
             'death_score': death_score,
             'assist_score': assist_score,
             'damage_score': damage_score,
+            'match_lose_minus': match_lose_minus,
+            'sum_score': sum_score,
         }
         print(json.dumps(score_dick, indent=4, ensure_ascii=False))
         return sum_score

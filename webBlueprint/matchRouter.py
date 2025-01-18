@@ -19,9 +19,10 @@ player_id_list = []
 
 @matchRouter.get('/get-match-obj/{server_name}')
 async def get_match_obj(req):
-    server_name = req.match_info['server_name']
+    server_name = str(req.match_info['server_name'])
     print('服务器请求数据' + server_name)
     if server_name is not None and server_name:
+        server_name = server_name if '-' not in server_name else server_name.split('-')[0]
         with get_session() as sqlSession:
             result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
                       .filter(DB_WillMatchs.server_name == server_name,

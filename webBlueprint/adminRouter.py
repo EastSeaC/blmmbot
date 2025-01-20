@@ -46,7 +46,7 @@ def ban_player(request):
     return Response(text=z)
 
 
-@adminRouter.get('get-admin-list')
+@adminRouter.get('/get-admin-list')
 def get_admin_list(req):
     with get_session() as sqlSession:
         z = sqlSession.execute(select(DBAdmin.playerId)).all()

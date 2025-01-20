@@ -3,11 +3,13 @@ import json
 import aiohttp_jinja2
 from aiohttp import web
 from aiohttp.web_response import Response
+from sqlalchemy import select
 
 from entity.BanType import BanType
 from init_db import get_session
 from lib.ServerGameConfig import GameConfig
 from lib.ServerManager import ServerManager
+from tables.Admin import DBAdmin
 from tables.Ban import DB_Ban
 
 adminRouter = web.RouteTableDef()
@@ -42,6 +44,13 @@ def ban_player(request):
 
     z = json.dumps({'state': True})
     return Response(text=z)
+
+
+@adminRouter.get('get-admin-list')
+def get_admin_list(req):
+    with get_session() as sqlSession:
+        z = sqlSession.execute(select(DBAdmin.playerId)).all()
+        return Response(text=json.dumps(z))
 
 
 @adminRouter.get('/restart_server')

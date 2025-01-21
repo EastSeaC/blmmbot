@@ -243,19 +243,20 @@ def init(bot: Bot, es_channels: EsChannels):
         user_id = e.body['user_id']
         guild_id = e.body['guild_id']
 
-        btn_value_dict: dict = json.loads(value)
-        if 'type' in btn_value_dict.keys():
-            type = str(btn_value_dict.get('type', 'invalid'))
-            selected_players = btn_value_dict.get('kookId')
-            if type == 'match_select_players':
-                selectPlayerMatchData: SelectPlayerMatchData = MatchConditionEx.blmm_1
-                if user_id in '482714005':
-                    selectPlayerMatchData.first_team_player_ids.append(selected_players)
-                elif user_id in '1555061634':
-                    selectPlayerMatchData.second_team_player_ids.append(selected_players)
-                else:
-                    print('你不是队长，禁止选取队员')
-                selectPlayerMatchData.need_to_select = selectPlayerMatchData.need_to_select.remove(selected_players)
+        if value.startswith('{'):
+            btn_value_dict: dict = json.loads(value)
+            if 'type' in btn_value_dict.keys():
+                type = str(btn_value_dict.get('type', 'invalid'))
+                selected_players = btn_value_dict.get('kookId')
+                if type == 'match_select_players':
+                    selectPlayerMatchData: SelectPlayerMatchData = MatchConditionEx.blmm_1
+                    if user_id in '482714005':
+                        selectPlayerMatchData.first_team_player_ids.append(selected_players)
+                    elif user_id in '1555061634':
+                        selectPlayerMatchData.second_team_player_ids.append(selected_players)
+                    else:
+                        print('你不是队长，禁止选取队员')
+                    selectPlayerMatchData.need_to_select = selectPlayerMatchData.need_to_select.remove(selected_players)
         else:
             with get_session() as sql_session:
                 t = sql_session.query(Player).filter(Player.kookId == user_id)

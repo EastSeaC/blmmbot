@@ -284,7 +284,8 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='show_match_2', case_sensitive=False, aliases=['sm2'])
     async def show_match(msg: Message):
-        user_list = ['482714005', '1757472132']
+        # user_list = ['482714005', '1757472132']
+        user_list = ['482714005', '1386568452'] # 平克曼
         print('123')
         global sqlSession
         sqlSession = get_session()

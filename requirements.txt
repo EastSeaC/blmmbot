@@ -1,2 +1,6 @@
 wcwidth
 khl
+aiohttp
+sqlalchemy
+asyncio
+pywin32

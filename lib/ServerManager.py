@@ -18,8 +18,8 @@ class ServerManager:
             if 'Mount and Blade II Bannerlord Dedicated Server Console' in title:
                 close_window(hwnd)
                 time.sleep(5.0)
-                open_bat(server_index)
-                display('重启服务器!')
+            open_bat(server_index)
+            display('重启服务器!')
         # 获取所有顶层窗口句柄和标题
 
     @staticmethod

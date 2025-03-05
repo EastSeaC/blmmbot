@@ -3,7 +3,7 @@ import json
 from khl import Bot, Message, GuildUser, EventTypes, Event
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
 
-from botCommands.adminBot import AdminButtonValue
+from botCommands.adminButtonValueImpl import AdminButtonValue
 from lib.LogHelper import LogHelper, get_time_str
 from config import get_rank_name
 from init_db import get_session

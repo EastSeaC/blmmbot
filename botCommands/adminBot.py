@@ -1,7 +1,8 @@
-from khl import Bot, Message, EventTypes, Event, GuildUser, PublicChannel
+from khl import Bot, Message, GuildUser, PublicChannel
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
-from sqlalchemy import literal, desc, text, select
+from sqlalchemy import desc, text, select
 
+from botCommands.adminButtonValueImpl import AdminButtonValue
 from config import INITIAL_SCORE
 from lib.LogHelper import LogHelper
 from blmm_bot import EsChannels
@@ -9,20 +10,11 @@ from init_db import get_session
 from kook.ChannelKit import ChannelManager
 from lib.basic import generate_numeric_code
 from tables import *
-from tables.Admin import DBAdmin
 from tables.PlayerNames import DB_PlayerNames
 
 session = get_session()
 g_channels: EsChannels
 
-
-class AdminButtonValue:
-    Show_Last_Match = 'show_last_match'
-    Show_Last_5_Matches = 'show_last_5_matches'
-    Refresh_All_VerifyCode = 'Refresh_All_VerifyCode'
-    Refresh_Server_NotForce = 'Refresh_Server_NotForce'
-    Refresh_Server_Force = 'Refresh_Server_Force'
-    Refresh_Server6_Force = 'Refresh_Server6_Force'
 
 # 用于注册命令的函数
 

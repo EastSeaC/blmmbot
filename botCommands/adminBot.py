@@ -111,7 +111,7 @@ def init(bot: Bot, es_channels: EsChannels):
             else:
                 print('wat')
 
-    @bot.command(case_sensitive=False)
+    @bot.command(name='admin', case_sensitive=False)
     async def admin(msg: Message):
         if msg.author_id not in ChannelManager.manager_user_id:
             await msg.reply("禁止使用管理员指令")

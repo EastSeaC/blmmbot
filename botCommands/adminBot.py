@@ -20,9 +20,13 @@ class AdminButtonValue:
     Show_Last_Match = 'show_last_match'
     Show_Last_5_Matches = 'show_last_5_matches'
     Refresh_All_VerifyCode = 'Refresh_All_VerifyCode'
-
+    Refresh_Server_NotForce = 'Refresh_Server_NotForce'
+    Refresh_Server_Force = 'Refresh_Server_Force'
+    Refresh_Server6_Force = 'Refresh_Server6_Force'
 
 # 用于注册命令的函数
+
+
 def init(bot: Bot, es_channels: EsChannels):
     global g_channels
     g_channels = es_channels
@@ -85,7 +89,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
         pass
 
-    @bot.command(name='reset_player_score', case_sensitive=False, aliases=['rps']) # 重置玩家分数
+    @bot.command(name='reset_player_score', case_sensitive=False, aliases=['rps'])  # 重置玩家分数
     async def reset_player_score(msg: Message, user_id: str):
         if msg.author_id not in ChannelManager.manager_user_id:
             await msg.reply("禁止使用管理员指令")
@@ -114,6 +118,30 @@ def init(bot: Bot, es_channels: EsChannels):
                     await msg.reply(f'重置 {player.kookName}分数失败')
             else:
                 print('wat')
+
+    @bot.command(case_sensitive=False)
+    async def admin(msg: Message):
+        if msg.author_id not in ChannelManager.manager_user_id:
+            await msg.reply("禁止使用管理员指令")
+            return
+
+        cm = CardMessage()
+        c8 = Card(
+            Module.ActionGroup(
+                Element.Button("重启服务器【非强制】", value=AdminButtonValue.Refresh_Server_NotForce,
+                               click=Types.Click.RETURN_VAL,
+                               theme=Types.Theme.INFO),
+                Element.Button("重启服务器5【强制】", value=AdminButtonValue.Refresh_Server_Force,
+                               click=Types.Click.RETURN_VAL,
+                               theme=Types.Theme.DANGER),
+                Element.Button("重启服务器6【强制】", value=AdminButtonValue.Refresh_Server_Force,
+                               click=Types.Click.RETURN_VAL,
+                               theme=Types.Theme.DANGER),
+            )
+        )
+        cm.append(c8)
+
+        pass
 
     # @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
     # async def btn_click_event(b: Bot, e: Event):

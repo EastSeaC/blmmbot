@@ -12,13 +12,13 @@ from lib.ServerGameConfig import GameConfig
 
 class ServerManager:
     @staticmethod
-    def RestartBLMMServer():
+    def RestartBLMMServer(server_index: int = 1):
         for hwnd, title in get_all_windows():
             # print(f'句柄: {hwnd}, 标题: {title}')
             if 'Mount and Blade II Bannerlord Dedicated Server Console' in title:
                 close_window(hwnd)
                 time.sleep(5.0)
-                open_bat()
+                open_bat(server_index)
                 display('重启服务器!')
         # 获取所有顶层窗口句柄和标题
 
@@ -46,9 +46,9 @@ class ServerManager:
         LogHelper.log_star_start()
 
 
-def open_bat():
+def open_bat(server_index: int = 1):
     server_desktop = r'C:\Users\Administrator\Desktop'
-    bat_name = '启动BLMM1.bat'
+    bat_name = f'启动BLMM{server_index}.bat'
     bat_path = os.path.join(server_desktop, bat_name)
     subprocess.run(['cmd.exe', '/c', bat_path])
 

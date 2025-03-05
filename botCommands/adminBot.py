@@ -123,10 +123,10 @@ def init(bot: Bot, es_channels: EsChannels):
                 Element.Button("重启服务器【非强制】", value=AdminButtonValue.Refresh_Server_NotForce,
                                click=Types.Click.RETURN_VAL,
                                theme=Types.Theme.INFO),
-                Element.Button("重启服务器5【强制】", value=AdminButtonValue.Refresh_Server_Force,
+                Element.Button("重启服务器5【强制】", value=AdminButtonValue.Refresh_Server6_Force,
                                click=Types.Click.RETURN_VAL,
                                theme=Types.Theme.DANGER),
-                Element.Button("重启服务器6【强制】", value=AdminButtonValue.Refresh_Server_Force,
+                Element.Button("重启服务器6【强制】", value=AdminButtonValue.Refresh_Server6_Force,
                                click=Types.Click.RETURN_VAL,
                                theme=Types.Theme.DANGER),
             )

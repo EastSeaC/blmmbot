@@ -265,8 +265,8 @@ def init(bot: Bot, es_channels: EsChannels):
                 await channel.send(
                     f'(met){user_id}(met) 禁止使用管理员指令')
                 return
-
         elif value == AdminButtonValue.Refresh_Server_Force or value == AdminButtonValue.Refresh_Server6_Force:
+            print('test-1')
             channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
             if user_id not in ChannelManager.manager_user_id:
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')

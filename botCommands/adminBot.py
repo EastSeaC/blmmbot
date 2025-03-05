@@ -132,7 +132,7 @@ def init(bot: Bot, es_channels: EsChannels):
             )
         )
         cm.append(c8)
-
+        await msg.reply(cm)
         pass
 
     # @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)

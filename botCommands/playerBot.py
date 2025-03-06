@@ -104,7 +104,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 if t.id not in dict_for_kook_id:
                     await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
                     await move_a_to_b_ex(OldGuildChannel.match_set_channel, [t.id])
-                player: Player = dict_for_kook_id[user]
+                player: Player = dict_for_kook_id[t.id]
                 player_info = PlayerBasicInfo({'username': player.kookName})
                 player_info.score = player.rank
                 player_info.user_id = player.kookId

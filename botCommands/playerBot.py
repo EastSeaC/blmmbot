@@ -94,14 +94,14 @@ def init(bot: Bot, es_channels: EsChannels):
             t: Player = i
             dict_for_kook_id[t.kookId] = t
 
-        # print([i.__dict__ for i in z])
-        # print([i.__dict__ for i in dict_for_kook_id.values()])
+        print([i.__dict__ for i in z])
+        print([i.__dict__ for i in dict_for_kook_id.values()])
         try:
             for id, user in enumerate(k):
                 t: GuildUser = user
                 if t.id not in dict_for_kook_id:
                     await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
-                    await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
+                    await move_a_to_b_ex(OldGuildChannel.match_set_channel, [t.id])
                 player: Player = dict_for_kook_id[user]
                 player_info = PlayerBasicInfo({'username': player.kookName})
                 player_info.score = player.rank
@@ -113,7 +113,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
         except Exception as e:
             LogHelper.log(f"没有注册 {t.id} {t.username}")
-            await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
+            await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册 Exception!')
             await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
             return
 

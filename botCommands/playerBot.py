@@ -1,18 +1,25 @@
 import json
+import random
 import re
+import uuid
+from datetime import datetime
 
 from khl import Bot, Message, GuildUser, EventTypes, Event, PublicVoiceChannel
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
+from sqlalchemy import select, desc
 
 from botCommands.ButtonValueImpl import AdminButtonValue, PlayerButtonValue
+from entity.WillMatchType import WillMatchType
 from lib.LogHelper import LogHelper, get_time_str
 from config import get_rank_name
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager, kim, get_troop_type_image, OldGuildChannel
 from lib.SelectMatchData import SelectPlayerMatchData
+from lib.ServerGameConfig import get_random_faction_2
 from lib.ServerManager import ServerManager
 from lib.match_state import PlayerBasicInfo, DivideData, MatchState, MatchConditionEx
 from tables import *
+from tables.DB_WillMatch import DB_WillMatchs
 from tables.PlayerChangeName import DB_PlayerChangeNames
 
 sqlSession = get_session()
@@ -124,12 +131,46 @@ def init(bot: Bot, es_channels: EsChannels):
         #     await msg.reply(f'注册人数不足12，请大伙先注册，/help可以提供支持')
         #     return
         # 说明注册人数 >=12
-        if len(player_list) % 2 != 0:
-            await msg.reply(f'人数非奇数！')
-            return
         #     player_list.pop()
 
         divide_data: DivideData = MatchState.divide_player_ex(player_list)
+
+        will_match_data = DB_WillMatchs()
+        will_match_data.time_match = datetime.datetime.now()
+        will_match_data.match_id = str(uuid.uuid1())
+        will_match_data.set_first_team_player_ids(divide_data.get_first_team_player_ids())
+        will_match_data.set_second_team_player_ids(divide_data.get_second_team_player_ids())
+
+        first_faction, second_faction = get_random_faction_2()
+        will_match_data.first_team_culture = first_faction
+        will_match_data.second_team_culture = second_faction
+
+        will_match_data.match_type = WillMatchType.Match66
+        will_match_data.is_cancel = False
+        will_match_data.is_finished = False
+        will_match_data.server_name = 'CN_BTL_NINGBO_1'
+
+        # 获取今天的日期并设置时间为 00:00:00
+        today_midnight = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+        result_temp = len(sqlSession.execute(
+            select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight)).all())
+        newest_data = sqlSession.execute(
+            select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight).order_by(
+                desc(DB_WillMatchs.time_match)).limit(1)).first()
+
+        last_match_number = random.randint(3, 10)
+        if newest_data is not None and len(newest_data) > 0:
+            last_match_number += newest_data[0].match_id_2
+
+        will_match_data.match_id_2 = last_match_number
+
+        try:
+            sqlSession.add(will_match_data)
+        except Exception as e:
+            print(e.with_traceback())
+            sqlSession.rollback()
+        else:
+            sqlSession.commit()
         # print(divide_data.attacker_list)
         # print(divide_data.defender_list)
         await msg.reply(CardMessage(

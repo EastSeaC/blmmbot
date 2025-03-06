@@ -119,9 +119,9 @@ def init(bot: Bot, es_channels: EsChannels):
             await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
             return
 
-        if len(player_list) < 12:
-            await msg.reply(f'注册人数不足12，请大伙先注册，/help可以提供支持')
-            return
+        # if len(player_list) < 12:
+        #     await msg.reply(f'注册人数不足12，请大伙先注册，/help可以提供支持')
+        #     return
         # 说明注册人数 >=12
         if len(player_list) % 2 != 0:
             await msg.reply(f'人数非奇数！')

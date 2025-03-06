@@ -114,7 +114,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 player_list.append(player_info)
 
         except Exception as e:
-            print(e)
+            print(repr(e))
             LogHelper.log(f"没有注册 {t.id} {t.username}")
             await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册 Exception!')
             await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])

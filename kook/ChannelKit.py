@@ -141,13 +141,13 @@ class EsChannels:
 
     async def Initial(self, bot1):
         self.wait_channel: PublicVoiceChannel = await bot1.client.fetch_public_channel(
-            ChannelManager.match_wait_channel)
+            OldGuildChannel.match_wait_channel)
         self.match_attack_channel: PublicVoiceChannel = await bot1.client.fetch_public_channel(
-            ChannelManager.match_attack_channel)
+            OldGuildChannel.match_attack_channel)
         self.match_defend_channel: PublicVoiceChannel = await  bot1.client.fetch_public_channel(
-            ChannelManager.match_defend_channel)
+            OldGuildChannel.match_defend_channel)
         self.command_channel: PublicTextChannel = await  bot1.client.fetch_public_channel(
-            ChannelManager.command_channel)
+            OldGuildChannel.command_channel)
 
         self.ready = True
         EsChannels._instance = self

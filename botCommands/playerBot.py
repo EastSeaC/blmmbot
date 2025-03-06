@@ -1,14 +1,14 @@
 import json
 import re
 
-from khl import Bot, Message, GuildUser, EventTypes, Event
+from khl import Bot, Message, GuildUser, EventTypes, Event, PublicVoiceChannel
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
 
 from botCommands.ButtonValueImpl import AdminButtonValue, PlayerButtonValue
 from lib.LogHelper import LogHelper, get_time_str
 from config import get_rank_name
 from init_db import get_session
-from kook.ChannelKit import EsChannels, ChannelManager, kim, get_troop_type_image
+from kook.ChannelKit import EsChannels, ChannelManager, kim, get_troop_type_image, OldGuildChannel
 from lib.SelectMatchData import SelectPlayerMatchData
 from lib.ServerManager import ServerManager
 from lib.match_state import PlayerBasicInfo, DivideData, MatchState, MatchConditionEx
@@ -60,13 +60,12 @@ def init(bot: Bot, es_channels: EsChannels):
 
         pass
 
-    """
-    开启匹配指令
-    is_no_move: 1 表示 不移动玩家，仅用作测试
-    """
-
     @bot.command(name='e', case_sensitive=False, aliases=['e'])
     async def es_start_match(msg: Message, is_no_move: int = 0):
+        """
+        开启匹配指令
+        is_no_move: 1 表示 不移动玩家，仅用作测试
+        """
         if ChannelManager.is_common_user(msg.author_id):
             await msg.reply('禁止使用es指令')
             return
@@ -76,6 +75,8 @@ def init(bot: Bot, es_channels: EsChannels):
             await msg.reply('数据库提交异常')
             sqlSession.rollback()
 
+        # k: PublicVoiceChannel = await bot.client.fetch_public_channel(OldGuildChannel.match_wait_channel)
+        # k = await k.fetch_user_list()
         k = await es_channels.wait_channel.fetch_user_list()
         for i in k:
             z: GuildUser = i

@@ -102,15 +102,13 @@ def init(bot: Bot, es_channels: EsChannels):
                 if t.id not in dict_for_kook_id:
                     await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
                     await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
-                player: Player = dict_for_kook_id[t.id]
-                player_info = PlayerBasicInfo({})
+                player: Player = dict_for_kook_id[user]
+                player_info = PlayerBasicInfo({'username': player.kookName})
                 player_info.score = player.rank
-                player_info.user_id = t.id
-                player_info.kook_name = t.username
-
-                player_info.first_troop = player.first_troop
-                player_info.second_troop = player.second_troop
-
+                player_info.user_id = player.kookId
+                player_info.username = player.kookName
+                player_info.player_id = player.playerId
+                # print(player_info.username)
                 player_list.append(player_info)
 
         except Exception as e:

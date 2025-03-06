@@ -136,7 +136,7 @@ def init(bot: Bot, es_channels: EsChannels):
         divide_data: DivideData = MatchState.divide_player_ex(player_list)
 
         will_match_data = DB_WillMatchs()
-        will_match_data.time_match = datetime.datetime.now()
+        will_match_data.time_match = datetime.now()
         will_match_data.match_id = str(uuid.uuid1())
         will_match_data.set_first_team_player_ids(divide_data.get_first_team_player_ids())
         will_match_data.set_second_team_player_ids(divide_data.get_second_team_player_ids())
@@ -151,7 +151,7 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.server_name = 'CN_BTL_NINGBO_1'
 
         # 获取今天的日期并设置时间为 00:00:00
-        today_midnight = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
         result_temp = len(sqlSession.execute(
             select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight)).all())
         newest_data = sqlSession.execute(

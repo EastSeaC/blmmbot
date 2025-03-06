@@ -2,7 +2,7 @@ from khl import Bot, Message, GuildUser, PublicChannel
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import desc, text, select
 
-from botCommands.adminButtonValueImpl import AdminButtonValue
+from botCommands.ButtonValueImpl import AdminButtonValue
 from config import INITIAL_SCORE
 from lib.LogHelper import LogHelper
 from blmm_bot import EsChannels

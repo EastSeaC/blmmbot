@@ -5,3 +5,10 @@ class AdminButtonValue:
     Refresh_Server_NotForce = 'Refresh_Server_NotForce'
     Refresh_Server_Force = 'Refresh_Server_Force'
     Refresh_Server6_Force = 'Refresh_Server6_Force'
+
+
+class PlayerButtonValue:
+    ShowServerState = 'ShowServerState'
+    player_wonder_server_state = 'player_wonder_server_state'
+    player_score = 'player_score'
+    player_score_list = 'player_score_list'

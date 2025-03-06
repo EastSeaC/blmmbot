@@ -11,7 +11,7 @@ from khl.card import Card, Module, Struct, Element, Types, CardMessage
 from sqlalchemy import select
 
 from lib.LogHelper import LogHelper
-from botCommands import adminBot, regBot, playerBot, configBot, matchBot, testBot
+from botCommands import adminBot, regBot, playerBot, configBot, matchBot, testBot, commonBot
 from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
@@ -187,8 +187,10 @@ async def bot_init(bot1: Bot):
     configBot.init(bot1, es_channels)
     matchBot.init(bot1, es_channels)
     testBot.init(bot1, es_channels)
+    commonBot.init(bot1, es_channels)
 
     await CheckDataBase()
+
 
 # 开跑
 # 同时运行app和bot

@@ -129,10 +129,13 @@ def kim(rank_name: str):
 
 
 class EsChannels:
+    _instance = None
+
     def __init__(self):
         self.wait_channel = ''
         self.match_attack_channel = ''
         self.match_defend_channel = ''
+        self.command_channel = None
 
         self.ready: bool = False
 
@@ -145,5 +148,12 @@ class EsChannels:
             ChannelManager.match_defend_channel)
         self.command_channel: PublicTextChannel = await  bot1.client.fetch_public_channel(
             ChannelManager.command_channel)
+
         self.ready = True
+        EsChannels._instance = self
         LogHelper.log("初始化频道成功")
+
+    @property
+    @classmethod
+    def instance(cls):
+        return cls._instance

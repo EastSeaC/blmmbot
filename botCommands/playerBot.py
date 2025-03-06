@@ -94,7 +94,9 @@ def init(bot: Bot, es_channels: EsChannels):
             t: Player = i
             dict_for_kook_id[t.kookId] = t
 
+        print('this is z data')
         print([i.__dict__ for i in z])
+        print('this is dict_for_kook_id')
         print([i.__dict__ for i in dict_for_kook_id.values()])
         try:
             for id, user in enumerate(k):

@@ -156,8 +156,8 @@ def init(bot: Bot, es_channels: EsChannels):
             )
         ))
         if is_no_move != 1:
-            await move_a_to_b_ex(ChannelManager.match_attack_channel, divide_data.attacker_list)
-            await move_a_to_b_ex(ChannelManager.match_defend_channel, divide_data.defender_list)
+            await move_a_to_b_ex(OldGuildChannel.match_attack_channel, divide_data.attacker_list)
+            await move_a_to_b_ex(OldGuildChannel.match_defend_channel, divide_data.defender_list)
         else:
             LogHelper.log("不移动")
 

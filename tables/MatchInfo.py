@@ -1,3 +1,5 @@
+import json
+
 from sqlalchemy import *
 
 from convert.PlayerMatchData import TPlayerMatchData
@@ -65,7 +67,8 @@ class DB_Matchs(Base):
     @property
     def get_total_data(self):
         match_sum_data = MatchSumData()
-        match_sum_data.total_round = int(self.tag.RoundCount)
+        print(type(self.tag), self.tag)
+        match_sum_data.total_round = int(json.loads(self.tag)["RoundCount"])
         # print('123X-tesrt')
         # print(self.player_data.values())
         all_player_data = [TPlayerMatchData(i) for i in self.player_data.values()]

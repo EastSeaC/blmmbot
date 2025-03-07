@@ -55,7 +55,7 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
 
         damage_score = clamp(
             score_limit.max_damage_score * (
-                    player_data.damage / (score_limit.per_round_damage * player_data.total_rounds)),
+                    player_data.damage / (score_limit.per_round_damage * all_player_data.total_round)),
             score_limit.min_damage_score,
             score_limit.max_damage_score,
             # 'damage'

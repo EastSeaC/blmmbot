@@ -65,6 +65,7 @@ class DB_Matchs(Base):
     @property
     def get_total_data(self):
         match_sum_data = MatchSumData()
+        match_sum_data.total_round = int(self.tag.RoundCount)
         # print('123X-tesrt')
         # print(self.player_data.values())
         all_player_data = [TPlayerMatchData(i) for i in self.player_data.values()]
@@ -101,3 +102,5 @@ class MatchSumData:
 
         self.first_team_total_assist_times = 0
         self.second_team_total_assist_times = 0
+
+        self.total_round = 0

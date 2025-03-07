@@ -267,10 +267,26 @@ async def update_match_data2(request):
         # print(f"{k.player_id}: {k.win_rounds}")
         if not k.is_spectator_by_score():
             k.set_old_score(oldData.rank)
-            if k.win_rounds >= 3 or k.win >= 3:
-                k.set_is_lose(False)
-            else:
-                k.set_is_lose(True)
+
+            if match_total_sum.attacker_rounds < match_total_sum.defender_rounds:
+                if k.player_id in t.left_players:
+                    print(11,k.player_name)
+                    k.set_is_lose(True)
+                elif k.player_id in t.right_players:
+                    print(12, k.player_name)
+                    k.set_is_lose(False)
+            elif match_total_sum.attacker_rounds == match_total_sum.defender_rounds:
+                if k.player_id in t.left_players or k.player_id in t.right_players:
+                    k.set_is_lose(False)
+            elif match_total_sum.attacker_rounds > match_total_sum.defender_rounds:
+                if k.player_id in t.left_players:
+                    k.set_is_lose(False)
+                elif k.player_id in t.right_players:
+                    k.set_is_lose(True)
+            # if k.win_rounds >= 3 or k.win >= 3:
+            #     k.set_is_lose(False)
+            # else:
+            #     k.set_is_lose(True)
             oldData.rank += calculate_score(match_total_sum, k)
             k.set_new_score(oldData.rank)
             show_data.append(k)

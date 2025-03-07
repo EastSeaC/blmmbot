@@ -50,6 +50,7 @@ class TPlayerMatchData:
 
     def set_is_lose(self, lose: bool):
         self.is_lose = lose
+        print(self.player_name, self.is_lose)
 
     def set_team(self, team_a: BannerlordTeam):
         self.team = team_a

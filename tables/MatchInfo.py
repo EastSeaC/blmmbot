@@ -92,6 +92,9 @@ class DB_Matchs(Base):
             [i.assist for i in all_player_data if i.player_id in self.right_players]
         )
 
+        match_sum_data.attacker_rounds = self.left_win_rounds
+        match_sum_data.defender_rounds = self.right_win_rounds
+
         return match_sum_data
 
 
@@ -105,5 +108,8 @@ class MatchSumData:
 
         self.first_team_total_assist_times = 0
         self.second_team_total_assist_times = 0
+
+        self.attacker_rounds = 0
+        self.defender_rounds = 0
 
         self.total_round = 0

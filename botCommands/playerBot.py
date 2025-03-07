@@ -196,6 +196,8 @@ def init(bot: Bot, es_channels: EsChannels):
                     )
                 ),
                 Module.Divider(),
+                Module.Header(f'服务器: {will_match_data.server_name}'),
+                Module.Divider(),
                 Module.Header(f'比赛ID：{will_match_data.match_id_2}')
             )
         ))

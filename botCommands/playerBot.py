@@ -101,10 +101,10 @@ def init(bot: Bot, es_channels: EsChannels):
             t: Player = i
             dict_for_kook_id[t.kookId] = t
 
-        print('this is z data')
-        print([i.__dict__ for i in z])
-        print('this is dict_for_kook_id')
-        print([i.__dict__ for i in dict_for_kook_id.values()])
+        # print('this is z data')
+        # print([i.__dict__ for i in z])
+        # print('this is dict_for_kook_id')
+        # print([i.__dict__ for i in dict_for_kook_id.values()])
         try:
             for id, user in enumerate(k):
                 t: GuildUser = user
@@ -148,7 +148,7 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.match_type = WillMatchType.Match66
         will_match_data.is_cancel = False
         will_match_data.is_finished = False
-        will_match_data.server_name = 'CN_BTL_NINGBO_1'
+        will_match_data.server_name = 'CN_BTL_NINGBO_6'
 
         # 获取今天的日期并设置时间为 00:00:00
         today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -195,6 +195,8 @@ def init(bot: Bot, es_channels: EsChannels):
                         Element.Text('game_info', type=Types.Text.KMD),
                     )
                 ),
+                Module.Divider(),
+                Module.Header(f'比赛ID：{will_match_data.match_id_2}')
             )
         ))
         if is_no_move != 1:

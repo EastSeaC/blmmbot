@@ -5,6 +5,7 @@ class AdminButtonValue:
     Refresh_Server_NotForce = 'Refresh_Server_NotForce'
     Refresh_Server_Force = 'Refresh_Server_Force'
     Refresh_Server6_Force = 'Refresh_Server6_Force'
+    Reset_Server_ChannelSet = 'Reset_Server_ChannelSet'
 
 
 class PlayerButtonValue:

@@ -30,6 +30,12 @@ class ChannelManager:
     manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
 
     @staticmethod
+    def is_admin(kook_id: str):
+        if kook_id in ChannelManager.manager_user_id:
+            return True
+        pass
+
+    @staticmethod
     def get_command_channel_id(guild_id: str):
         if guild_id == '9019084812125033':
             return "1451138349000890"

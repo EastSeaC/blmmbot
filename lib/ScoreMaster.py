@@ -44,11 +44,14 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
             # 'death_score'
         )
 
-        assist_score = clamp(
-            score_limit.max_assist_score * player_data.assist / ally_total_assist_times,
-            score_limit.min_assist_score,
-            score_limit.max_assist_score,
-        )
+        if ally_total_assist_times == 0:
+            assist_score = 0
+        else:
+            assist_score = clamp(
+                score_limit.max_assist_score * player_data.assist / ally_total_assist_times,
+                score_limit.min_assist_score,
+                score_limit.max_assist_score,
+            )
 
         damage_score = clamp(
             score_limit.max_damage_score * (

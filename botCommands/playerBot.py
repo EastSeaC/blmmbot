@@ -145,7 +145,7 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.first_team_culture = first_faction
         will_match_data.second_team_culture = second_faction
 
-        will_match_data.match_type = WillMatchType.Match66
+        will_match_data.match_type = WillMatchType.get_match_type_with_player_num(len(divide_data.first_team))
         will_match_data.is_cancel = False
         will_match_data.is_finished = False
         will_match_data.server_name = 'CN_BTL_NINGBO_6'

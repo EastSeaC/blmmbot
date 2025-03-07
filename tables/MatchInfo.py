@@ -23,7 +23,7 @@ class DB_Matchs(Base):
 
     mvp_player = Column(JSON, nullable=True, default='{}')
 
-    tag = Column(VARCHAR(50), nullable=True, default='Test')
+    tag = Column(Text, nullable=True, default='Test')
 
     raw = Column(JSON, nullable=False, default='{}')
     player_data = Column(JSON, nullable=False, default='')

@@ -48,6 +48,7 @@ async def cancel_match(req):
     server_name = req.match_info['server_name']
     match_id = req.match_info['match_id']
 
+    LogHelper.log('尝试取消比赛')
     sql_session = get_session()
     if server_name is not None and match_id is not None:
         target_match_id = int(match_id)
@@ -66,6 +67,7 @@ async def cancel_match(req):
             try:
                 sql_session.add(will_match)
                 sql_session.commit()
+                LogHelper.log('取消比赛成功')
                 return ControllerResponse.success_response(True)
             except Exception as e:
                 sql_session.rollback()

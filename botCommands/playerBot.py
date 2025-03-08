@@ -276,10 +276,9 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.on_message()
     async def kook_bot_message(m: Message):
-        print('123123x')
         bot_id = (await bot.client.fetch_me()).id
 
-        print(bot_id)
+        # print(bot_id)
         a = re.search(f'\(met\){bot_id}\(met\)', m.content)
         if a is None:
             return

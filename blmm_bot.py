@@ -14,9 +14,10 @@ from lib.LogHelper import LogHelper
 from botCommands import adminBot, regBot, playerBot, configBot, matchBot, testBot, commonBot
 from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
-from kook.ChannelKit import EsChannels, ChannelManager
+from kook.ChannelKit import EsChannels, ChannelManager, OldGuildChannel
 from lib.match_guard import MatchGuard
 from lib.match_state import MatchConditionEx
+from tables.KookChannelGroup import DB_KookChannelGroup
 from tables.ScoreLimit import DB_ScoreLimit
 from webBlueprint.adminRouter import adminRouter
 from webBlueprint.matchRouter import matchRouter
@@ -174,6 +175,43 @@ async def CheckDataBase():
                 sql_session.commit()
             except Exception as e:
                 sql_session.rollback()
+
+        result = sql_session.execute(
+            select(DB_KookChannelGroup).where(DB_KookChannelGroup.guild_id == OldGuildChannel.sever)).all()
+        print('服务器ID', result)
+        if len(result) == 0:
+            guild = await bot.client.fetch_guild(OldGuildChannel.sever)
+            category_list = await guild.fetch_channel_category_list(True)
+            current_category_names = [i.name for i in category_list]
+            category_names = OldGuildChannel.get_category_list_name()
+            for i in category_names:
+                if i not in current_category_names:
+                    try:
+
+                        blmm_5_category = await guild.create_channel_category(i)
+                        channel_group = DB_KookChannelGroup()
+                        team_a_channel = await guild.create_voice_channel(OldGuildChannel.channel_a_team,
+                                                                          blmm_5_category, )
+                        team_b_channel = await guild.create_voice_channel(OldGuildChannel.channel_b_team,
+                                                                          blmm_5_category)
+                        team_eliminate_channel = await guild.create_voice_channel(
+                            OldGuildChannel.channel_eliminate_room, blmm_5_category)
+                        channel_group.group_name = i
+                        channel_group.group_id = blmm_5_category.id
+                        channel_group.guild_id = OldGuildChannel.sever
+                        channel_group.team_a_channel = team_a_channel.id
+                        channel_group.team_b_channel = team_b_channel.id
+                        channel_group.wait_channel = team_eliminate_channel.id
+                        try:
+                            sql_session.add(channel_group)
+                            sql_session.commit()
+                        except Exception as e:
+                            sql_session.rollback()
+                        print('创建服务器 I 频道 成功')
+                    except Exception as e:
+                        print(e)
+        else:
+            pass
 
 
 @bot.on_startup

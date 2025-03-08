@@ -71,6 +71,10 @@ class ChannelManager:
     def is_common_user(kook_id: str):
         return kook_id not in ChannelManager.manager_user_id
 
+    @classmethod
+    def get_server_name(cls, index: int = 0):
+        return f'BLMM_{index}'
+
 
 class OldGuildChannel:
     # 服务器
@@ -97,6 +101,20 @@ class OldGuildChannel:
     common_channel = '3137719365146347'
     command_channel = '1451138349000890'
     manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
+
+    @classmethod
+    def get_server_name(cls, index: int = 0):
+        return f'BLMM_{index}'
+
+    @classmethod
+    def get_category_list_name(cls):
+        return [f'BLMM_{i}' for i in range(1, 6+1)]
+
+    command_channel_name = '指令频道'
+    channel_a_team = 'A队'
+    channel_b_team = 'B队'
+    channel_wait_room = '休息室'
+    channel_eliminate_room = '淘汰休息室'
 
 
 def get_troop_type_image(a: int):

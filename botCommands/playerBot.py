@@ -15,7 +15,7 @@ from config import get_rank_name
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager, kim, get_troop_type_image, OldGuildChannel
 from lib.SelectMatchData import SelectPlayerMatchData
-from lib.ServerGameConfig import get_random_faction_2
+from lib.ServerGameConfig import get_random_faction_2, GameConfig
 from lib.ServerManager import ServerManager
 from lib.match_state import PlayerBasicInfo, DivideData, MatchState, MatchConditionEx
 from tables import *
@@ -219,6 +219,11 @@ def init(bot: Bot, es_channels: EsChannels):
         else:
             LogHelper.log("不移动")
 
+        px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x'
+        with open(px, 'w') as f:
+            text = GameConfig(match_id=f'{will_match_data.match_id_2}').to_str()
+            f.write(text)
+        ServerManager.RestartBLMMServer(6)
         await msg.reply('分配完毕!')
 
     async def move_a_to_b(a: str, b: str):

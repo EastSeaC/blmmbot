@@ -198,5 +198,7 @@ def cancel_match(author_name: str, match_id_2: int):
             sql_session.commit()
             return f'比赛ID:{will_match.match_id_2}被' + will_match.cancel_reason
         except Exception as e:
+            print(e)
+            print(e.with_traceback())
             sql_session.rollback()
             return f'比赛ID:{will_match.match_id_2} 无法取消，服务器异常，请联系管理员'

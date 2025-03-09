@@ -48,7 +48,7 @@ class ServerManager:
 
 def open_bat(server_index: int = 1):
     server_desktop = r'C:\Users\Administrator\Desktop'
-    bat_name = f'启动BLMM{server_index}.bat'
+    bat_name = f'启动BLMM{server_index}_x.bat'
     bat_path = os.path.join(server_desktop, bat_name)
     subprocess.run(['cmd.exe', '/c', bat_path])
 

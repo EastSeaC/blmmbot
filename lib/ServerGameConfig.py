@@ -11,8 +11,8 @@ def get_random_faction_2():
 
 
 class GameConfig:
-    def __init__(self):
-        self.server_name = "CN_BTL_NINGBO_1"
+    def __init__(self, match_id):
+        self.server_name = f"CN_BTL_NINGBO_6-{match_id}"
         self.game_type = "Skirmish"
         self.admin_password = "btl626"
         self.game_password = "blmm"
@@ -38,10 +38,10 @@ class GameConfig:
         self.friendly_fire_damage_ranged_friend_percent = 50
         self.friendly_fire_damage_ranged_self_percent = 0
         self.min_number_of_players_for_match_start = 2
-        self.round_total = 5
+        self.round_total = 10
         self.map_time_limit = 8
         self.round_time_limit = 420
-        self.warmup_time_limit = 1
+        self.warmup_time_limit = 60
         self.allow_polls_to_change_maps = True
         self.automated_battle_count = -1
         self.automated_battle_switching_enabled = True
@@ -68,14 +68,15 @@ class GameConfig:
         automated_battle_pool_str = ''.join(
             [f"add_map_to_automated_battle_pool {i}\n" for i in self.automated_battle_pool])
 
+        first_faction, second_faction = get_random_faction_2()
         return (f"ServerName {self.server_name}\n"
                 f"GameType {self.game_type}\n"
                 f"AdminPassword {self.admin_password}\n"
-                f"GamePassword {self.game_password}\n"
+                f"#GamePassword {self.game_password}\n"
                 f"{automated_battle_pool_str}"
                 f"Map {self.map}\n"
-                f"CultureTeam1 {self.culture_team1}\n"
-                f"CultureTeam2 {self.culture_team2}\n"
+                f"CultureTeam1 {first_faction}\n"
+                f"CultureTeam2 {second_faction}\n"
                 f"RespawnPeriodTeam1 {self.respawn_period_team1}\n"
                 f"RespawnPeriodTeam2 {self.respawn_period_team2}\n"
                 f"RoundPreparationTimeLimit {self.round_preparation_time_limit}\n"
@@ -98,5 +99,5 @@ class GameConfig:
 
 # Example usage
 if __name__ == '__main__':
-    config = GameConfig()
+    config = GameConfig(32)
     config.start_game_and_mission()

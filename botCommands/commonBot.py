@@ -194,6 +194,7 @@ def cancel_match(author_name: str, match_id_2: int):
         will_match.is_cancel = True
         will_match.cancel_reason = f'管理员{author_name}于{get_time_str()}取消'
         try:
+            sql_session.merge(will_match)
             sql_session.commit()
             return f'比赛ID:{will_match.match_id_2}被' + will_match.cancel_reason
         except Exception as e:

@@ -4,7 +4,7 @@ import datetime as dt_or
 
 from khl import Bot, EventTypes, Event
 from khl.card import CardMessage, Card, Module, Element, Types
-from sqlalchemy import desc
+from sqlalchemy import desc, select
 
 from botCommands.ButtonValueImpl import AdminButtonValue, ESActionType
 from lib.LogHelper import LogHelper, get_time_str
@@ -22,7 +22,7 @@ session = get_session()
 g_channels: EsChannels
 
 
-def ESActionTypeget_troop_type_name(a: int):
+def get_troop_type_name(a: int):
     if a == 1:
         return "步兵"
     elif a == 2:
@@ -45,7 +45,9 @@ def init(bot: Bot, es_channels: EsChannels):
         value = str(e.body['value'])
         user_id = e.body['user_id']
         guild_id = e.body['guild_id']
+        e_body_user_info = e.body['user_info']['username']
 
+        channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
         if value.startswith('{'):
             btn_value_dict: dict = json.loads(value)
             if 'type' in btn_value_dict.keys():
@@ -61,7 +63,8 @@ def init(bot: Bot, es_channels: EsChannels):
                         print('你不是队长，禁止选取队员')
                     selectPlayerMatchData.need_to_select = selectPlayerMatchData.need_to_select.remove(selected_players)
                 elif type == ESActionType.Admin_Cancel_Match:
-
+                    x = cancel_match(e_body_user_info, btn_value_dict['match_id_2'])
+                    await channel.send(x)
                     pass
         elif value == AdminButtonValue.Refresh_Server_Force:
             if user_id not in ChannelManager.manager_user_id:
@@ -139,19 +142,27 @@ def show_server_state():
         )
 
         for i in server_names:
+            print(i)
             result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
                       .filter(DB_WillMatchs.server_name == i,
-                              DB_WillMatchs.is_cancel is False,
-                              DB_WillMatchs.time_match >= datetime.now() - dt_or.timedelta(minutes=5))
+                              DB_WillMatchs.is_cancel == 0, )).limit(1).first()
+            print('first_test', result)
+            if result:
+                print(result.match_id_2)
+            result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                      .filter(DB_WillMatchs.server_name == i,
+                              DB_WillMatchs.is_cancel == 0,
+                              DB_WillMatchs.time_match >= datetime.now() - dt_or.timedelta(minutes=15))
                       .limit(1)
                       .first())
             will_match: DB_WillMatchs
+            print(result)
             if result:
                 will_match = result
                 card.append(Module.Section(
                     Element.Text(f'{i}: {will_match.get_match_description()} 比赛ID:{will_match.match_id_2}'),
                     Element.Button(text='取消比赛',
-                                   value=json.dumps({'action_type': 'admin-cancel-match',
+                                   value=json.dumps({'type': 'admin-cancel-match',
                                                      'match_id_2': will_match.match_id_2,
                                                      'server_name': i}),
                                    theme=Types.Theme.DANGER)
@@ -165,3 +176,27 @@ def show_server_state():
 
         return card
     pass
+
+
+def cancel_match(author_name: str, match_id_2: int):
+    sql_session = get_session()
+    today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+    z = sql_session.execute(select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight,
+                                                        DB_WillMatchs.match_id_2 == match_id_2)).first()
+
+    # print(z)
+    if z is None or len(z) == 0:
+        return '比赛ID 错误'
+    will_match: DB_WillMatchs = z[0]
+    if will_match.is_cancel is True or will_match.is_finished is True:
+        return f'比赛ID {will_match.match_id_2} 已结束或者取消， 不再接受操作'
+    else:
+        will_match.is_cancel = True
+        will_match.cancel_reason = f'管理员{author_name}于{get_time_str()}取消'
+        try:
+            sql_session.add(will_match)
+            sql_session.commit()
+            return f'比赛ID:{will_match.match_id_2}被' + will_match.cancel_reason
+        except Exception as e:
+            sql_session.rollback()
+            return f'比赛ID:{will_match.match_id_2} 无法取消，服务器异常，请联系管理员'

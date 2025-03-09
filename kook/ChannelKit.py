@@ -57,6 +57,8 @@ class ChannelManager:
     image_big_knight_2 = 'https://img.kookapp.cn/assets/2024-12/30/U0bx0f56nw01s01s.png'
     image_follower = 'https://img.kookapp.cn/assets/2024-12/30/aXfKXOO9Q90b40b4.png'
     image_guard = 'https://img.kookapp.cn/assets/2024-12/30/V5Nx6soV1J0b40b4.png'
+    image_knight = None
+
     image_lord = 'https://img.kookapp.cn/assets/2024-12/30/ZUAQnICKXb0e80e8.png'
     image_duke = 'https://img.kookapp.cn/assets/2024-12/30/XlFk0gAFp201s01s.png'
     image_prince = 'https://img.kookapp.cn/assets/2024-12/30/um0wBP2AxU01s01s.png'
@@ -177,7 +179,6 @@ class EsChannels:
         EsChannels._instance = self
         LogHelper.log("初始化频道成功")
 
-    @property
     @classmethod
     def instance(cls):
         return cls._instance

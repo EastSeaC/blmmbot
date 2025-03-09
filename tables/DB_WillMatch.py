@@ -56,6 +56,18 @@ class DB_WillMatchs(Base):
     def set_second_team_player_ids(self, player_ids: List[str]):
         self.second_team_player_ids = json.dumps(player_ids)
 
+    def get_match_description(self):
+        tartest = '未知'
+        if self.is_cancel:
+            tartest = '已取消'
+        elif self.is_finished:
+            tartest = '已完成'
+        elif self.is_cancel is False and self.is_finished is False:
+            tartest = '进行中'
+        else:
+            tartest = '异常'
+
+        return tartest
         # 将对象转换为字典
 
     def to_dict(self) -> dict:

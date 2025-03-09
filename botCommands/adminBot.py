@@ -129,6 +129,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 Element.Button("重启服务器6【强制】", value=AdminButtonValue.Refresh_Server6_Force,
                                click=Types.Click.RETURN_VAL,
                                theme=Types.Theme.DANGER),
+                Element.Button('查看服务器比赛状态', value=AdminButtonValue.Show_Server_State)
             )
         )
         cm.append(c8)

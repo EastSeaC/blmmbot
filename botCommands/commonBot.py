@@ -1,23 +1,28 @@
 import json
 from datetime import datetime
+import datetime as dt_or
 
 from khl import Bot, EventTypes, Event
+from khl.card import CardMessage, Card, Module, Element, Types
+from sqlalchemy import desc
 
-from botCommands.ButtonValueImpl import AdminButtonValue
-from lib.LogHelper import LogHelper
+from botCommands.ButtonValueImpl import AdminButtonValue, ESActionType
+from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
 from lib.SelectMatchData import SelectPlayerMatchData
 from lib.ServerManager import ServerManager
 from lib.match_state import MatchConditionEx
 from tables import *
+from tables import DB_WillMatch
+from tables.DB_WillMatch import DB_WillMatchs
 from tables.ResetPlayer import DB_ResetPlayer
 
 session = get_session()
 g_channels: EsChannels
 
 
-def get_troop_type_name(a: int):
+def ESActionTypeget_troop_type_name(a: int):
     if a == 1:
         return "步兵"
     elif a == 2:
@@ -55,12 +60,24 @@ def init(bot: Bot, es_channels: EsChannels):
                     else:
                         print('你不是队长，禁止选取队员')
                     selectPlayerMatchData.need_to_select = selectPlayerMatchData.need_to_select.remove(selected_players)
+                elif type == ESActionType.Admin_Cancel_Match:
+
+                    pass
         elif value == AdminButtonValue.Refresh_Server_Force:
             if user_id not in ChannelManager.manager_user_id:
                 channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
                 await channel.send(
                     f'(met){user_id}(met) 禁止使用管理员指令')
                 return
+        elif value == AdminButtonValue.Show_Server_State:  # 查看服务器 的比赛状态，需要发送一个新的卡片消息
+            channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
+            if not ChannelManager.is_admin(user_id):
+                await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
+                return
+            c9 = show_server_state()
+            cm = CardMessage(c9)
+            await channel.send(cm)
+            # await channel.send(f'(met){user_id}(met) 该指令{value}还未实现')
         elif value == AdminButtonValue.Reset_Server_ChannelSet:
             channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
             if ChannelManager.is_admin(user_id):
@@ -112,3 +129,39 @@ def init(bot: Bot, es_channels: EsChannels):
                 else:
                     await channel.send(
                         f'(met){user_id}(met) 你没有注册，请先注册')
+
+
+def show_server_state():
+    with get_session() as sqlSession:
+        server_names = [f'CN_BTL_NINGBO_{i}' for i in range(5, 6 + 1)]
+        card = Card(
+            Module.Header('服务器状态:' + get_time_str()),
+        )
+
+        for i in server_names:
+            result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                      .filter(DB_WillMatchs.server_name == i,
+                              DB_WillMatchs.is_cancel is False,
+                              DB_WillMatchs.time_match >= datetime.now() - dt_or.timedelta(minutes=5))
+                      .limit(1)
+                      .first())
+            will_match: DB_WillMatchs
+            if result:
+                will_match = result
+                card.append(Module.Section(
+                    Element.Text(f'{i}: {will_match.get_match_description()} 比赛ID:{will_match.match_id_2}'),
+                    Element.Button(text='取消比赛',
+                                   value=json.dumps({'action_type': 'admin-cancel-match',
+                                                     'match_id_2': will_match.match_id_2,
+                                                     'server_name': i}),
+                                   theme=Types.Theme.DANGER)
+                ))
+
+            else:
+                card.append(Module.Section(
+                    Element.Text(f'{i}:空闲'),
+                ))
+            card.append(Module.Divider())
+
+        return card
+    pass

@@ -68,19 +68,24 @@ def init(bot: Bot, es_channels: EsChannels):
         pass
 
     @bot.command(name='e', case_sensitive=False, aliases=['e'])
-    async def es_start_match(msg: Message, is_no_move: int = 0):
+    async def es_start_match(msg: Message, arg: str = ''):
         """
         开启匹配指令
-        is_no_move: 1 表示 不移动玩家，仅用作测试
+        n:  表示 不移动玩家，仅用作测试
+        e:  不包括东海
+
         """
         if ChannelManager.is_common_user(msg.author_id):
             await msg.reply('禁止使用es指令')
             return
-        try:
-            sqlSession.commit()
-        except Exception as e:
-            await msg.reply('数据库提交异常')
-            sqlSession.rollback()
+
+        is_no_move = False
+        is_exclude_es = False
+        for i in arg:
+            if i == 'e':
+                is_exclude_es = True
+            elif i == 'n':
+                is_no_move = True
 
         # k: PublicVoiceChannel = await bot.client.fetch_public_channel(OldGuildChannel.match_wait_channel)
         # k = await k.fetch_user_list()
@@ -89,12 +94,17 @@ def init(bot: Bot, es_channels: EsChannels):
             z: GuildUser = i
             print(z.__dict__)
             print(convert_timestamp(z.active_time))
+            if is_exclude_es:
+                if z.id == ChannelManager.es_user_id:
+                    k.remove(z)
+
         number_of_user = len(k)
         if number_of_user % 2 == 1 or number_of_user == 0:
             await msg.reply(f'人数异常, 当前人数为 {len(k)} , 必须为非0偶数')
             return
         player_list = []
 
+        sqlSession = get_session()
         z = sqlSession.query(Player).filter(Player.kookId.in_([i.id for i in k])).all()
         dict_for_kook_id = {}
         for i in z:
@@ -152,6 +162,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
         # 获取今天的日期并设置时间为 00:00:00
         today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+        # 更新session
         result_temp = len(sqlSession.execute(
             select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight)).all())
         newest_data = sqlSession.execute(
@@ -166,12 +177,12 @@ def init(bot: Bot, es_channels: EsChannels):
 
         try:
             sqlSession.add(will_match_data)
+            sqlSession.commit()
         except Exception as e:
             print(e.with_traceback())
             sqlSession.rollback()
-        else:
-            sqlSession.commit()
-        # print(divide_data.attacker_list)
+            return
+            # print(divide_data.attacker_list)
         # print(divide_data.defender_list)
         await msg.reply(CardMessage(
             Card(
@@ -201,7 +212,8 @@ def init(bot: Bot, es_channels: EsChannels):
                 Module.Header(f'比赛ID：{will_match_data.match_id_2}')
             )
         ))
-        if is_no_move != 1:
+
+        if is_no_move:
             await move_a_to_b_ex(OldGuildChannel.match_attack_channel, divide_data.attacker_list)
             await move_a_to_b_ex(OldGuildChannel.match_defend_channel, divide_data.defender_list)
         else:

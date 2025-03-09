@@ -219,7 +219,7 @@ def init(bot: Bot, es_channels: EsChannels):
         else:
             LogHelper.log("不移动")
 
-        px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x'
+        px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x.txt'
         with open(px, 'w') as f:
             text = GameConfig(match_id=f'{will_match_data.match_id_2}').to_str()
             f.write(text)

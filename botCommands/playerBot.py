@@ -1,4 +1,5 @@
 import json
+import os.path
 import random
 import re
 import uuid
@@ -221,6 +222,9 @@ def init(bot: Bot, es_channels: EsChannels):
             LogHelper.log("不移动")
 
         px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x.txt'
+        if not os.path.exists(px):
+            await msg.reply('路径不存在，快来检查服务器')
+            return
         with open(px, 'w') as f:
             text = GameConfig(match_id=f'{will_match_data.match_id_2}')
             text.culture_team1 = first_faction

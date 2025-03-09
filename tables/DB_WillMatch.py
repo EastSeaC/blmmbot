@@ -58,11 +58,11 @@ class DB_WillMatchs(Base):
 
     def get_match_description(self):
         tartest = '未知'
-        if self.is_cancel:
+        if self.is_cancel == 1:
             tartest = '已取消'
-        elif self.is_finished:
+        elif self.is_finished == 1:
             tartest = '已完成'
-        elif self.is_cancel is False and self.is_finished is False:
+        elif self.is_cancel == 0 and self.is_finished == 0:
             tartest = '进行中'
         else:
             tartest = '异常'

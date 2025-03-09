@@ -4,12 +4,15 @@ from aiohttp import web
 import sys
 # 本地文件导出
 from web_bp import bp
-
+from webBlueprint.adminRouter import adminRouter
+from webBlueprint.matchRouter import matchRouter
 # 添加routes到app中
 app = web.Application()
 app.router.add_static('/satic/', './satic', name='satic')
 aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('./satic'))  # 指定模板文件目录
 app.add_routes(bp)
+app.add_routes(adminRouter)
+app.add_routes(matchRouter)
 
 # HOST, PORT = '0.0.0.0', 14725
 HOST, PORT = 'localhost', 14725

@@ -24,7 +24,7 @@ class DB_WillMatchs(Base):
     match_type = Column(String(50), nullable=True)  # 对应 C# 的 ESMatchType
     match_config = Column(String(350), nullable=True)  # 对应 C# 的 EMatchConfig
 
-    is_cancel = Column(Boolean, nullable=True, default=False)  # 对应 C# 的 isCancel
+    is_cancel = Column(INT, nullable=True, default='0')  # 对应 C# 的 isCancel
     cancel_reason = Column(Text, nullable=True)
     is_finished = Column(Boolean, nullable=False, default=False)
     finished_time = Column(DateTime, nullable=True)

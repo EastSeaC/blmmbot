@@ -23,10 +23,11 @@ async def get_match_obj(req):
     print('服务器请求数据' + server_name)
     if server_name is not None and server_name:
         server_name = server_name if '-' not in server_name else server_name.split('-')[0]
+        print(server_name)
         with get_session() as sqlSession:
             result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
                       .filter(DB_WillMatchs.server_name == server_name,
-                              DB_WillMatchs.is_cancel == False,
+                              DB_WillMatchs.is_cancel == 0,
                               DB_WillMatchs.time_match >= datetime.datetime.now() - datetime.timedelta(minutes=5))
                       .limit(1)
                       .first())
@@ -37,7 +38,9 @@ async def get_match_obj(req):
                 # print(will_match.first_team_player_ids)
                 return web.json_response(ControllerResponse.success_response(will_match.to_dict()))
             else:
-                return web.json_response(ControllerResponse.error_response(-1, "找不到匹配对局"))
+                textresult= "找不到匹配对局"
+                print(textresult)
+                return web.json_response(ControllerResponse.error_response(-1, textresult))
     else:
         return web.json_response(ControllerResponse.error_response(-1, "没有提交服务器名称"))
     pass

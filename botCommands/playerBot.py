@@ -184,6 +184,7 @@ def init(bot: Bot, es_channels: EsChannels):
             return
             # print(divide_data.attacker_list)
         # print(divide_data.defender_list)
+        first_faction, second_faction = get_random_faction_2()
         await msg.reply(CardMessage(
             Card(
                 Module.Header('分队情况表'),
@@ -194,7 +195,7 @@ def init(bot: Bot, es_channels: EsChannels):
                         3,
                         Element.Text(divide_data.get_attacker_names(), type=Types.Text.KMD),
                         Element.Text(divide_data.get_attacker_scores(), type=Types.Text.KMD),
-                        Element.Text('game_info', type=Types.Text.KMD),
+                        Element.Text(f'game_info\n{first_faction}', type=Types.Text.KMD),
                     )
                 ),
                 Module.Divider(),
@@ -203,7 +204,7 @@ def init(bot: Bot, es_channels: EsChannels):
                         3,
                         Element.Text(divide_data.get_defender_names(), type=Types.Text.KMD),
                         Element.Text(divide_data.get_defender_scores(), type=Types.Text.KMD),
-                        Element.Text('game_info', type=Types.Text.KMD),
+                        Element.Text(f'game_info\n{second_faction}', type=Types.Text.KMD),
                     )
                 ),
                 Module.Divider(),
@@ -221,8 +222,10 @@ def init(bot: Bot, es_channels: EsChannels):
 
         px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x.txt'
         with open(px, 'w') as f:
-            text = GameConfig(match_id=f'{will_match_data.match_id_2}').to_str()
-            f.write(text)
+            text = GameConfig(match_id=f'{will_match_data.match_id_2}')
+            text.culture_team1 = first_faction
+            text.culture_team2 = second_faction
+            f.write(text.to_str())
         ServerManager.RestartBLMMServer(6)
         await msg.reply('分配完毕!')
 

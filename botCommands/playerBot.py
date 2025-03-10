@@ -375,7 +375,7 @@ def init(bot: Bot, es_channels: EsChannels):
         助攻:{db_player.assist}
         KDA:{round((db_player.kill + db_player.assist) / max(db_player.death, 1), 3)}
         KD: {round(db_player.kill / max(db_player.death, 1), 3)}
-        伤害:
+        伤害:{db_player.damage}
         '''
 
             game_info = f'''**游戏**

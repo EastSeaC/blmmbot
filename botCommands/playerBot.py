@@ -370,20 +370,20 @@ def init(bot: Bot, es_channels: EsChannels):
                 )
             )
             Kill_Info = f'''**Kill Info**
-        击杀:{player.kill}
-        死亡:{player.death}
-        助攻:{player.assist}
-        KDA:{(player.kill + player.assist) / max(player.death, 1)}
-        KD: {player.kill / max(player.death, 1)}
+        击杀:{db_playerdata.kill}
+        死亡:{db_playerdata.death}
+        助攻:{db_playerdata.assist}
+        KDA:{(db_playerdata.kill + db_playerdata.assist) / max(db_playerdata.death, 1)}
+        KD: {db_playerdata.kill / max(db_playerdata.death, 1)}
         伤害:
         '''
 
             game_info = f'''**游戏**
-        对局数:{player.match}
-        胜场:{player.win}
-        败场:{player.lose}
-        平局:{player.draw}
-        胜/败:{player.win / max(player.lose, 1)}
+        对局数:{db_playerdata.match}
+        胜场:{db_playerdata.win}
+        败场:{db_playerdata.lose}
+        平局:{db_playerdata.draw}
+        胜/败:{db_playerdata.win / max(db_playerdata.lose, 1)}
         MVPs:{0}
                 '''
             c2 = Card(

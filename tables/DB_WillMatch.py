@@ -85,5 +85,6 @@ class DB_WillMatchs(Base):
             "is_finished": self.is_finished,
             "finished_time": self.finished_time.isoformat() if self.finished_time else None,
             "match_id": self.match_id,
+            'match_id_2': self.match_id_2,
             "server_name": self.server_name,
         }

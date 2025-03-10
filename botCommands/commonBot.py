@@ -188,10 +188,10 @@ def cancel_match(author_name: str, match_id_2: int):
     if z is None or len(z) == 0:
         return '比赛ID 错误'
     will_match: DB_WillMatchs = z[0]
-    if will_match.is_cancel is True or will_match.is_finished is True:
+    if will_match.is_cancel ==1 or will_match.is_finished ==1:
         return f'比赛ID {will_match.match_id_2} 已结束或者取消， 不再接受操作'
     else:
-        will_match.is_cancel = True
+        will_match.is_cancel = 1
         will_match.cancel_reason = f'管理员{author_name}于{get_time_str()}取消'
         try:
             sql_session.merge(will_match)

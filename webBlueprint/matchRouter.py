@@ -38,7 +38,7 @@ async def get_match_obj(req):
                 # print(will_match.first_team_player_ids)
                 return web.json_response(ControllerResponse.success_response(will_match.to_dict()))
             else:
-                textresult= "找不到匹配对局"
+                textresult = "找不到匹配对局"
                 print(textresult)
                 return web.json_response(ControllerResponse.error_response(-1, textresult))
     else:
@@ -54,10 +54,12 @@ async def cancel_match(req):
     LogHelper.log('尝试取消比赛')
     sql_session = get_session()
     if server_name is not None and match_id is not None:
+        server_name = server_name.split('-')[0]
         target_match_id = int(match_id)
 
         today_midnight = get_midnight_time()
         z = sql_session.execute(select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight,
+                                                            DB_WillMatchs.server_name == server_name,
                                                             DB_WillMatchs.match_id_2 == target_match_id)).first()
         if z is None or len(z) == 0:
             return ControllerResponse.success_response(True)

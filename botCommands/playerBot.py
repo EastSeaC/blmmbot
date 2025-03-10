@@ -373,8 +373,8 @@ def init(bot: Bot, es_channels: EsChannels):
         击杀:{db_player.kill}
         死亡:{db_player.death}
         助攻:{db_player.assist}
-        KDA:{(db_player.kill + db_player.assist) / max(db_player.death, 1)}
-        KD: {db_player.kill / max(db_player.death, 1)}
+        KDA:{round((db_player.kill + db_player.assist) / max(db_player.death, 1), 3)}
+        KD: {round(db_player.kill / max(db_player.death, 1), 3)}
         伤害:
         '''
 
@@ -383,7 +383,7 @@ def init(bot: Bot, es_channels: EsChannels):
         胜场:{db_player.win}
         败场:{db_player.lose}
         平局:{db_player.draw}
-        胜/败:{db_player.win / max(db_player.lose, 1)}
+        胜/败:{round(db_player.win / max(db_player.lose, 1), 3)}
         MVPs:{0}
                 '''
             c2 = Card(

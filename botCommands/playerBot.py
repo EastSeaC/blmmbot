@@ -22,6 +22,7 @@ from lib.match_state import PlayerBasicInfo, DivideData, MatchState, MatchCondit
 from tables import *
 from tables.DB_WillMatch import DB_WillMatchs
 from tables.PlayerChangeName import DB_PlayerChangeNames
+from tables.PlayerMedal import DB_PlayerMedal
 
 sqlSession = get_session()
 g_channels: EsChannels
@@ -335,6 +336,18 @@ def init(bot: Bot, es_channels: EsChannels):
                 player.rank = db_player.rank
             else:
                 db_player = player
+
+            # 获取玩家 勋章
+            player_medal_db = sql_session.query(DB_PlayerMedal).filter(DB_PlayerMedal.kookId == msg.author_id)
+            if player_medal_db.count() ==1:
+                player_medal_db:DB_PlayerMedal = player_medal_db.first()
+            else:
+                player_medal_db = DB_PlayerMedal()
+                player_medal_db.playerId = db_player.playerId
+                player_medal_db.kookId = player.kookId
+                sql_session.add(player_medal_db)
+                sql_session.commit()
+
             cm = CardMessage()
             rank_name = get_rank_name(player.rank)
             c1 = Card(
@@ -399,7 +412,10 @@ def init(bot: Bot, es_channels: EsChannels):
                 ),
                 Module.Divider(),
                 Module.Section(
-                    
+                    Struct.Paragraph(
+                        3,
+                        Element.Text(player_medal_db.get_testor_emoji)
+                    )
                 )
             )
             # cm.append(c1)

@@ -18,3 +18,12 @@ class DB_PlayerMedal(Base):
     kookId = Column(VARCHAR(50), nullable=False, unique=True)
 
     medal_blmm_testor = Column(INT, nullable=False)
+
+    __base_emoji = "(emj){}(emj)[{}]"
+
+    @property
+    def get_testor_emoji(self):
+        if self.medal_blmm_testor == 1:
+            return DB_PlayerMedal.__base_emoji.format('BLMM元勋', '9019084812125033/4ggrfAXKOo02o02o')
+        else:
+            return ''

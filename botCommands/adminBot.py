@@ -60,6 +60,7 @@ def init(bot: Bot, es_channels: EsChannels):
     async def es2(msg: Message):
         t = '''    /reset_state_machine
     
+    /admin 打开管理员菜单
     /request_admin [playerId/userId] 申请成为管理
     /change_admin_level [playerId] [level] 修改管理员等级
     /cancel_admin [playerId/userId] 取消管理员

@@ -92,6 +92,7 @@ class GameConfig:
                 f"WarmupTimeLimit {self.warmup_time_limit}\n"
                 f"AllowPollsToChangeMaps {self.allow_polls_to_change_maps}\n"
                 f"AutomatedBattleCount {self.automated_battle_count}\n"
+                f"SpectatorCameraTypes LockToTeamMembersView\n"
                 f"AutomatedBattleSwitchingEnabled {self.automated_battle_switching_enabled}\n"
                 f"enable_automated_battle_switching\nstart_game_and_mission")
 

@@ -333,7 +333,8 @@ def init(bot: Bot, es_channels: EsChannels):
             if db_playerdata.count() >= 1:
                 db_player: DB_PlayerData = db_playerdata.first()
                 player.rank = db_player.rank
-
+            else:
+                db_player = player
             cm = CardMessage()
             rank_name = get_rank_name(player.rank)
             c1 = Card(
@@ -395,6 +396,10 @@ def init(bot: Bot, es_channels: EsChannels):
                         Element.Text(f"**步/骑/弓弩**\n{player.infantry}/{player.cavalry}/{player.archer}",
                                      type=Types.Text.KMD),
                     )
+                ),
+                Module.Divider(),
+                Module.Section(
+                    
                 )
             )
             # cm.append(c1)

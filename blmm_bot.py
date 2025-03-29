@@ -10,6 +10,7 @@ from khl import Bot, Message, GuildUser
 from khl.card import Card, Module, Struct, Element, Types, CardMessage
 from sqlalchemy import select
 
+from entity.BLMMServerSocket import AsyncSocketServer
 from lib.LogHelper import LogHelper
 from botCommands import adminBot, regBot, playerBot, configBot, matchBot, testBot, commonBot
 from convert.PlayerMatchData import TPlayerMatchData
@@ -236,5 +237,11 @@ HOST, PORT = '0.0.0.0', 14725
 if __name__ == '__main__':
     app.router.add_static('/satic', 'satic')
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('satic'))
+
     asyncio.get_event_loop().run_until_complete(
-        asyncio.gather(web._run_app(app, host=HOST, port=PORT), bot.start()))
+        asyncio.gather(
+            web._run_app(app, host=HOST, port=PORT),
+            bot.start(),
+            # AsyncSocketServer().start_server(),
+        )
+    )

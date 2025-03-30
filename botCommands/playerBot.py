@@ -124,8 +124,11 @@ def init(bot: Bot, es_channels: EsChannels):
                     await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
                     await move_a_to_b_ex(OldGuildChannel.match_set_channel, [t.id])
                 player: Player = dict_for_kook_id[t.id]
+                px: DB_PlayerData = sqlSession.query(DB_PlayerData).filter(
+                    DB_PlayerData.playerId == player.playerId).first()
+
                 player_info = PlayerBasicInfo({'username': player.kookName})
-                player_info.score = player.rank
+                player_info.score = px.rank # 分数采用总分评价
                 player_info.user_id = player.kookId
                 player_info.username = player.kookName
                 player_info.player_id = player.playerId
@@ -339,8 +342,8 @@ def init(bot: Bot, es_channels: EsChannels):
 
             # 获取玩家 勋章
             player_medal_db = sql_session.query(DB_PlayerMedal).filter(DB_PlayerMedal.kookId == msg.author_id)
-            if player_medal_db.count() ==1:
-                player_medal_db:DB_PlayerMedal = player_medal_db.first()
+            if player_medal_db.count() == 1:
+                player_medal_db: DB_PlayerMedal = player_medal_db.first()
             else:
                 player_medal_db = DB_PlayerMedal()
                 player_medal_db.playerId = db_player.playerId

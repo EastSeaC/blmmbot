@@ -52,13 +52,14 @@ def init(bot: Bot, es_channels):
             await msg.reply('playerId 不合规则，请重新确认并仔细填写')
             return
 
-        z = session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId == player_id).count()
+        sql_session = get_session()
+        z = sql_session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId.like(f'%{player_id}%')).count()
         if z == 0:
             await msg.reply('该playerId 所属的玩家暂未进入服务器，请先进入游戏服务器')
             return
 
             # 检测是否已被注册
-        t = session.query(Player).filter(
+        t = sql_session.query(Player).filter(
             or_(Player.playerId == player_id, Player.kookId == user_id)).count()
         if t > 0:
             failed_text += '该kook_id 或player_id已被注册,如果你确认这个账号是你的，请联系管理员'
@@ -66,7 +67,7 @@ def init(bot: Bot, es_channels):
             return
 
         # 判断
-        verify_code_obj = session.query(Verify).filter(Verify.code == verify_code, Verify.playerId == player_id)
+        verify_code_obj = sql_session.query(Verify).filter(Verify.code == verify_code, Verify.playerId == player_id)
         if verify_code_obj is None:
             LogHelper.log(Verify(verify_code_obj).code)
             failed_text += '验证码错误'
@@ -77,8 +78,8 @@ def init(bot: Bot, es_channels):
         player.playerId = player_id
         player.kookId = user_id
         player.kookName = user.username
-        session.add(player)
-        session.commit()
+        sql_session.add(player)
+        sql_session.commit()
 
         LogHelper.log(f'注册成功, playerId:{player_id}, kookName:{user.username}')
         await msg.reply("注册成功")

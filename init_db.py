@@ -21,17 +21,14 @@ def get_session():
     try:
         global engine
         Session = sessionmaker(bind=engine)
-        session = Session()
-
-        Base.metadata.create_all(engine)
     except Exception as e:
         engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8')
         engine.connect()
         Session = sessionmaker(bind=engine)
-        session = Session()
 
-        Base.metadata.create_all(engine)
         pass
+    session = Session()
+    Base.metadata.create_all(engine)
     return session
 
 

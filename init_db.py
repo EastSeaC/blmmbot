@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from config import *
 from tables import *
 
-
+global engine
 engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8')
 engine.connect()
 

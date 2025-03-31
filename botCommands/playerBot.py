@@ -74,7 +74,7 @@ def init(bot: Bot, es_channels: EsChannels):
             player: Player = z.first()
             playerId = player.playerId
 
-            match_history = (sqlSession.query(DB_Matchs).order_by(desc(DB_WillMatchs.time_match))
+            match_history = (sqlSession.query(DB_Matchs).order_by(desc(DB_Matchs.time_match))
                              .filter(DB_Matchs.left_players.contains(playerId)).limit(10)).all()
             cm = CardMessage()
             c7 = Card(

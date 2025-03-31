@@ -36,7 +36,9 @@ def init(bot: Bot, es_channels: EsChannels):
     async def world(msg: Message, *args):
         cm = CardMessage()
 
+        sqlSession = get_session()
         sqlSession.commit()
+
         t = sqlSession.query(Player).order_by(Player.rank.desc()).limit(10).all()
         print(t)
         kill_scoreboard = '**积分榜单**'
@@ -64,9 +66,40 @@ def init(bot: Bot, es_channels: EsChannels):
         cm.append(c2)
         await msg.reply(cm)
 
+    @bot.command(name='log_history', case_sensitive=False, aliases=['l'])
+    async def show_player_match_history(msg: Message, *args):
+        z = sqlSession.query(Player).filter(Player.kookId == msg.author_id)
+
+        if z.count() == 1:
+            player: Player = z.first()
+            playerId = player.playerId
+
+            match_history = (sqlSession.query(DB_Matchs).order_by(desc(DB_WillMatchs.time_match))
+                             .filter(DB_Matchs.left_players.contains(playerId)).limit(10)).all()
+            cm = CardMessage()
+            c7 = Card(
+                Module.Header(f'玩家：{player.kookName} PlayerId:{player.playerId}'),
+                Module.Divider(),
+            )
+
+            for i in match_history:
+                match_info: DB_Matchs = i
+                if match_info is not None:
+                    match_id =str(match_info.server_name).split('-')[1]
+                    c7.append(Module.Section(
+                        Element.Text(f'比赛ID:{match_id}'),
+                        Element.Button('查看比赛记录')
+                    ))
+
+            cm.append(c7)
+            await msg.reply(cm)
+        else:
+            await msg.reply('请先注册，如果不会，可以先输入/h 然后按enter发送消息到指令频道')
+        pass
+
     @bot.command(name='reset_score', case_sensitive=False, aliases=['rs'])
     async def reset_score(msg: Message, *args):
-
+        sqlSession = get_session()
         pass
 
     @bot.command(name='e', case_sensitive=False, aliases=['e'])
@@ -128,7 +161,7 @@ def init(bot: Bot, es_channels: EsChannels):
                     DB_PlayerData.playerId == player.playerId).first()
 
                 player_info = PlayerBasicInfo({'username': player.kookName})
-                player_info.score = px.rank # 分数采用总分评价
+                player_info.score = px.rank  # 分数采用总分评价
                 player_info.user_id = player.kookId
                 player_info.username = player.kookName
                 player_info.player_id = player.playerId
@@ -321,8 +354,15 @@ def init(bot: Bot, es_channels: EsChannels):
                                theme=Types.Theme.DANGER),
                 Element.Button("查看排行榜", value=PlayerButtonValue.player_score_list, click=Types.Click.RETURN_VAL,
                                theme=Types.Theme.SECONDARY)
-            )
+            ),
+            Module.Divider()
         )
+
+        if ChannelManager.is_admin(m.author_id):
+            c7.append(Module.Section(
+                Element.Text(content=ServerManager.check_token_file())
+            ))
+
         await m.reply(CardMessage(c7))
 
     @bot.command(name='score', case_sensitive=False, aliases=['s'])

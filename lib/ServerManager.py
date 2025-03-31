@@ -1,7 +1,9 @@
+import io
 import json
 import os.path
 import subprocess
 import time
+from datetime import datetime
 
 import win32con
 import win32gui
@@ -11,6 +13,34 @@ from lib.ServerGameConfig import GameConfig
 
 
 class ServerManager:
+    """
+    这个class 用于管理 BLMM系统的 token文件等等
+    """
+    toke_file_path = r'C:\Users\Administrator\Documents\Mount and Blade II Bannerlord\Tokens\DedicatedCustomServerAuthToken.txt'
+
+    @staticmethod
+    def check_token_file():
+        toke_file_path = ServerManager.toke_file_path
+        result = '未知'
+        if not os.path.exists(toke_file_path):
+            result = 'token文件不存在'
+        else:
+            # 获取文件修改时间（时间戳）
+            mod_time = os.path.getmtime(toke_file_path)
+            # 转换为 datetime 对象
+            file_mod_time = datetime.fromtimestamp(mod_time)
+            # 将时间戳转换为可读格式
+            readable_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(mod_time))
+            result = f'token文件存在，最后修改时间: {readable_time}'
+            # 获取当前时间
+            current_time = datetime.now()
+            # 计算时间差
+            time_diff = current_time - file_mod_time
+            # 提取天数
+            days_diff = time_diff.days
+            result = f'token文件存在，最后修改时间: {file_mod_time}，距今 {days_diff} 天'
+        return result
+
     @staticmethod
     def RestartBLMMServer(server_index: int = 1):
         for hwnd, title in get_all_windows():

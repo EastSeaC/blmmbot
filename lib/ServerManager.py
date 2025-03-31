@@ -38,7 +38,10 @@ class ServerManager:
             time_diff = current_time - file_mod_time
             # 提取天数
             days_diff = time_diff.days
-            result = f'token文件存在，最后修改时间: {file_mod_time}，距今 {days_diff} 天'
+            result = f'token文件存在，最后修改时间: {readable_time}，距今 {days_diff} 天'
+
+            if days_diff >= 60:
+                result += '【快去重新生成一份token文件！】'
         return result
 
     @staticmethod

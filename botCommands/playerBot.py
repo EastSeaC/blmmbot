@@ -87,7 +87,11 @@ def init(bot: Bot, es_channels: EsChannels):
                 if match_info is not None:
                     c7.append(Module.Section(
                         Element.Text(f'ID:{match_info.server_name} [{match_info.time_match}]'),
-                        Element.Button('查看比赛记录')
+                        Element.Button('查看比赛记录', value=json.dumps(
+                            {'match_id': match_info.get_match_id,
+                             'player_id': player.playerId,
+
+                             }))
                     ))
 
             cm.append(c7)
@@ -158,6 +162,13 @@ def init(bot: Bot, es_channels: EsChannels):
                 player: Player = dict_for_kook_id[t.id]
                 px: DB_PlayerData = sqlSession.query(DB_PlayerData).filter(
                     DB_PlayerData.playerId == player.playerId).first()
+                if px is None:
+                    px = DB_PlayerData()
+                    px.playerId = player.playerId
+                    px.playerName = player.kookName
+                    px.rank = 1000
+                    sqlSession.add(px)
+                    sqlSession.commit()
 
                 player_info = PlayerBasicInfo({'username': player.kookName})
                 player_info.score = px.rank  # 分数采用总分评价

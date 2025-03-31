@@ -45,6 +45,14 @@ class DB_Matchs(Base):
             'tag': self.tag,
         }
 
+    @property
+    def get_match_id(self):
+        match_id = '0'
+        if '-' in self.server_name:
+            match_id = str(self.server_name).split('-')[1]
+
+        return match_id
+
     def get_player_team(self, player_id: str):
         if player_id in self.left_players:
             return BannerlordTeam.FirstTeam

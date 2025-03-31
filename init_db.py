@@ -19,12 +19,12 @@ def confirm(msg: str):
 
 def get_session():
     try:
+        global engine
         Session = sessionmaker(bind=engine)
         session = Session()
 
         Base.metadata.create_all(engine)
     except Exception as e:
-        global engine
         engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8')
         engine.connect()
         Session = sessionmaker(bind=engine)

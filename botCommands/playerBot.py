@@ -85,9 +85,8 @@ def init(bot: Bot, es_channels: EsChannels):
             for i in match_history:
                 match_info: DB_Matchs = i
                 if match_info is not None:
-                    match_id =str(match_info.server_name).split('-')[1]
                     c7.append(Module.Section(
-                        Element.Text(f'比赛ID:{match_id}'),
+                        Element.Text(f'比赛ID:{match_info.server_name}'),
                         Element.Button('查看比赛记录')
                     ))
 

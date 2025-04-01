@@ -18,14 +18,6 @@ def receive_close(conn, exception):
     print("连接关闭,重新连接")
 
 
-def confirm(msg: str):
-    print(msg, end="")
-    word = input("(y或yes表示是，其他表示否) ")
-    if word.lower() in ("y", "yes"):
-        return True
-    return False
-
-
 def get_session():
     try:
         global engine

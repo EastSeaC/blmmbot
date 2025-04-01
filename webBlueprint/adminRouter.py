@@ -9,7 +9,7 @@ from entity.BanType import BanType
 from init_db import get_session
 from lib.ServerGameConfig import GameConfig
 from lib.ServerManager import ServerManager
-from tables.Admin import DBAdmin
+from tables.Admin import DB_Admin
 from tables.Ban import DB_Ban
 
 adminRouter = web.RouteTableDef()
@@ -49,7 +49,7 @@ def ban_player(request):
 @adminRouter.get('/get-admin-list')
 def get_admin_list(req):
     with get_session() as sqlSession:
-        z = sqlSession.execute(select(DBAdmin.playerId)).scalars().all()
+        z = sqlSession.execute(select(DB_Admin.playerId)).scalars().all()
         return Response(text=json.dumps(z))
 
 

@@ -10,7 +10,7 @@ from init_db import get_session
 from kook.ChannelKit import ChannelManager
 from lib.basic import generate_numeric_code
 from tables import *
-from tables.Admin import DBAdmin
+from tables.Admin import DB_Admin
 from tables.PlayerNames import DB_PlayerNames
 
 session = get_session()
@@ -236,11 +236,11 @@ def init(bot: Bot, es_channels: EsChannels):
                 if p.count() == 1:
                     player: Player = p.first()
 
-                    admin_record = sql_session.query(DBAdmin).filter(DBAdmin.playerId == target_kook_id)
+                    admin_record = sql_session.query(DB_Admin).filter(DB_Admin.playerId == target_kook_id)
                     if admin_record.count() >= 1:
                         await msg.reply('管理员已存在')
                     else:
-                        admin_record = DBAdmin()
+                        admin_record = DB_Admin()
                         admin_record.playerId = player.playerId
                         admin_record.kookId = player.kookId
                         admin_record.playerName = player.kookName

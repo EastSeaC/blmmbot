@@ -3,7 +3,7 @@ from sqlalchemy import *
 from .base import Base
 
 
-class DBAdmin(Base):
+class DB_Admin(Base):
     __tablename__ = "admins"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

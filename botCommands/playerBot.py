@@ -43,14 +43,15 @@ def init(bot: Bot, es_channels: EsChannels):
         print(t)
         kill_scoreboard = '**积分榜单**'
         for id, k in enumerate(t):
-            player: Player = k
-            kill_scoreboard += f"\n{player.kookName}:{player.rank}"
+            # player: Player = k
+            player_data: DB_PlayerData = k
+            kill_scoreboard += f"\n{player_data.playerName}:{player_data.rank}"
 
         game_scoreboard = '**对局榜单**'
         t = sqlSession.query(DB_PlayerData).order_by(DB_PlayerData.win.desc()).limit(10).all()
         for id, k in enumerate(t):
-            player: Player = k
-            game_scoreboard += f"\n{player.kookName}:{player.win}"
+            player: DB_PlayerData = k
+            game_scoreboard += f"\n{player.playerName}:{player.win}"
 
         c2 = Card(
             Module.Section(

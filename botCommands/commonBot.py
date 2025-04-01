@@ -6,7 +6,8 @@ from khl import Bot, EventTypes, Event
 from khl.card import CardMessage, Card, Module, Element, Types
 from sqlalchemy import desc, select
 
-from botCommands.ButtonValueImpl import AdminButtonValue, ESActionType
+from botCommands.ButtonValueImpl import AdminButtonValue, ESActionType, PlayerButtonValue
+from kook.CardHelper import get_player_score_card
 from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
@@ -66,6 +67,11 @@ def init(bot: Bot, es_channels: EsChannels):
                     x = cancel_match(e_body_user_info, btn_value_dict['match_id_2'])
                     await channel.send(x)
                     pass
+        elif value == PlayerButtonValue.player_score:
+            channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
+
+            cx = await get_player_score_card(user_id)
+            await channel.send(cx)
         elif value == AdminButtonValue.Refresh_Server_Force:
             if user_id not in ChannelManager.manager_user_id:
                 channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
@@ -188,7 +194,7 @@ def cancel_match(author_name: str, match_id_2: int):
     if z is None or len(z) == 0:
         return '比赛ID 错误'
     will_match: DB_WillMatchs = z[0]
-    if will_match.is_cancel ==1 or will_match.is_finished ==1:
+    if will_match.is_cancel == 1 or will_match.is_finished == 1:
         return f'比赛ID {will_match.match_id_2} 已结束或者取消， 不再接受操作'
     else:
         will_match.is_cancel = 1

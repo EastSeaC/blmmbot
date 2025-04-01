@@ -296,7 +296,8 @@ def init(bot: Bot, es_channels: EsChannels):
     @bot.command(name='change_name', case_sensitive=False, aliases=['cn'])
     async def change_name(msg: Message, new_name: str, *args):
         # 处理玩家随便输入的时候， 在函数原型中加入 , *args
-        sqlSession.commit()
+        # sqlSession.commit()
+        sqlSession = get_session()
         t: Player = sqlSession.query(Player).filter(Player.kookId == msg.author_id).first()
         if t:
             player: Player = t
@@ -374,6 +375,8 @@ def init(bot: Bot, es_channels: EsChannels):
             ))
 
         await m.reply(CardMessage(c7))
+
+
 
     @bot.command(name='score', case_sensitive=False, aliases=['s'])
     async def show_score(msg: Message, *args):
@@ -477,7 +480,6 @@ def init(bot: Bot, es_channels: EsChannels):
             await  msg.reply(cm)
         else:
             await msg.reply("请先注册")
-
         pass
 
 

@@ -69,6 +69,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='log_history', case_sensitive=False, aliases=['l'])
     async def show_player_match_history(msg: Message, *args):
+        sqlSession = get_session()
         z = sqlSession.query(Player).filter(Player.kookId == msg.author_id)
 
         if z.count() == 1:

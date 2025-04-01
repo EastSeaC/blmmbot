@@ -74,6 +74,8 @@ class GameConfig:
                 f"#GamePassword {self.game_password}\n"
                 f"{automated_battle_pool_str}"
                 f"Map {self.map}\n"
+                f"enable_map_voting\n"
+                f"enable_culture_voting\n"
                 f"CultureTeam1 {self.culture_team1}\n"
                 f"CultureTeam2 {self.culture_team2}\n"
                 f"RespawnPeriodTeam1 {self.respawn_period_team1}\n"

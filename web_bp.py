@@ -271,11 +271,11 @@ async def update_match_data2(request):
             if match_total_sum.attacker_rounds < match_total_sum.defender_rounds:
                 if k.player_id in t.left_players:
                     print(
-                        f"{k.player_name} is attacker. and attacker_rounds:{match_total_sum.attacker_rounds} defender分数是:{match_total_sum.defender_rounds}")
+                        f"{k.player_name} .分数{match_total_sum.attacker_rounds}-{match_total_sum.defender_rounds}，false")
                     k.set_is_lose(True)
                 elif k.player_id in t.right_players:
                     print(
-                        f"{k.player_name} is defender.攻击者分数{match_total_sum.attacker_rounds} and defender分数是:{match_total_sum.defender_rounds}")
+                        f"{k.player_name} .分数{match_total_sum.attacker_rounds}-{match_total_sum.defender_rounds}，win")
                     k.set_is_lose(False)
             elif match_total_sum.attacker_rounds == match_total_sum.defender_rounds:
                 print(f"{k.player_name} .分数{match_total_sum.attacker_rounds}-{match_total_sum.defender_rounds}")
@@ -283,8 +283,12 @@ async def update_match_data2(request):
                     k.set_is_lose(False)
             elif match_total_sum.attacker_rounds > match_total_sum.defender_rounds:
                 if k.player_id in t.left_players:
+                    print(
+                        f"{k.player_name} .分数{match_total_sum.attacker_rounds}-{match_total_sum.defender_rounds}，win")
                     k.set_is_lose(False)
                 elif k.player_id in t.right_players:
+                    print(
+                        f"{k.player_name} .分数{match_total_sum.attacker_rounds}-{match_total_sum.defender_rounds}，false")
                     k.set_is_lose(True)
             # if k.win_rounds >= 3 or k.win >= 3:
             #     k.set_is_lose(False)

@@ -7,6 +7,41 @@ from tables import Player, DB_PlayerData
 from tables.PlayerMedal import DB_PlayerMedal
 
 
+async def get_score_list_card():
+    cm = CardMessage()
+
+    sqlSession = get_session()
+    sqlSession.commit()
+
+    t = sqlSession.query(DB_PlayerData).order_by(DB_PlayerData.rank.desc()).limit(10).all()
+    # print(t)
+    kill_scoreboard = '**积分榜单**'
+    for id, k in enumerate(t):
+        # player: Player = k
+        player_data: DB_PlayerData = k
+        kill_scoreboard += f"\n{player_data.playerName}:{player_data.rank}"
+
+    game_scoreboard = '**对局榜单**'
+    t = sqlSession.query(DB_PlayerData).order_by(DB_PlayerData.win.desc()).limit(10).all()
+    for id, k in enumerate(t):
+        player: DB_PlayerData = k
+        game_scoreboard += f"\n{player.playerName}:{player.win}"
+
+    c2 = Card(
+        Module.Section(
+            Struct.Paragraph(
+                3,
+                Element.Text(kill_scoreboard, type=Types.Text.KMD),
+                Element.Text(game_scoreboard, type=Types.Text.KMD),
+                Element.Text(f"**步/骑/弓弩**\n",
+                             type=Types.Text.KMD),
+            )
+        )
+    )
+    cm.append(c2)
+    return cm
+
+
 async def get_player_score_card(kook_id: str):
     sql_session = get_session()
     t = sql_session.query(Player).filter(Player.kookId == kook_id)

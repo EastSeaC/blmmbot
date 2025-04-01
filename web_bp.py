@@ -270,7 +270,7 @@ async def update_match_data2(request):
 
             if match_total_sum.attacker_rounds < match_total_sum.defender_rounds:
                 if k.player_id in t.left_players:
-                    print(11,k.player_name)
+                    print(f"{k.player_name} is attacker. and attacker_rounds:{match_total_sum.attacker_rounds}")
                     k.set_is_lose(True)
                 elif k.player_id in t.right_players:
                     print(12, k.player_name)

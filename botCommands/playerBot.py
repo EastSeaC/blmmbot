@@ -40,7 +40,7 @@ def init(bot: Bot, es_channels: EsChannels):
         sqlSession.commit()
 
         t = sqlSession.query(DB_PlayerData).order_by(DB_PlayerData.rank.desc()).limit(10).all()
-        print(t)
+        # print(t)
         kill_scoreboard = '**积分榜单**'
         for id, k in enumerate(t):
             # player: Player = k

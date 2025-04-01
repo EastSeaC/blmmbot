@@ -39,7 +39,7 @@ def init(bot: Bot, es_channels: EsChannels):
         sqlSession = get_session()
         sqlSession.commit()
 
-        t = sqlSession.query(Player).order_by(Player.rank.desc()).limit(10).all()
+        t = sqlSession.query(DB_PlayerData).order_by(DB_PlayerData.rank.desc()).limit(10).all()
         print(t)
         kill_scoreboard = '**积分榜单**'
         for id, k in enumerate(t):
@@ -47,7 +47,7 @@ def init(bot: Bot, es_channels: EsChannels):
             kill_scoreboard += f"\n{player.kookName}:{player.rank}"
 
         game_scoreboard = '**对局榜单**'
-        t = sqlSession.query(Player).order_by(Player.win.desc()).limit(10).all()
+        t = sqlSession.query(DB_PlayerData).order_by(DB_PlayerData.win.desc()).limit(10).all()
         for id, k in enumerate(t):
             player: Player = k
             game_scoreboard += f"\n{player.kookName}:{player.win}"

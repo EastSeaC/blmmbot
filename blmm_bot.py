@@ -125,6 +125,8 @@ async def task1():
                 # Module.Context(f'比赛时间为{MatchConditionEx}'),
                 Module.Divider(),
                 Module.Header(f'时间:{get_time_str()}'),
+                Module.Divider(),
+                Module.Header(f'比分:{MatchConditionEx.attacker_score}:{MatchConditionEx.defender_score}')
             )))
         z = MatchConditionEx.data
 

@@ -334,6 +334,8 @@ async def update_match_data2(request):
     MatchConditionEx.server_name = t.server_name
     MatchConditionEx.round_count = round_count
     MatchConditionEx.data = show_data
+    MatchConditionEx.attacker_score = t.left_win_rounds
+    MatchConditionEx.defender_score = t.right_win_rounds
     if is_match_ending:
         # 存放到 静态类中，让机器人输出
         MatchConditionEx.end_game = True

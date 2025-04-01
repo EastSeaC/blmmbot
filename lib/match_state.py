@@ -13,6 +13,9 @@ class MatchConditionEx:
     data2 = None
     round_count = 0
 
+    attacker_score = 0
+    defender_score = 0
+
     blmm_1 = None
     blmm_2 = None
     blmm_3 = None

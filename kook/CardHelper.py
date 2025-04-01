@@ -21,7 +21,7 @@ async def get_player_score_card(kook_id: str):
             db_player = player
 
         # 获取玩家 勋章
-        player_medal_db = sql_session.query(DB_PlayerMedal).filter(DB_PlayerMedal.kookId == msg.author_id)
+        player_medal_db = sql_session.query(DB_PlayerMedal).filter(DB_PlayerMedal.kookId == kook_id)
         if player_medal_db.count() == 1:
             player_medal_db: DB_PlayerMedal = player_medal_db.first()
         else:

@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import event
 
 from config import *
 from tables import *
@@ -7,6 +8,14 @@ from tables import *
 global engine
 engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8')
 engine.connect()
+
+
+@event.listens_for(engine, "close")
+def receive_close(conn, exception):
+    global engine
+    engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8')
+    engine.connect()
+    print("连接关闭,重新连接")
 
 
 def confirm(msg: str):

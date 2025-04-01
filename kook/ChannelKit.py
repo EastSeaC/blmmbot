@@ -30,6 +30,13 @@ class ChannelManager:
     manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
 
     @staticmethod
+    def is_es(kook_id: str):
+        if kook_id == ChannelManager.es_user_id:
+            return True
+        else:
+            return False
+
+    @staticmethod
     def is_admin(kook_id: str):
         if kook_id in ChannelManager.manager_user_id:
             return True
@@ -110,7 +117,7 @@ class OldGuildChannel:
 
     @classmethod
     def get_category_list_name(cls):
-        return [f'BLMM_{i}' for i in range(1, 6+1)]
+        return [f'BLMM_{i}' for i in range(1, 6 + 1)]
 
     command_channel_name = '指令频道'
     channel_a_team = 'A队'

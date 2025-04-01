@@ -10,6 +10,7 @@ from init_db import get_session
 from kook.ChannelKit import ChannelManager
 from lib.basic import generate_numeric_code
 from tables import *
+from tables.Admin import DBAdmin
 from tables.PlayerNames import DB_PlayerNames
 
 session = get_session()
@@ -223,6 +224,35 @@ def init(bot: Bot, es_channels: EsChannels):
 
         await msg.reply('移动成功')
         pass
+
+    @bot.command(name='grant_player_as_admin', case_sensitive=False, aliases=['gad'])
+    async def grant_player_as_admin(msg: Message, target_kook_id: str):
+        """
+        授权管理员，从而能操纵游戏内指令
+        """
+        if ChannelManager.is_es(msg.author_id):
+            with get_session() as sql_session:
+                p = sql_session.query(Player).filter(Player.kookId == target_kook_id)
+                if p.count() == 1:
+                    player: Player = p.first()
+
+                    admin_record = sql_session.query(DBAdmin).filter(DBAdmin.playerId == target_kook_id)
+                    if admin_record.count() >= 1:
+                        await msg.reply('管理员已存在')
+                    else:
+                        admin_record = DBAdmin()
+                        admin_record.playerId = player.playerId
+                        admin_record.kookId = player.kookId
+                        admin_record.playerName = player.kookName
+
+                        sql_session.add(admin_record)
+                        sql_session.commit()
+
+                        await msg.reply(f'已成功添加 {admin_record.playerName} 为游戏内管理员')
+                else:
+                    await msg.reply(f'该玩家尚未 注册')
+        else:
+            await msg.reply('禁止使用es指令')
 
     @bot.command(name='guiltest', case_sensitive=False)
     async def worldO(msg: Message):

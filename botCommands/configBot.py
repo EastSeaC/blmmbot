@@ -35,6 +35,7 @@ def init(bot: Bot, es_channels: EsChannels):
         session.commit()
 
     async def reset_aux():
+        session = get_session()
         some_records = session.query(DB_PlayerData).all()
 
         for i in some_records:
@@ -44,3 +45,14 @@ def init(bot: Bot, es_channels: EsChannels):
 
         LogHelper.log("已重置所有人数据")
         session.commit()
+
+    async def reset_apply(arg:str):
+        session = get_session()
+        some_records = session.query(DB_PlayerData).all()
+
+        if 'a' in arg:
+            for i in some_records:
+                player_data: DB_PlayerData = i
+                player_data.refresh_data_soft()
+                session.merge(player_data)
+                session.commit()

@@ -23,6 +23,7 @@ from tables import *
 from tables.DB_WillMatch import DB_WillMatchs
 from tables.PlayerChangeName import DB_PlayerChangeNames
 from tables.PlayerMedal import DB_PlayerMedal
+from tables.ScoreLimit import DB_ScoreLimit
 
 sqlSession = get_session()
 g_channels: EsChannels
@@ -192,6 +193,11 @@ def init(bot: Bot, es_channels: EsChannels):
         #     return
         # 说明注册人数 >=12
         #     player_list.pop()
+        z_config = sqlSession.query(DB_ScoreLimit).first(DB_ScoreLimit.score_type == 'default').first()
+        name_x = 'CN_BTL_SHAOXING_6'
+        if z_config is not None:
+            z_config_scre: DB_ScoreLimit = z_config
+            name_x = 'CN_BTL_SHAOXING_6' if z_config_scre.BaseServerName is None else z_config_scre.BaseServerName
 
         divide_data: DivideData = MatchState.divide_player_ex(player_list)
 
@@ -377,8 +383,6 @@ def init(bot: Bot, es_channels: EsChannels):
             ))
 
         await m.reply(CardMessage(c7))
-
-
 
     @bot.command(name='score', case_sensitive=False, aliases=['s'])
     async def show_score(msg: Message, *args):

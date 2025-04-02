@@ -41,3 +41,6 @@ class DB_ScoreLimit(Base):
     InfantryMultiple = Column(Float, nullable=False, default=1.3)
     CavalryMultiple = Column(Float, nullable=False, default=0.95)
     RangerMultiple = Column(Float, nullable=False, default=1.0)
+
+    # 其他配置
+    BaseServerName = Column(String, nullable=False, default='CN_BTL_SHAOXING_6')

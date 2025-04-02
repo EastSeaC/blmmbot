@@ -12,7 +12,7 @@ def get_random_faction_2():
 
 class GameConfig:
     def __init__(self, match_id):
-        self.server_name = f"CN_BTL_NINGBO_6-{match_id}"
+        self.server_name = f"CN_BTL_SHAOXING_6-{match_id}"
         self.game_type = "Skirmish"
         self.admin_password = "btl626"
         self.game_password = "blmm"

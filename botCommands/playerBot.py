@@ -193,7 +193,7 @@ def init(bot: Bot, es_channels: EsChannels):
         #     return
         # 说明注册人数 >=12
         #     player_list.pop()
-        z_config = sqlSession.query(DB_ScoreLimit).first(DB_ScoreLimit.score_type == 'default').first()
+        z_config = sqlSession.query(DB_ScoreLimit).filter(DB_ScoreLimit.score_type == 'default').first()
         name_x = 'CN_BTL_SHAOXING_6'
         if z_config is not None:
             z_config_scre: DB_ScoreLimit = z_config

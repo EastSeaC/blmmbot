@@ -10,6 +10,7 @@ from khl.card import CardMessage, Card, Module, Struct, Element, Types
 from sqlalchemy import select, desc
 
 from botCommands.ButtonValueImpl import AdminButtonValue, PlayerButtonValue
+from entity.ServerEnum import ServerEnum
 from entity.WillMatchType import WillMatchType
 from lib.LogHelper import LogHelper, get_time_str
 from config import get_rank_name
@@ -193,6 +194,30 @@ def init(bot: Bot, es_channels: EsChannels):
         #     return
         # 说明注册人数 >=12
         #     player_list.pop()
+        # 2服
+        # sqlSession.query(DB_WillMatchs)
+        name_x_initial = 'CN_BTL_SHAOXING_6'
+
+        use_server_x = ServerEnum.Server_1
+        use_server = 1
+        use_server_1 = True
+        use_server_2 = False
+        result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                  .filter(DB_WillMatchs.server_name == name_x_initial,
+                          DB_WillMatchs.is_cancel == 0,
+                          DB_WillMatchs.is_finished == 0)).limit(1).count()
+        if result > 0:
+            name_x_initial = 'CN_BTL_SHAOXING_5'
+            result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                      .filter(DB_WillMatchs.server_name == name_x_initial,
+                              DB_WillMatchs.is_cancel == 0,
+                              DB_WillMatchs.is_finished == 0)).limit(1).count()
+            use_server_2 = True
+            use_server = 2
+            use_server_x = ServerEnum.Server_2
+        else:
+            pass
+
         z_config = sqlSession.query(DB_ScoreLimit).filter(DB_ScoreLimit.score_type == 'default').first()
         name_x = 'CN_BTL_SHAOXING_6'
         if z_config is not None:
@@ -214,7 +239,7 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.match_type = WillMatchType.get_match_type_with_player_num(len(divide_data.first_team))
         will_match_data.is_cancel = False
         will_match_data.is_finished = False
-        will_match_data.server_name = 'CN_BTL_SHAOXING_6'
+        will_match_data.server_name = name_x_initial
 
         # 获取今天的日期并设置时间为 00:00:00
         today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -243,6 +268,8 @@ def init(bot: Bot, es_channels: EsChannels):
         first_faction, second_faction = get_random_faction_2()
         await msg.reply(CardMessage(
             Card(
+                Module.Header(f'服务器: {will_match_data.server_name}-{will_match_data.match_id_2}'),
+                Module.Divider(),
                 Module.Header('分队情况表'),
                 Module.Divider(),
                 Module.Header(f'时间:{get_time_str()}'),
@@ -264,22 +291,25 @@ def init(bot: Bot, es_channels: EsChannels):
                     )
                 ),
                 Module.Divider(),
-                Module.Header(f'服务器: {will_match_data.server_name}'),
-                Module.Divider(),
+                # Module.Header(f'服务器: {will_match_data.server_name}'),
+                # Module.Divider(),
                 Module.Header(f'比赛ID：{will_match_data.match_id_2}')
             )
         ))
 
         if not is_no_move:
-            await move_a_to_b_ex(OldGuildChannel.match_attack_channel, divide_data.attacker_list)
-            await move_a_to_b_ex(OldGuildChannel.match_defend_channel, divide_data.defender_list)
+            if use_server_x == ServerEnum.Server_1:
+                await move_a_to_b_ex(OldGuildChannel.match_attack_channel, divide_data.attacker_list)
+                await move_a_to_b_ex(OldGuildChannel.match_defend_channel, divide_data.defender_list)
+            elif use_server_x == ServerEnum.Server_2:
+
+                pass
         else:
             LogHelper.log("不移动")
 
-        px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x.txt'
-        if not os.path.exists(px):
-            await msg.reply('路径不存在，快来检查服务器')
-            return
+        # 获取 txt配置文件路径
+        px = ServerManager.CheckConfitTextFile(use_server_x)
+        # px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x.txt'
         with open(px, 'w') as f:
             text = GameConfig(match_id=f'{will_match_data.match_id_2}')
             text.culture_team1 = first_faction

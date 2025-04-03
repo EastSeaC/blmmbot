@@ -8,6 +8,7 @@ from datetime import datetime
 import win32con
 import win32gui
 
+from entity.ServerEnum import ServerEnum
 from lib.LogHelper import display, LogHelper
 from lib.ServerGameConfig import GameConfig
 
@@ -17,6 +18,9 @@ class ServerManager:
     这个class 用于管理 BLMM系统的 token文件等等
     """
     toke_file_path = r'C:\Users\Administrator\Documents\Mount and Blade II Bannerlord\Tokens\DedicatedCustomServerAuthToken.txt'
+
+    server_1_handle = None
+    server_1_pid = None
 
     @staticmethod
     def check_token_file():
@@ -56,6 +60,16 @@ class ServerManager:
         # 获取所有顶层窗口句柄和标题
 
     @staticmethod
+    def RestartBLMMServerEx(server_index: ServerEnum):
+        for hwnd, title in get_all_windows():
+            # print(f'句柄: {hwnd}, 标题: {title}')
+            if 'Mount and Blade II Bannerlord Dedicated Server Console' in title:
+                close_window(hwnd)
+                time.sleep(5.0)
+        open_bat(server_index)
+        display('重启服务器!')
+
+    @staticmethod
     def GenerateConfigFile(config: GameConfig):
         with open(os.path.join(os.getcwd(), 'x.json'), 'r') as f:
             LogHelper.log_star_start()
@@ -77,6 +91,12 @@ class ServerManager:
         with open(file_confit_path, 'w', encoding='utf8') as f:
             f.write(config.to_str())
         LogHelper.log_star_start()
+
+    @classmethod
+    def CheckConfitTextFile(cls, use_server_x: ServerEnum):
+        px = f'C:\\Users\\Administrator\\Desktop\\server files license\\Modules\\Native\\blmm_{use_server_x.value}_x.txt'
+        return px
+        pass
 
 
 def open_bat(server_index: int = 1):

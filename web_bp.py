@@ -17,6 +17,7 @@ from init_db import get_session
 from lib.ScoreMaster import calculate_score
 from lib.match_state import MatchConditionEx
 from tables import *
+from tables.DB_WillMatch import DB_WillMatchs
 from tables.PlayerNames import DB_PlayerNames
 
 # 创建一个蓝图
@@ -330,6 +331,7 @@ async def update_match_data2(request):
 
     session.commit()
 
+    # (session.query(DB_WillMatchs).filter(DB_WillMatchs.match_id_2 == )
     # 保存数据到静态 , 转为有比赛结果
     MatchConditionEx.server_name = t.server_name
     MatchConditionEx.round_count = round_count

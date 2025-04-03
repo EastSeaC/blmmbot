@@ -1,5 +1,6 @@
 from khl import PublicVoiceChannel, PublicTextChannel
 
+from entity.ServerEnum import ServerEnum
 from lib.LogHelper import LogHelper
 
 
@@ -110,6 +111,20 @@ class OldGuildChannel:
     common_channel = '3137719365146347'
     command_channel = '1451138349000890'
     manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
+
+    match_attack_channel_2 = '5436769046749546'
+    match_defend_channel_2 = '8246783800929740'
+
+    match_attack_channel_3 = '5889652844944800'
+    match_defend_channel_3 = '8324383899171681'
+
+    def get_match_attack_channel(self, server: ServerEnum):
+        if server == ServerEnum.Server_1:
+            return OldGuildChannel.match_attack_channel
+        elif server == ServerEnum.Server_2:
+            return OldGuildChannel.match_attack_channel_2
+        elif server == ServerEnum.Server_3:
+            return OldGuildChannel.match_attack_channel_3
 
     @classmethod
     def get_server_name(cls, index: int = 0):

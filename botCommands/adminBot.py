@@ -234,33 +234,60 @@ def init(bot: Bot, es_channels: EsChannels):
         """
         授权管理员，从而能操纵游戏内指令
         """
-        if ChannelManager.is_es(msg.author_id):
-            with get_session() as sql_session:
-                p = sql_session.query(Player).filter(Player.kookId == target_kook_id)
-                if p.count() == 1:
-                    player: Player = p.first()
-
-                    admin_record = sql_session.query(DB_Admin).filter(DB_Admin.playerId == target_kook_id)
-                    if admin_record.count() >= 1:
-                        await msg.reply('管理员已存在')
-                    else:
-                        admin_record = DB_Admin()
-                        admin_record.playerId = player.playerId
-                        admin_record.kookId = player.kookId
-                        admin_record.playerName = player.kookName
-                        admin_record.can_start_match = 1
-
-                        sql_session.add(admin_record)
-                        sql_session.commit()
-
-                        await msg.reply(f'已成功添加 {admin_record.playerName} 为游戏内管理员')
-                else:
-                    await msg.reply(f'该玩家尚未 注册')
-
-                ChannelManager.organization_user_ids = sql_session.execute(select(DB_Admin.kookId)).scalars().all()
-                LogHelper.log("更新管理玩家")
-        else:
+        if not ChannelManager.is_es(msg.author_id):
             await msg.reply('禁止使用es指令')
+
+        with get_session() as sql_session:
+            p = sql_session.query(Player).filter(Player.kookId == target_kook_id)
+            if p.count() == 1:
+                player: Player = p.first()
+
+                # 当初写成playerId了，要谨慎
+                admin_record = sql_session.query(DB_Admin).filter(DB_Admin.kookId == target_kook_id)
+                if admin_record.count() >= 1:
+                    await msg.reply('管理员已存在')
+                else:
+                    admin_record = DB_Admin()
+                    admin_record.playerId = player.playerId
+                    admin_record.kookId = player.kookId
+                    admin_record.playerName = player.kookName
+                    admin_record.can_start_match = 1
+
+                    sql_session.add(admin_record)
+                    sql_session.commit()
+
+                    await msg.reply(f'已成功添加 {admin_record.playerName} 为游戏内管理员')
+            else:
+                await msg.reply(f'该玩家尚未 注册')
+
+            ChannelManager.organization_user_ids = sql_session.execute(select(DB_Admin.kookId)).scalars().all()
+            LogHelper.log("更新管理玩家")
+
+    @bot.command(name='remove_grant_as_common', case_sensitive=False, aliases=['rga'])
+    async def grant_player_as_admin(msg: Message, target_kook_id: str):
+        """
+        授权管理员，从而能操纵游戏内指令
+        """
+        if not ChannelManager.is_es(msg.author_id):
+            await msg.reply('禁止使用es指令')
+
+        with get_session() as sql_session:
+            p = sql_session.query(Player).filter(Player.kookId == target_kook_id)
+            if p.count() != 1:
+                await msg.reply('该玩家未注册')
+                return
+
+            admin_record = sql_session.query(DB_Admin).filter(DB_Admin.kookId == target_kook_id)
+            if admin_record.count() < 1:
+                await msg.reply(f'该玩家不是管理员，无需操作')
+                return
+
+            admin_item: DB_Admin = admin_record.first()
+            admin_item.can_start_match = 0
+            sql_session.merge(admin_item)
+            sql_session.commit()
+
+            await msg.reply(f'已移除玩家 {admin_record.playerName} 的管理员 角色')
 
     @bot.command(name='guiltest', case_sensitive=False)
     async def worldO(msg: Message):

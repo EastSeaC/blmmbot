@@ -71,9 +71,9 @@ class ServerManager:
             if kill_process_by_pid(pid):
                 LogHelper.log(f'关闭服务器')
                 time.sleep(1)
-                generateBatFile(server_index)
-                time.sleep(1)
-                open_bat(server_index.value)
+        generateBatFile(server_index)
+        time.sleep(1)
+        open_bat(server_index.value)
 
     @staticmethod
     def GenerateConfigFile(config: GameConfig):

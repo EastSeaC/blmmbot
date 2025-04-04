@@ -254,7 +254,7 @@ def init(bot: Bot, es_channels: EsChannels):
                         sql_session.merge(admin_item)
                         sql_session.commit()
 
-                        await msg.reply(f'已成功添加 {admin_record.playerName} 为游戏内管理员')
+                        await msg.reply(f'已成功添加 {admin_item.playerName} 为游戏内管理员')
                         return
                 else:
                     admin_record = DB_Admin()
@@ -270,7 +270,8 @@ def init(bot: Bot, es_channels: EsChannels):
             else:
                 await msg.reply(f'该玩家尚未 注册')
 
-            ChannelManager.organization_user_ids = sql_session.execute(select(DB_Admin.kookId)).scalars().all()
+            ChannelManager.organization_user_ids = sql_session.execute(
+                select(DB_Admin.kookId).where(DB_Admin.can_start_match == 1)).scalars().all()
             LogHelper.log("更新管理玩家")
 
     @bot.command(name='remove_grant_as_common', case_sensitive=False, aliases=['rga'])

@@ -47,7 +47,12 @@ def init(bot: Bot, es_channels: EsChannels):
         value = str(e.body['value'])
         user_id = e.body['user_id']
         guild_id = e.body['guild_id']
+        channel_id = e.body['target_id']
         e_body_user_info = e.body['user_info']['username']
+
+        # 这个代码虽然可以让所有人自由使用机器人，但是这会导致
+        # 鸡婆拉屎，到处都是
+        # channel = await b.client.fetch_public_channel(channel_id)
 
         channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
         if value.startswith('{'):

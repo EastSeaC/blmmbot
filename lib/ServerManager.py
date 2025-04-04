@@ -106,6 +106,7 @@ class ServerManager:
 
     @classmethod
     def GetTargetPort(cls, use_server_x: ServerEnum):
+        print(use_server_x.value)
         return 7100 - 1 + use_server_x.value
 
 

@@ -125,6 +125,8 @@ def open_bat(server_index: int = 1):
     server_desktop = r'C:\Users\Administrator\Desktop'
     bat_name = f'启动BLMM{server_index}_x.bat'
     bat_path = os.path.join(server_desktop, bat_name)
+
+    print('启动！' + bat_path)
     subprocess.run(['cmd.exe', '/c', bat_path])
 
 

@@ -234,7 +234,7 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.match_type = WillMatchType.get_match_type_with_player_num(len(divide_data.first_team))
         will_match_data.is_cancel = False
         will_match_data.is_finished = False
-        will_match_data.server_name = 'CN_BTL_SHAOXING' + str(use_server_x.value[0])
+        will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
 
         # 获取今天的日期并设置时间为 00:00:00
         today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)

@@ -245,7 +245,17 @@ def init(bot: Bot, es_channels: EsChannels):
                 # 当初写成playerId了，要谨慎
                 admin_record = sql_session.query(DB_Admin).filter(DB_Admin.kookId == target_kook_id)
                 if admin_record.count() >= 1:
-                    await msg.reply('管理员已存在')
+                    admin_item: DB_Admin = admin_record.first()
+                    if admin_item.can_start_match == 1:
+                        await msg.reply('管理员已存在')
+                        return
+                    else:
+                        admin_item.can_start_match = 1
+                        sql_session.merge(admin_item)
+                        sql_session.commit()
+
+                        await msg.reply(f'已成功添加 {admin_record.playerName} 为游戏内管理员')
+                        return
                 else:
                     admin_record = DB_Admin()
                     admin_record.playerId = player.playerId

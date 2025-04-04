@@ -111,7 +111,7 @@ class ServerManager:
 
 
 def generateBatFile(use_server_x: ServerEnum):
-    path_a = f'C:\\Users\\Administrator\\Desktop\\启动blmm_{use_server_x.value[0]}_x.bat'
+    path_a = f'C:\\Users\\Administrator\\Desktop\\启动BLMM_{use_server_x.value[0]}_x.bat'
     if not os.path.exists(path_a):
         with open(path_a, 'w') as f:
             text_a = '\n'.join([

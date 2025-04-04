@@ -73,7 +73,7 @@ class ServerManager:
                 time.sleep(1)
         generateBatFile(server_index)
         time.sleep(1)
-        open_bat(server_index.value)
+        open_bat(server_index.value[0])
 
     @staticmethod
     def GenerateConfigFile(config: GameConfig):

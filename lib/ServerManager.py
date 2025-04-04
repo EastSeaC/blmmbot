@@ -106,6 +106,10 @@ class ServerManager:
         pass
 
     @classmethod
+    def getServerName(cls, server_x: ServerEnum):
+        return 'CN_BTL_SHAOXING_' + str(server_x.value[0])
+
+    @classmethod
     def GetTargetPort(cls, use_server_x: ServerEnum):
         print(use_server_x.value)
         return 7100

@@ -196,28 +196,27 @@ def init(bot: Bot, es_channels: EsChannels):
         #     player_list.pop()
         # 2服
         # sqlSession.query(DB_WillMatchs)
-        name_x_initial = 'CN_BTL_SHAOXING_6'
-
         use_server_x = ServerEnum.Server_1
+        name_x_initial = ServerManager.getServerName(ServerEnum.Server_1)
         result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
                   .filter(DB_WillMatchs.server_name == name_x_initial,
                           DB_WillMatchs.is_cancel == 0,
                           DB_WillMatchs.is_finished == 0)).limit(1).count()
         if result > 0:
-            name_x_initial = 'CN_BTL_SHAOXING_5'
+            use_server_x = ServerEnum.Server_2
+            name_x_initial = ServerManager.getServerName(use_server_x)
             result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
                       .filter(DB_WillMatchs.server_name == name_x_initial,
                               DB_WillMatchs.is_cancel == 0,
                               DB_WillMatchs.is_finished == 0)).limit(1).count()
-            use_server_x = ServerEnum.Server_2
         else:
             pass
 
         z_config = sqlSession.query(DB_ScoreLimit).filter(DB_ScoreLimit.score_type == 'default').first()
-        name_x = 'CN_BTL_SHAOXING_6'
+        # name_x = 'CN_BTL_SHAOXING_6'
         if z_config is not None:
             z_config_scre: DB_ScoreLimit = z_config
-            name_x = 'CN_BTL_SHAOXING_6' if z_config_scre.BaseServerName is None else z_config_scre.BaseServerName
+            # name_x = 'CN_BTL_SHAOXING_6' if z_config_scre.BaseServerName is None else z_config_scre.BaseServerName
 
         divide_data: DivideData = MatchState.divide_player_ex(player_list)
 
@@ -245,7 +244,7 @@ def init(bot: Bot, es_channels: EsChannels):
             select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight).order_by(
                 desc(DB_WillMatchs.time_match)).limit(1)).first()
 
-        last_match_number = random.randint(3, 10)
+        last_match_number = random.randint(3, 6)
         if newest_data is not None and len(newest_data) > 0:
             last_match_number += newest_data[0].match_id_2
 

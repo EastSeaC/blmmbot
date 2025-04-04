@@ -248,6 +248,7 @@ def init(bot: Bot, es_channels: EsChannels):
                         admin_record.playerId = player.playerId
                         admin_record.kookId = player.kookId
                         admin_record.playerName = player.kookName
+                        admin_record.can_start_match = 1
 
                         sql_session.add(admin_record)
                         sql_session.commit()
@@ -255,6 +256,9 @@ def init(bot: Bot, es_channels: EsChannels):
                         await msg.reply(f'已成功添加 {admin_record.playerName} 为游戏内管理员')
                 else:
                     await msg.reply(f'该玩家尚未 注册')
+
+                ChannelManager.organization_user_ids = sql_session.execute(select(DB_Admin.kookId)).scalars().all()
+                LogHelper.log("更新管理玩家")
         else:
             await msg.reply('禁止使用es指令')
 

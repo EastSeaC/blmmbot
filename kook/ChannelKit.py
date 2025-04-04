@@ -28,7 +28,15 @@ class ChannelManager:
     # 通用 人类提示频道
     common_channel = '3137719365146347'
     command_channel = '3971225977704461'
-    manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
+    manager_user_id = ['482714005',
+                       '404770518',  # 大C
+                       '1439484517',  # 小明？
+                       '3743625354',  # 海棠
+                       ]
+
+    organization_user_ids = [
+
+    ]
 
     @staticmethod
     def is_es(kook_id: str):
@@ -42,6 +50,10 @@ class ChannelManager:
         if kook_id in ChannelManager.manager_user_id:
             return True
         pass
+
+    @staticmethod
+    def is_organization_user(kook_id: str):
+        return ChannelManager.is_admin(kook_id) or kook_id in ChannelManager.organization_user_ids
 
     @staticmethod
     def get_command_channel_id(guild_id: str):

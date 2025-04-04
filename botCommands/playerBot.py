@@ -117,8 +117,8 @@ def init(bot: Bot, es_channels: EsChannels):
         e:  不包括东海
 
         """
-        if ChannelManager.is_common_user(msg.author_id):
-            await msg.reply('禁止使用es指令')
+        if not ChannelManager.is_organization_user(msg.author_id):
+            await msg.reply('禁止使用管理员指令')
             return
 
         is_no_move = False

@@ -283,6 +283,9 @@ def init(bot: Bot, es_channels: EsChannels):
                 return
 
             admin_item: DB_Admin = admin_record.first()
+            if admin_item.can_start_match == 0:
+                await msg.reply(f'该玩家不是管理员，无需操作')
+                return
             admin_item.can_start_match = 0
             sql_session.merge(admin_item)
             sql_session.commit()

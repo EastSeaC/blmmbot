@@ -152,6 +152,12 @@ class MatchState:
         # print('*' * 20)
         x, y = min_diff_partition(a)
 
+        # 随机交换一名队员
+        exchange_index = randint(2, 5)
+        exchange_item = x[exchange_index]
+        x[exchange_index] = y[exchange_index]
+        y[exchange_index] = exchange_item
+
         attacker_names = []
         attacker_score_temp = 0
         defender_names = []

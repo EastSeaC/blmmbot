@@ -314,13 +314,14 @@ def init(bot: Bot, es_channels: EsChannels):
         # 获取 txt配置文件路径
         px = ServerManager.CheckConfitTextFile(use_server_x)
         # px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x.txt'
-        print('txt file path'+px)
+        print('txt file path' + px)
         with open(px, 'w') as f:
             text = GameConfig(server_name=f'CN_BTL_SHAOXING_{use_server_x.value[0]}',
                               match_id=f'{will_match_data.match_id_2}')
             text.culture_team1 = first_faction
             text.culture_team2 = second_faction
             f.write(text.to_str())
+
         # ServerManager.RestartBLMMServer(6)
         ServerManager.RestartBLMMServerEx(use_server_x)
         await msg.reply('分配完毕!')

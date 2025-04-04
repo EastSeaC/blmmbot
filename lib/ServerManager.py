@@ -1,6 +1,9 @@
 import io
 import json
 import os.path
+import platform
+import re
+import signal
 import subprocess
 import time
 from datetime import datetime
@@ -50,24 +53,27 @@ class ServerManager:
 
     @staticmethod
     def RestartBLMMServer(server_index: int = 1):
-        for hwnd, title in get_all_windows():
-            # print(f'句柄: {hwnd}, 标题: {title}')
-            if 'Mount and Blade II Bannerlord Dedicated Server Console' in title:
-                close_window(hwnd)
-                time.sleep(5.0)
-        open_bat(server_index)
-        display('重启服务器!')
+        return False
+        # for hwnd, title in get_all_windows():
+        #     # print(f'句柄: {hwnd}, 标题: {title}')
+        #     if 'Mount and Blade II Bannerlord Dedicated Server Console' in title:
+        #         close_window(hwnd)
+        #         time.sleep(5.0)
+        # open_bat(server_index)
+        # display('重启服务器!')
         # 获取所有顶层窗口句柄和标题
 
     @staticmethod
     def RestartBLMMServerEx(server_index: ServerEnum):
-        for hwnd, title in get_all_windows():
-            # print(f'句柄: {hwnd}, 标题: {title}')
-            if 'Mount and Blade II Bannerlord Dedicated Server Console' in title:
-                close_window(hwnd)
-                time.sleep(5.0)
-        open_bat(server_index)
-        display('重启服务器!')
+        port = ServerManager.GetTargetPort(server_index)
+        pid = find_pid_by_port_windows(port)
+        if pid is not None:
+            if kill_process_by_pid(pid):
+                LogHelper.log(f'关闭服务器')
+                time.sleep(1)
+                generateBatFile(server_index)
+                time.sleep(1)
+                open_bat(server_index.value)
 
     @staticmethod
     def GenerateConfigFile(config: GameConfig):
@@ -98,12 +104,72 @@ class ServerManager:
         return px
         pass
 
+    @classmethod
+    def GetTargetPort(cls, use_server_x: ServerEnum):
+        return 7100 - 1 + use_server_x.value
+
+
+def generateBatFile(use_server_x: ServerEnum):
+    path_a = f'C:\\Users\\Administrator\\Desktop\\启动blmm_{use_server_x.value}_x.bat'
+    if not os.path.exists(path_a):
+        with open(path_a, 'w') as f:
+            text_a = '\n'.join([
+                'cd /d "C:\\Users\\Administrator\\Desktop\\server files license\\bin\\Win64_Shipping_Server"',
+                f'start DedicatedCustomServer.Starter.exe /no_watchdog /dedicatedcustomserverconfigfile blmm_{use_server_x.value}_x.txt /port {ServerManager.GetTargetPort(use_server_x)} /LogOutputPath "C:\\Users\\Administrator\\Documents\\log" /multiplayer _MODULES_*Native*Multiplayer*BLMMX*_MODULES_'
+            ])
+            f.write(text_a)
+
 
 def open_bat(server_index: int = 1):
     server_desktop = r'C:\Users\Administrator\Desktop'
     bat_name = f'启动BLMM{server_index}_x.bat'
     bat_path = os.path.join(server_desktop, bat_name)
     subprocess.run(['cmd.exe', '/c', bat_path])
+
+
+def find_pid_by_port_windows(port):
+    # 执行 netstat 命令获取端口和 PID
+    result = subprocess.run(
+        ["netstat", "-ano"],
+        capture_output=True,
+        text=True,
+        shell=True
+    )
+
+    # 用正则匹配端口对应的行
+    pattern = re.compile(f":{port}\\s.*LISTENING\\s+(\\d+)")
+    match = pattern.search(result.stdout)
+
+    if match:
+        pid = match.group(1)
+        print(f"端口 {port} 对应的 PID: {pid}")
+        return int(pid)
+    else:
+        print(f"未找到端口 {port} 对应的进程")
+        return None
+
+
+def kill_process_by_pid(pid):
+    system = platform.system().lower()
+
+    try:
+        if system == "windows":
+            # Windows 使用 `signal.CTRL_C_EVENT` 或强制终止
+            os.kill(pid, signal.SIGTERM)  # 优雅终止
+            # os.kill(pid, signal.SIGKILL)  # 强制终止（类似 taskkill /F）
+        else:
+            # Linux/macOS 使用 SIGTERM（优雅终止）或 SIGKILL（强制终止）
+            os.kill(pid, signal.SIGTERM)  # 默认优雅终止
+            # os.kill(pid, signal.SIGKILL)  # 强制终止
+
+        print(f"已发送终止信号到 PID: {pid}")
+        return True
+    except ProcessLookupError:
+        print(f"进程 {pid} 不存在")
+        return False
+    except PermissionError:
+        print(f"无权限终止进程 {pid}（可能需要管理员权限）")
+        return False
 
 
 # 关闭窗口函数

@@ -115,6 +115,9 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='admin', case_sensitive=False)
     async def admin(msg: Message):
+        """
+        管理员界面
+        """
         if msg.author_id not in ChannelManager.manager_user_id:
             await msg.reply("禁止使用管理员指令")
             return
@@ -122,17 +125,18 @@ def init(bot: Bot, es_channels: EsChannels):
         cm = CardMessage()
         c8 = Card(
             Module.ActionGroup(
-                Element.Button("重启服务器【非强制】", value=AdminButtonValue.Refresh_Server_NotForce,
+                Element.Button("重启服务器1", value=AdminButtonValue.Restart_Server_1,
                                click=Types.Click.RETURN_VAL,
                                theme=Types.Theme.INFO),
-                Element.Button("重启服务器5【强制】", value=AdminButtonValue.Refresh_Server6_Force,
+                Element.Button("重启服务器2", value=AdminButtonValue.Restart_Server_2,
                                click=Types.Click.RETURN_VAL,
                                theme=Types.Theme.DANGER),
-                Element.Button("重启服务器6【强制】", value=AdminButtonValue.Refresh_Server6_Force,
+                Element.Button("重启服务器3", value=AdminButtonValue.Restart_Server_3,
                                click=Types.Click.RETURN_VAL,
                                theme=Types.Theme.DANGER),
                 Element.Button('查看服务器比赛状态', value=AdminButtonValue.Show_Server_State)
-            )
+            ),
+            Module.Divider(),
         )
         cm.append(c8)
         await msg.reply(cm)

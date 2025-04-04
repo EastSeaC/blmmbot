@@ -13,3 +13,5 @@ class DB_Admin(Base):
     playerName = Column(VARCHAR(50), nullable=False)
 
     priority = Column(Integer, nullable=True)
+
+    can_start_match = Column(Integer, nullable=True, default=1)

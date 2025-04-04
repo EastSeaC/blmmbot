@@ -302,7 +302,11 @@ def init(bot: Bot, es_channels: EsChannels):
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel, divide_data.attacker_list)
                 await move_a_to_b_ex(OldGuildChannel.match_defend_channel, divide_data.defender_list)
             elif use_server_x == ServerEnum.Server_2:
-
+                await move_a_to_b_ex(OldGuildChannel.match_attack_channel_2, divide_data.attacker_list)
+                await move_a_to_b_ex(OldGuildChannel.match_defend_channel_2, divide_data.defender_list)
+            elif use_server_x == ServerEnum.Server_3:
+                await move_a_to_b_ex(OldGuildChannel.match_attack_channel_3, divide_data.attacker_list)
+                await move_a_to_b_ex(OldGuildChannel.match_defend_channel_3, divide_data.defender_list)
                 pass
         else:
             LogHelper.log("不移动")
@@ -311,11 +315,13 @@ def init(bot: Bot, es_channels: EsChannels):
         px = ServerManager.CheckConfitTextFile(use_server_x)
         # px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x.txt'
         with open(px, 'w') as f:
-            text = GameConfig(match_id=f'{will_match_data.match_id_2}')
+            text = GameConfig(server_name=f'CN_BTL_SHAOXING_{use_server_x.value}',
+                              match_id=f'{will_match_data.match_id_2}')
             text.culture_team1 = first_faction
             text.culture_team2 = second_faction
             f.write(text.to_str())
-        ServerManager.RestartBLMMServer(6)
+        # ServerManager.RestartBLMMServer(6)
+        ServerManager.RestartBLMMServerEx(use_server_x)
         await msg.reply('分配完毕!')
 
     async def move_a_to_b(a: str, b: str):

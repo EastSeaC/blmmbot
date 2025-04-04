@@ -11,8 +11,12 @@ def get_random_faction_2():
 
 
 class GameConfig:
-    def __init__(self, match_id):
-        self.server_name = f"CN_BTL_SHAOXING_6-{match_id}"
+    def __init__(self,
+                 server_name: str,
+                 match_id: str,
+                 culture_team1: str = 'khuzait',
+                 culture_team2: str = 'aserai'):
+        self.server_name = f"{server_name}-{match_id}"
         self.game_type = "Skirmish"
         self.admin_password = "btl626"
         self.game_password = "blmm"
@@ -26,8 +30,8 @@ class GameConfig:
             "mp_bnl_ghosttown"
         ]
         self.map = "mp_skirmish_map_007"
-        self.culture_team1 = "khuzait"
-        self.culture_team2 = "aserai"
+        self.culture_team1 = culture_team1
+        self.culture_team2 = culture_team2
         self.respawn_period_team1 = 3
         self.respawn_period_team2 = 3
         self.round_preparation_time_limit = 25

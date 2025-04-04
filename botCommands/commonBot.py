@@ -7,6 +7,7 @@ from khl.card import CardMessage, Card, Module, Element, Types
 from sqlalchemy import desc, select
 
 from botCommands.ButtonValueImpl import AdminButtonValue, ESActionType, PlayerButtonValue
+from entity.ServerEnum import ServerEnum
 from kook.CardHelper import get_player_score_card, get_score_list_card
 from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
@@ -67,6 +68,14 @@ def init(bot: Bot, es_channels: EsChannels):
                     x = cancel_match(e_body_user_info, btn_value_dict['match_id_2'])
                     await channel.send(x)
                     pass
+        # 重启服务器
+        elif value == AdminButtonValue.Restart_Server_1:
+            ServerManager.RestartBLMMServerEx(ServerEnum.Server_1)
+        elif value == AdminButtonValue.Restart_Server_2:
+            ServerManager.RestartBLMMServerEx(ServerEnum.Server_2)
+        elif value == AdminButtonValue.Restart_Server_3:
+            ServerManager.RestartBLMMServerEx(ServerEnum.Server_3)
+
         elif value == PlayerButtonValue.player_score:  # 玩家个人积分和 勋章
             channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
 
@@ -107,9 +116,13 @@ def init(bot: Bot, es_channels: EsChannels):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
             if value == AdminButtonValue.Refresh_Server_Force:
-                ServerManager.RestartBLMMServer(5)
+                ServerManager.RestartBLMMServerEx(server_index=ServerEnum.Server_1)
+                ServerManager.RestartBLMMServerEx(ServerEnum.Server_2)
+                ServerManager.RestartBLMMServerEx(ServerEnum.Server_3)
+                # ServerManager.RestartBLMMServer(5)
             else:
-                ServerManager.RestartBLMMServer(6)
+                pass
+                # ServerManager.RestartBLMMServer(6)
             await channel.send(f'(met){user_id}(met) 服务器重启成功')
 
         else:

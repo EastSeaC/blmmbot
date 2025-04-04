@@ -8,6 +8,10 @@ class AdminButtonValue:
     Refresh_Server6_Force = 'Refresh_Server6_Force'
     Reset_Server_ChannelSet = 'Reset_Server_ChannelSet'
 
+    Restart_Server_1 = 'Refresh_Server_Force_1'
+    Restart_Server_2 = 'Refresh_Server_Force_2'
+    Restart_Server_3 = 'Refresh_Server_Force_3'
+
 
 class PlayerButtonValue:
     ShowServerState = 'ShowServerState'

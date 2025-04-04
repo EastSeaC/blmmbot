@@ -287,7 +287,7 @@ def init(bot: Bot, es_channels: EsChannels):
             sql_session.merge(admin_item)
             sql_session.commit()
 
-            await msg.reply(f'已移除玩家 {admin_record.playerName} 的管理员 角色')
+            await msg.reply(f'已移除玩家 {admin_item.playerName} 的管理员 角色')
 
     @bot.command(name='guiltest', case_sensitive=False)
     async def worldO(msg: Message):

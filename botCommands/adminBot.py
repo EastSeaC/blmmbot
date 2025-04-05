@@ -137,6 +137,11 @@ def init(bot: Bot, es_channels: EsChannels):
                 Element.Button('查看服务器比赛状态', value=AdminButtonValue.Show_Server_State)
             ),
             Module.Divider(),
+            Module.ActionGroup(
+                Element.Button("查看组织管理", value=AdminButtonValue.Show_OrganizationPlayers,
+                               click=Types.Click.RETURN_VAL,
+                               theme=Types.Theme.INFO),
+            ),
         )
         cm.append(c8)
         await msg.reply(cm)

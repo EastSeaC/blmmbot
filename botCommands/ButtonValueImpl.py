@@ -1,4 +1,5 @@
 class AdminButtonValue:
+    Show_OrganizationPlayers = 'Show_OrganizationPlayers'
     Show_Server_State = 'show_server_state'
     Show_Last_Match = 'show_last_match'
     Show_Last_5_Matches = 'show_last_5_matches'

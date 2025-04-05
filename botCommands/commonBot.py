@@ -90,7 +90,11 @@ def init(bot: Bot, es_channels: EsChannels):
             channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
             cx = await get_score_list_card()
             await channel.send(cx)
-
+        elif value == AdminButtonValue.Show_OrganizationPlayers:
+            channel = await b.client.fetch_public_channel(channel_id)
+            await channel.send(
+                f'(met){user_id}(met) ' + ' '.join(ChannelManager.organization_user_ids))
+            return
         elif value == AdminButtonValue.Refresh_Server_Force:
             if user_id not in ChannelManager.manager_user_id:
                 channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))

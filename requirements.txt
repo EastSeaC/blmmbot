@@ -1,6 +1,8 @@
-wcwidth
-khl
+aiohttp_jinja2
+khl.py
 aiohttp
 sqlalchemy
 asyncio
 pywin32
+pymysql
+openpyxl

@@ -100,7 +100,7 @@ class ServerManager:
 
     @classmethod
     def CheckConfitTextFile(cls, use_server_x: ServerEnum):
-        tart_path = os.path.abspath('../config/config.json')
+        tart_path = os.path.abspath(r'C:\Users\Administrator\Desktop\blmmbot\config')
         print(tart_path)
         up_x = ''
         is_ready = False

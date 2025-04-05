@@ -16,6 +16,7 @@ from botCommands import adminBot, regBot, playerBot, configBot, matchBot, testBo
 from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager, OldGuildChannel
+from lib.ServerManager import ServerManager
 from lib.match_guard import MatchGuard
 from lib.match_state import MatchConditionEx
 from tables.KookChannelGroup import DB_KookChannelGroup
@@ -59,6 +60,8 @@ def open_file(path: str):
 # 打开config.json
 # config = open_file('config\config.json')
 config = open_file('config\\config.json')
+
+ServerManager.MB_Path = config.get('MB_Path')
 
 # 初始化机器人
 """main bot"""

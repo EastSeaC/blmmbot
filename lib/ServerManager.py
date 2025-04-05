@@ -21,7 +21,7 @@ class ServerManager:
     这个class 用于管理 BLMM系统的 token文件等等
     """
     toke_file_path = r'C:\Users\Administrator\Documents\Mount and Blade II Bannerlord\Tokens\DedicatedCustomServerAuthToken.txt'
-
+    MB_Path = ''
     server_1_handle = None
     server_1_pid = None
 
@@ -102,6 +102,7 @@ class ServerManager:
     @classmethod
     def CheckConfitTextFile(cls, use_server_x: ServerEnum):
         tart_path = os.path.abspath('../config/config.json')
+        print(tart_path)
         if os.path.exists(tart_path):
             with open(tart_path, 'r') as f:
                 config_x = json.load(f)

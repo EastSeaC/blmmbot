@@ -243,9 +243,6 @@ def init(bot: Bot, es_channels: EsChannels):
             await msg.reply('禁止使用es指令')
 
         with get_session() as sql_session:
-            ChannelManager.organization_user_ids = sql_session.execute(
-                select(DB_Admin.kookId).where(DB_Admin.can_start_match == 1)).scalars().all()
-
             p = sql_session.query(Player).filter(Player.kookId == target_kook_id)
             if p.count() == 1:
                 player: Player = p.first()
@@ -256,14 +253,12 @@ def init(bot: Bot, es_channels: EsChannels):
                     admin_item: DB_Admin = admin_record.first()
                     if admin_item.can_start_match == 1:
                         await msg.reply('管理员已存在')
-                        return
                     else:
                         admin_item.can_start_match = 1
                         sql_session.merge(admin_item)
                         sql_session.commit()
 
                         await msg.reply(f'已成功添加 {admin_item.playerName} 为游戏内管理员')
-                        return
                 else:
                     admin_record = DB_Admin()
                     admin_record.playerId = player.playerId

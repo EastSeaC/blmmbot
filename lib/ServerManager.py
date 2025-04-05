@@ -110,6 +110,7 @@ class ServerManager:
                 up_x = config_x.get('MB_Path', '')
                 is_ready = True
 
+        print(is_ready)
         if not is_ready:
             tart_path = f'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mount & Blade II Dedicated Server\\Modules\\Native\\blmm_{use_server_x.value[0]}_x.txt'
         else:

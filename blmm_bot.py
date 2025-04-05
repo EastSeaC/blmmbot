@@ -65,6 +65,7 @@ config = open_file('config\\config.json')
 """main bot"""
 bot = Bot(token=config['token'])  # 默认采用 websocket
 
+ServerManager.MB_Path = config.get('MB_Path', '')
 es_channels = EsChannels()
 
 

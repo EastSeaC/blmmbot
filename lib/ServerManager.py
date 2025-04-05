@@ -22,6 +22,7 @@ class ServerManager:
     """
     toke_file_path = r'C:\Users\Administrator\Documents\Mount and Blade II Bannerlord\Tokens\DedicatedCustomServerAuthToken.txt'
     server_1_handle = None
+    MB_Path =''
     server_1_pid = None
 
     @staticmethod
@@ -100,21 +101,10 @@ class ServerManager:
 
     @classmethod
     def CheckConfitTextFile(cls, use_server_x: ServerEnum):
-        tart_path = os.path.abspath(r'C:\Users\Administrator\Desktop\blmmbot\config')
-        print(tart_path)
-        up_x = ''
-        is_ready = False
-        if os.path.exists(tart_path):
-            with open(tart_path, 'r') as f:
-                config_x = json.load(f)
-                up_x = config_x.get('MB_Path', '')
-                is_ready = True
-
-        print(is_ready)
-        if not is_ready:
-            tart_path = f'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mount & Blade II Dedicated Server\\Modules\\Native\\blmm_{use_server_x.value[0]}_x.txt'
+        if cls.MB_Path != '':
+            tart_path = cls.MB_Path + f'\\blmm_{use_server_x.value[0]}_x.txt'
         else:
-            tart_path = up_x + f'\\blmm_{use_server_x.value[0]}_x.txt'
+            tart_path = f'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mount & Blade II Dedicated Server\\Modules\\Native\\blmm_{use_server_x.value[0]}_x.txt'
 
         return tart_path
         pass

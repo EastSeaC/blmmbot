@@ -61,8 +61,6 @@ def open_file(path: str):
 # config = open_file('config\config.json')
 config = open_file('config\\config.json')
 
-ServerManager.MB_Path = config.get('MB_Path')
-
 # 初始化机器人
 """main bot"""
 bot = Bot(token=config['token'])  # 默认采用 websocket

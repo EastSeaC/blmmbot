@@ -103,12 +103,15 @@ class ServerManager:
     def CheckConfitTextFile(cls, use_server_x: ServerEnum):
         tart_path = os.path.abspath('../config/config.json')
         print(tart_path)
+        up_x = ''
+        is_ready = False
         if os.path.exists(tart_path):
             with open(tart_path, 'r') as f:
                 config_x = json.load(f)
                 up_x = config_x.get('MB_Path', '')
+                is_ready = True
 
-        if tart_path == '':
+        if not is_ready:
             tart_path = f'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mount & Blade II Dedicated Server\\Modules\\Native\\blmm_{use_server_x.value[0]}_x.txt'
         else:
             tart_path = up_x + f'\\blmm_{use_server_x.value[0]}_x.txt'

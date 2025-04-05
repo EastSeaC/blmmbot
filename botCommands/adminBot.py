@@ -241,6 +241,7 @@ def init(bot: Bot, es_channels: EsChannels):
         """
         if not ChannelManager.is_es(msg.author_id):
             await msg.reply('禁止使用es指令')
+            return
 
         with get_session() as sql_session:
             p = sql_session.query(Player).filter(Player.kookId == target_kook_id)

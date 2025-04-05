@@ -106,12 +106,12 @@ class ServerManager:
         if os.path.exists(tart_path):
             with open(tart_path, 'r') as f:
                 config_x = json.load(f)
-                tart_path = config_x.get('MB_Path', '')
+                up_x = config_x.get('MB_Path', '')
 
         if tart_path == '':
             tart_path = f'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mount & Blade II Dedicated Server\\Modules\\Native\\blmm_{use_server_x.value[0]}_x.txt'
         else:
-            tart_path += f'\\blmm_{use_server_x.value[0]}_x.txt'
+            tart_path = up_x + f'\\blmm_{use_server_x.value[0]}_x.txt'
 
         return tart_path
         pass

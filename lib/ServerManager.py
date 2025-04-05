@@ -107,7 +107,6 @@ class ServerManager:
             tart_path = f'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mount & Blade II Dedicated Server\\Modules\\Native\\blmm_{use_server_x.value[0]}_x.txt'
 
         return tart_path
-        pass
 
     @classmethod
     def getServerName(cls, server_x: ServerEnum):

@@ -243,6 +243,9 @@ def init(bot: Bot, es_channels: EsChannels):
             await msg.reply('禁止使用es指令')
 
         with get_session() as sql_session:
+            ChannelManager.organization_user_ids = sql_session.execute(
+                select(DB_Admin.kookId).where(DB_Admin.can_start_match == 1)).scalars().all()
+
             p = sql_session.query(Player).filter(Player.kookId == target_kook_id)
             if p.count() == 1:
                 player: Player = p.first()
@@ -277,7 +280,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
             ChannelManager.organization_user_ids = sql_session.execute(
                 select(DB_Admin.kookId).where(DB_Admin.can_start_match == 1)).scalars().all()
-            LogHelper.log("更新管理玩家")
+        LogHelper.log("更新管理玩家")
 
     @bot.command(name='remove_grant_as_common', case_sensitive=False, aliases=['rga'])
     async def grant_player_as_admin(msg: Message, target_kook_id: str):

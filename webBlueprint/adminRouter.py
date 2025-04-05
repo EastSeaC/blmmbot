@@ -6,6 +6,7 @@ from aiohttp.web_response import Response
 from sqlalchemy import select
 
 from entity.BanType import BanType
+from entity.ServerEnum import ServerEnum
 from init_db import get_session
 from lib.ServerGameConfig import GameConfig
 from lib.ServerManager import ServerManager
@@ -70,5 +71,7 @@ def test_auto_config(req):
 
 @adminRouter.get('/test_divide_players')
 def test_divide_players(req):
+    px =ServerManager.CheckConfitTextFile(ServerEnum.Server_1)
+    print(px)
     pass
     return Response(text='1x')

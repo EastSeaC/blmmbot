@@ -101,7 +101,7 @@ class ServerManager:
 
     @classmethod
     def CheckConfitTextFile(cls, use_server_x: ServerEnum):
-        px = f'C:\\Users\\Administrator\\Desktop\\server files license\\Modules\\Native\\blmm_{use_server_x.value[0]}_x.txt'
+        px = f'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mount & Blade II Dedicated Server\\Modules\\Native\\blmm_{use_server_x.value[0]}_x.txt'
         return px
         pass
 

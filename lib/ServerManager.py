@@ -101,9 +101,9 @@ class ServerManager:
 
     @classmethod
     def CheckConfitTextFile(cls, use_server_x: ServerEnum):
-        tart_path = ''
-        if os.path.exists('..\\config\\config.json'):
-            with open('.\\config\\config.json', 'r') as f:
+        tart_path = os.path.abspath('../config/config.json')
+        if os.path.exists(tart_path):
+            with open(tart_path, 'r') as f:
                 config_x = json.load(f)
                 tart_path = config_x.get('MB_Path', '')
 

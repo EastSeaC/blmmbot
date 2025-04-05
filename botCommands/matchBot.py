@@ -63,6 +63,7 @@ def init(bot: Bot, es_channels: EsChannels):
         count = len(args)
         if msg.author_id not in ChannelManager.manager_user_id:
             await msg.reply('禁止使用管理员指令')
+            return
 
         if count >= 1:
             if str(args[0]).isdecimal():

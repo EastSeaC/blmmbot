@@ -227,7 +227,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
         if result == 0:
             use_server_x = ServerEnum.Server_1
-            LogHelper.log(f'first_result {use_server_x}' + result)
+            LogHelper.log(f'first_result {use_server_x} {result}')
             pass
         elif result > 0:
             use_server_x = ServerEnum.Server_2

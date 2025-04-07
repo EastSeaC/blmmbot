@@ -123,11 +123,17 @@ def init(bot: Bot, es_channels: EsChannels):
 
         is_no_move = False
         is_exclude_es = False
+        is_use_2 = False
+        not_open_server = False
         for i in arg:
             if i == 'e':
                 is_exclude_es = True
             elif i == 'n':
                 is_no_move = True
+            elif i == 'x':
+                is_use_2 = True
+            elif i == 'z':
+                not_open_server = True
 
         # k: PublicVoiceChannel = await bot.client.fetch_public_channel(OldGuildChannel.match_wait_channel)
         # k = await k.fetch_user_list()
@@ -196,7 +202,10 @@ def init(bot: Bot, es_channels: EsChannels):
         #     player_list.pop()
         # 2服
         # sqlSession.query(DB_WillMatchs)
-        use_server_x = ServerEnum.Server_1
+        if is_use_2:
+            use_server_x = ServerEnum.Server_2
+        else:
+            use_server_x = ServerEnum.Server_1
         import datetime as dt_or
         name_x_initial = ServerManager.getServerName(ServerEnum.Server_1)
         LogHelper.log('name_x_initial: ' + name_x_initial)
@@ -241,6 +250,7 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.match_type = WillMatchType.get_match_type_with_player_num(len(divide_data.first_team))
         will_match_data.is_cancel = False
         will_match_data.is_finished = False
+
         will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
 
         # 获取今天的日期并设置时间为 00:00:00
@@ -325,7 +335,11 @@ def init(bot: Bot, es_channels: EsChannels):
             f.write(text.to_str())
 
         # ServerManager.RestartBLMMServer(6)
-        ServerManager.RestartBLMMServerEx(use_server_x)
+        if not not_open_server:
+            ServerManager.RestartBLMMServerEx(use_server_x)
+        else:
+            await msg.reply('没有开服')
+
         await msg.reply('分配完毕!')
 
     async def move_a_to_b(a: str, b: str):

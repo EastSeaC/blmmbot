@@ -7,6 +7,7 @@ from khl import Bot, Message, GuildUser, PublicVoiceChannel
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import desc, select
 
+from entity.ServerEnum import ServerEnum
 from lib.LogHelper import get_time_str
 from entity.WillMatchType import WillMatchType
 from kook.ChannelKit import EsChannels, OldGuildChannel
@@ -14,6 +15,7 @@ from init_db import get_session
 from kook.ChannelKit import ChannelManager
 from lib.SelectMatchData import SelectPlayerMatchData
 from lib.ServerGameConfig import get_random_faction_2
+from lib.ServerManager import ServerManager
 from lib.match_state import PlayerBasicInfo, MatchState, DivideData, MatchConditionEx
 from tables import *
 from tables.DB_WillMatch import DB_WillMatchs
@@ -184,6 +186,20 @@ def init(bot: Bot, es_channels: EsChannels):
 
             await msg.reply(CardMessage(card8))
         pass
+
+    @bot.command(name='test_abc', case_sensitive=False)
+    async def test_abc(msg: Message):
+        with get_session() as sqlSession:
+            name_x_initial = ServerManager.getServerName(ServerEnum.Server_1)
+            result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                      .filter(DB_WillMatchs.server_name == name_x_initial,
+                              DB_WillMatchs.is_cancel == 0,
+                              DB_WillMatchs.is_finished == 0,
+                              DB_WillMatchs.time_match >= datetime.datetime.now() - datetime.timedelta(
+                                  minutes=15))).limit(
+                1).count()
+
+            await  msg.reply(f'服务器：{name_x_initial} :{result}')
 
     @bot.command(name='show_match', case_sensitive=False, aliases=['sm'])
     async def show_match(msg: Message):

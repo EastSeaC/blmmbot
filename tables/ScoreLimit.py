@@ -43,4 +43,4 @@ class DB_ScoreLimit(Base):
     RangerMultiple = Column(Float, nullable=False, default=1.0)
 
     # 其他配置
-    BaseServerName = Column(String, nullable=False, default='CN_BTL_SHAOXING_6')
+    BaseServerName = Column(VARCHAR(100), nullable=False, default='CN_BTL_SHAOXING_6')

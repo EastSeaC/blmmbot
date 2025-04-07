@@ -224,8 +224,10 @@ def init(bot: Bot, es_channels: EsChannels):
                           DB_WillMatchs.is_cancel == 0,
                           DB_WillMatchs.is_finished == 0,
                           )).limit(1).count()
+
         if result == 0:
             use_server_x = ServerEnum.Server_1
+            LogHelper.log(f'first_result {use_server_x}' + result)
             pass
         elif result > 0:
             use_server_x = ServerEnum.Server_2

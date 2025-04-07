@@ -2,6 +2,7 @@ import json
 
 from aiohttp import web
 
+from entity.webEntity.ControllerResponse import ControllerResponse
 from init_db import get_session
 from tables.Announcement import DB_Anouncement
 
@@ -18,5 +19,4 @@ async def get_notice_1(req):
             notice: DB_Anouncement = i
             p.append(notice.to_dict())
 
-        return json.dumps(p)
-
+        return web.json_response(ControllerResponse.success_response(json.dumps(p)))

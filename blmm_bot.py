@@ -19,6 +19,7 @@ from kook.ChannelKit import EsChannels, ChannelManager, OldGuildChannel
 from lib.ServerManager import ServerManager
 from lib.match_guard import MatchGuard
 from lib.match_state import MatchConditionEx
+from tables.Admin import DB_Admin
 from tables.KookChannelGroup import DB_KookChannelGroup
 from tables.ScoreLimit import DB_ScoreLimit
 from webBlueprint.adminRouter import adminRouter
@@ -232,6 +233,10 @@ async def bot_init(bot1: Bot):
     testBot.init(bot1, es_channels)
     commonBot.init(bot1, es_channels)
 
+    # 启动时更新组织管理员列表
+    with get_session() as sql_session:
+        ChannelManager.organization_user_ids = sql_session.execute(
+            select(DB_Admin.playerId).where(DB_Admin.can_start_match == 1)).scalars().all()
     await CheckDataBase()
 
 

@@ -196,10 +196,22 @@ def init(bot: Bot, es_channels: EsChannels):
                               DB_WillMatchs.is_cancel == 0,
                               DB_WillMatchs.is_finished == 0,
                               DB_WillMatchs.time_match >= datetime.datetime.now() - datetime.timedelta(
-                                  minutes=15))).limit(
+                                  minutes=30))).limit(
                 1).count()
 
-            await  msg.reply(f'服务器：{name_x_initial} :{result}')
+            await  msg.reply(f'服务器：{name_x_initial} :{result},')
+
+            use_server_x = ServerEnum.Server_2
+            name_x_initial = ServerManager.getServerName(use_server_x)
+            result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                      .filter(DB_WillMatchs.server_name == name_x_initial,
+                              DB_WillMatchs.is_cancel == 0,
+                              DB_WillMatchs.is_finished == 0,
+                              DB_WillMatchs.time_match >= datetime.datetime.now() - datetime.timedelta(
+                                  minutes=30))).limit(
+                1).count()
+
+            await  msg.reply(f'服务器：{name_x_initial} :{result},')
 
     @bot.command(name='show_match', case_sensitive=False, aliases=['sm'])
     async def show_match(msg: Message):

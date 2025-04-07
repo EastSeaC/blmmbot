@@ -136,6 +136,10 @@ def init(bot: Bot, es_channels: EsChannels):
             elif i == 'z':
                 not_open_server = True
             elif i == 't':
+                is_force_use_2 = False
+                is_force_use_3 = True
+            elif i == '3':
+                is_force_use_2 = False
                 is_force_use_3 = True
 
         # k: PublicVoiceChannel = await bot.client.fetch_public_channel(OldGuildChannel.match_wait_channel)

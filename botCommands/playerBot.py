@@ -135,6 +135,9 @@ def init(bot: Bot, es_channels: EsChannels):
                 is_force_use_2 = True
             elif i == 'z':
                 not_open_server = True
+            elif i == '1':
+                is_force_use_2 = False
+                is_force_use_3 = False
             elif i == 't':
                 is_force_use_2 = False
                 is_force_use_3 = True

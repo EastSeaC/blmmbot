@@ -123,7 +123,8 @@ def init(bot: Bot, es_channels: EsChannels):
 
         is_no_move = False
         is_exclude_es = False
-        is_use_2 = False
+        is_force_use_2 = False
+        is_force_use_3 = False
         not_open_server = False
         for i in arg:
             if i == 'e':
@@ -131,9 +132,11 @@ def init(bot: Bot, es_channels: EsChannels):
             elif i == 'n':
                 is_no_move = True
             elif i == 'x':
-                is_use_2 = True
+                is_force_use_2 = True
             elif i == 'z':
                 not_open_server = True
+            elif i == 't':
+                is_force_use_3 = True
 
         # k: PublicVoiceChannel = await bot.client.fetch_public_channel(OldGuildChannel.match_wait_channel)
         # k = await k.fetch_user_list()
@@ -202,7 +205,7 @@ def init(bot: Bot, es_channels: EsChannels):
         #     player_list.pop()
         # 2服
         # sqlSession.query(DB_WillMatchs)
-        if is_use_2:
+        if is_force_use_2:
             use_server_x = ServerEnum.Server_2
         else:
             use_server_x = ServerEnum.Server_1
@@ -213,7 +216,7 @@ def init(bot: Bot, es_channels: EsChannels):
                   .filter(DB_WillMatchs.server_name == name_x_initial,
                           DB_WillMatchs.is_cancel == 0,
                           DB_WillMatchs.is_finished == 0,
-                          DB_WillMatchs.time_match >= datetime.now() - dt_or.timedelta(minutes=30))).limit(1).count()
+                          )).limit(1).count()
         if result > 0:
             use_server_x = ServerEnum.Server_2
             name_x_initial = ServerManager.getServerName(use_server_x)
@@ -221,7 +224,7 @@ def init(bot: Bot, es_channels: EsChannels):
                       .filter(DB_WillMatchs.server_name == name_x_initial,
                               DB_WillMatchs.is_cancel == 0,
                               DB_WillMatchs.is_finished == 0,
-                              DB_WillMatchs.time_match >= datetime.now() - dt_or.timedelta(minutes=30))).limit(
+                              )).limit(
                 1).count()
             if result > 0:
                 await msg.reply('暂无服务器，请稍后')
@@ -252,9 +255,11 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.is_finished = False
 
         will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
-        if is_use_2:
+        if is_force_use_2:
             use_server_x = ServerEnum.Server_2
-            will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
+        elif is_force_use_3:
+            use_server_x = ServerEnum.Server_3
+        will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
 
         # 获取今天的日期并设置时间为 00:00:00
         today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)

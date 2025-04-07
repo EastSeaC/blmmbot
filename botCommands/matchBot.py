@@ -61,7 +61,7 @@ def init(bot: Bot, es_channels: EsChannels):
     @bot.command(name='cancel_match', case_sensitive=False, aliases=['cnm'])
     async def cancel_match(msg: Message, *args):
         count = len(args)
-        if msg.author_id not in ChannelManager.manager_user_id:
+        if not ChannelManager.is_organization_user(msg.author_id):
             await msg.reply('禁止使用管理员指令')
             return
 

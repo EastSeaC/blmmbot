@@ -205,9 +205,7 @@ def init(bot: Bot, es_channels: EsChannels):
                       .filter(DB_WillMatchs.server_name == name_x_initial,
                               DB_WillMatchs.is_cancel == 0,
                               DB_WillMatchs.is_finished == 0,
-                              DB_WillMatchs.time_match >= datetime.datetime.now() - datetime.timedelta(
-                                  minutes=30))).limit(
-                1).count()
+                              )).limit(1).count()
 
             await  msg.reply(f'服务器：{name_x_initial} :{result},')
 

@@ -217,7 +217,10 @@ def init(bot: Bot, es_channels: EsChannels):
                           DB_WillMatchs.is_cancel == 0,
                           DB_WillMatchs.is_finished == 0,
                           )).limit(1).count()
-        if result > 0:
+        if result == 0:
+            use_server_x = ServerEnum.Server_1
+            pass
+        elif result > 0:
             use_server_x = ServerEnum.Server_2
             name_x_initial = ServerManager.getServerName(use_server_x)
             result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
@@ -230,6 +233,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 await msg.reply('暂无服务器，请稍后')
                 return
         else:
+            use_server_x = ServerEnum.Server_3
             pass
 
         z_config = sqlSession.query(DB_ScoreLimit).filter(DB_ScoreLimit.score_type == 'default').first()

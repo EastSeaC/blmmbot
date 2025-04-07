@@ -204,7 +204,7 @@ def init(bot: Bot, es_channels: EsChannels):
                   .filter(DB_WillMatchs.server_name == name_x_initial,
                           DB_WillMatchs.is_cancel == 0,
                           DB_WillMatchs.is_finished == 0,
-                          DB_WillMatchs.time_match >= datetime.now() - dt_or.timedelta(minutes=15))).limit(1).count()
+                          DB_WillMatchs.time_match >= datetime.now() - dt_or.timedelta(minutes=30))).limit(1).count()
         if result > 0:
             use_server_x = ServerEnum.Server_2
             name_x_initial = ServerManager.getServerName(use_server_x)
@@ -212,7 +212,7 @@ def init(bot: Bot, es_channels: EsChannels):
                       .filter(DB_WillMatchs.server_name == name_x_initial,
                               DB_WillMatchs.is_cancel == 0,
                               DB_WillMatchs.is_finished == 0,
-                              DB_WillMatchs.time_match >= datetime.now() - dt_or.timedelta(minutes=15))).limit(
+                              DB_WillMatchs.time_match >= datetime.now() - dt_or.timedelta(minutes=30))).limit(
                 1).count()
             if result > 0:
                 await msg.reply('暂无服务器，请稍后')

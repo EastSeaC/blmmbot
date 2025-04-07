@@ -17,7 +17,7 @@ class DB_PlayerMedal(Base):
     playerName = Column(VARCHAR(50), nullable=True)
     kookId = Column(VARCHAR(50), nullable=False, unique=True)
 
-    medal_blmm_testor = Column(INT, nullable=False)
+    medal_blmm_testor = Column(INT, nullable=True)
 
     __base_emoji = "(emj){}(emj)[{}]"
 

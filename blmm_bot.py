@@ -236,7 +236,7 @@ async def bot_init(bot1: Bot):
     # 启动时更新组织管理员列表
     with get_session() as sql_session:
         ChannelManager.organization_user_ids = sql_session.execute(
-            select(DB_Admin.playerId).where(DB_Admin.can_start_match == 1)).scalars().all()
+            select(DB_Admin.kookId).where(DB_Admin.can_start_match == 1)).scalars().all()
     await CheckDataBase()
 
 

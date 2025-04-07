@@ -9,12 +9,14 @@ from aiohttp.web import Response
 from openpyxl.workbook import Workbook
 from sqlalchemy import or_
 
+from entity.ServerEnum import ServerEnum
 from lib.LogHelper import LogHelper
 from config import INITIAL_SCORE, WIN_REWARD_SCORE, LOSE_PENALTY_SCORE
 from convert.PlayerMatchData import TPlayerMatchData
 from entity.PlayerRegInfo import PlayerInfo
 from init_db import get_session
 from lib.ScoreMaster import calculate_score
+from lib.ServerManager import ServerManager
 from lib.match_state import MatchConditionEx
 from tables import *
 from tables.DB_WillMatch import DB_WillMatchs
@@ -330,6 +332,20 @@ async def update_match_data2(request):
     pass
 
     session.commit()
+
+    server_name = ServerManager.getServerName(ServerEnum.Server_1)
+    server_name_withou_clear: str = t.server_name
+    if '-' in server_name_withou_clear:
+        server_name_withou_clear = server_name_withou_clear.split('-')[0]
+    z = session.query(DB_WillMatchs).filter(DB_WillMatchs.server_name == server_name_withou_clear,
+                                            DB_WillMatchs.match_id_2 == t.get_match_id)
+    if z.count() > 0:
+        for i in z:
+            db_x: DB_WillMatchs = i
+            db_x.is_finished = 1
+
+            session.merge(db_x)
+        session.commit()
 
     # (session.query(DB_WillMatchs).filter(DB_WillMatchs.match_id_2 == )
     # 保存数据到静态 , 转为有比赛结果

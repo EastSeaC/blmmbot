@@ -1,4 +1,7 @@
-from khl import Bot, Message, GuildUser, PublicChannel
+import datetime
+import re
+
+from khl import Bot, Message, GuildUser, PublicChannel, User
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import desc, text, select
 
@@ -11,6 +14,7 @@ from kook.ChannelKit import ChannelManager
 from lib.basic import generate_numeric_code
 from tables import *
 from tables.Admin import DB_Admin
+from tables.Ban import DB_Ban
 from tables.PlayerNames import DB_PlayerNames
 
 session = get_session()
@@ -324,6 +328,33 @@ def init(bot: Bot, es_channels: EsChannels):
 
             await channel_b.move_user(ChannelManager.match_attack_channel, d.id)
 
+    @bot.command(name='ban', case_sensitive=False)
+    async def ban_player(msg: Message, kook_id: str, day: str):
+        if not ChannelManager.is_admin(msg.author_id):
+            await msg.reply('禁止使用管理员指令')
+            return
+
+        k: User = await bot.client.fetch_user(kook_id)
+
+        if re.match(r'\d+'):
+            real_day = float(day)
+        else:
+            await msg.reply('时间错误')
+            return
+        with get_session() as sql_session:
+            ban_record = DB_Ban()
+            ban_record.kookId = k.id
+            ban_record.playerName = k.username
+            ban_record.createdAt = datetime.datetime.now()
+            ban_record.endAt = datetime.datetime.now() + datetime.timedelta(days=real_day)
+            ban_record.admin_kook_id = msg.author_id
+            ban_record.admin_kook_name = msg.author.username
+
+            sql_session.add(ban_record)
+            sql_session.commit()
+
+            await msg.reply(f'已封印 {ban_record.playerName} {real_day}天')
+
     async def check_admin(msg: Message):
         if msg.author_id != ChannelManager.es_user_id or not msg.author_id in ChannelManager.manager_user_id:
             await msg.reply('禁止使用es指令')
@@ -411,7 +442,6 @@ async def ShowLastMatch():
 #     pass
 
 
-# @bot.command(name='ban', case_sensitive=False)
 # async def ban(msg: Message, type: str = 'gi', condition: str = ''):
 #     cm = CardMessage()
 #

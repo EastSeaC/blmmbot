@@ -21,6 +21,7 @@ from lib.ServerGameConfig import get_random_faction_2, GameConfig
 from lib.ServerManager import ServerManager
 from lib.match_state import PlayerBasicInfo, DivideData, MatchState, MatchConditionEx
 from tables import *
+from tables.Ban import DB_Ban
 from tables.DB_WillMatch import DB_WillMatchs
 from tables.PlayerChangeName import DB_PlayerChangeNames
 from tables.PlayerMedal import DB_PlayerMedal
@@ -168,6 +169,16 @@ def init(bot: Bot, es_channels: EsChannels):
         for i in z:
             t: Player = i
             dict_for_kook_id[t.kookId] = t
+
+        try:
+            ban_player_kook_id = sqlSession.execute(select(DB_Ban.kookId).where(DB_Ban.endAt <= datetime.now())).all()
+            for i in ban_player_kook_id:
+                if i in dict_for_kook_id:
+                    player_x_ban: Player = dict_for_kook_id[i]
+                    await msg.reply(f'有被封印玩家 {player_x_ban.kookName} 停止匹配')
+                    return
+        except Exception as e:
+            print(e)
 
         # print('this is z data')
         # print([i.__dict__ for i in z])

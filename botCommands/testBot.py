@@ -112,7 +112,7 @@ def init(bot: Bot, es_channels: EsChannels):
     @bot.command(name='testSelect', case_sensitive=False, aliases=['test-sm'])
     async def test_select(msg: Message, *args):
 
-        user_list = ['482714005', '1555061634', '755654595', '3006824740', '3484257139', '2806603494', '3394658957',
+        user_list = ['482714005', '1555061634', '755654595', '304648463', '3484257139', '2806603494', '3394658957',
                      '2806603494', '1384765669', '1510300409', '828555933', '3784439652']
         first_team_o = '482714005'
         second_team_o = '1555061634'

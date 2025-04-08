@@ -131,12 +131,15 @@ async def task1():
                 Module.Divider(),
                 Module.Header(f'比分:{MatchConditionEx.attacker_score}:{MatchConditionEx.defender_score}')
             )))
-        z = MatchConditionEx.data
+        z = MatchConditionEx.data2
 
         name_str = '姓名:'
         game_info = '分数:'
         kill_info = 'KDA伤:'
-        for i in z:
+
+        cm = CardMessage()
+        z1 = z[0:6]
+        for i in z1:
             player: TPlayerMatchData = i
             name_str += f'\n{player.truncate_by_width()}'
             game_info += f'\n{player.get_score_info_2}'
@@ -152,7 +155,32 @@ async def task1():
                 )
             )
         )
-        await es_channels.command_channel.send(CardMessage(c1))
+        cm.append(c1)
+        cm.append(Module.Divider())
+        z2 = z[6:]
+
+        name_str = ''
+        game_info = ''
+        kill_info = ''
+        for i in z2:
+            for i in z1:
+                player: TPlayerMatchData = i
+                name_str += f'\n{player.truncate_by_width()}'
+                game_info += f'\n{player.get_score_info_2}'
+                kill_info += f'\n{player.get_kill_info_2}'
+
+        c2 = Card(
+            Module.Section(
+                Struct.Paragraph(
+                    3,
+                    Element.Text(name_str, type=Types.Text.KMD),
+                    Element.Text(kill_info, type=Types.Text.KMD),
+                    Element.Text(game_info, type=Types.Text.KMD),
+                )
+            )
+        )
+        cm.append(c2)
+        await es_channels.command_channel.send(cm)
 
 
 async def move_a_to_b(a: str, b: str):

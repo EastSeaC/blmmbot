@@ -204,40 +204,41 @@ async def update_match_data2(request):
     #     print(f"Key: {key}, Value: {value}")
     if not isinstance(data, dict):
         data = json.loads(data)
-    t = DB_Matchs()
-    t.left_scores = data["AttackScores"]
-    t.right_scores = data["DefendScores"]
-    t.left_players = list(set(data["AttackPlayerIds"]))
-    t.right_players = list(set(data["DefendPlayerIds"]))
-    t.left_win_rounds = data["AttackRound"]
-    t.right_win_rounds = data["DefendRound"]
-    t.server_name = data["ServerName"]
-    t.tag = data["Tag"]
+    match_data = DB_Matchs()
+    match_data.left_scores = data["AttackScores"]
+    match_data.right_scores = data["DefendScores"]
+    match_data.left_players = list(set(data["AttackPlayerIds"]))
+    match_data.right_players = list(set(data["DefendPlayerIds"]))
+    match_data.left_win_rounds = data["AttackRound"]
+    match_data.right_win_rounds = data["DefendRound"]
+    match_data.server_name = data["ServerName"]
+    match_data.tag = data["Tag"]
     playerData = data["_players"]
-    t.player_data = playerData
-    t.raw = data
-    ###### 提前保存，防止数据异常
+    match_data.player_data = playerData
+    match_data.raw = data
 
-    print('解析前的tag', t.tag, type(t.tag))
-    if isinstance(t.tag, dict):
-        t.tag = json.dumps(t.tag)
-        print('属性判定', isinstance(t.tag, dict))
+    # #### 提前保存，防止数据异常 ####
+
+    print('解析前的tag', match_data.tag, type(match_data.tag))
+    if isinstance(match_data.tag, dict):
+        match_data.tag = json.dumps(match_data.tag)
+        print('属性判定', isinstance(match_data.tag, dict))
     session = get_session()
-    session.add(t)
+    session.add(match_data)
     session.commit()
 
-    t.tag = json.loads(t.tag)
-    if isinstance(t.tag, dict):
-        is_match_ending = t.tag["IsMatchEnding"]
-        round_count = int(t.tag["RoundCount"])
+    match_data.tag = json.loads(match_data.tag)
+    if isinstance(match_data.tag, dict):
+        is_match_ending = match_data.tag["IsMatchEnding"]
+        round_count = int(match_data.tag["RoundCount"])
     else:
         round_count = 0
         is_match_ending = False
     if round_count < 3:
         LogHelper.log("未满3局")
         return
-    if isinstance(t.tag, dict):
-        t.tag = json.dumps(t.tag)
+    if isinstance(match_data.tag, dict):
+        match_data.tag = json.dumps(match_data.tag)
     # session.add(t)
     player_ids = list(playerData.keys())
     print(type(player_ids))
@@ -251,6 +252,8 @@ async def update_match_data2(request):
     print('数据只有一项', '*' * 65)
 
     show_data = []
+    team_a_data = []
+    team_b_data = []
 
     # 搜索玩家数据
     result = session.query(DB_PlayerData).filter(DB_PlayerData.playerId.in_(player_ids))
@@ -262,7 +265,7 @@ async def update_match_data2(request):
     #     找到之前没有数据的玩家
     missing_data = [value for key, value in playerData.items() if key not in result_player_ids]
 
-    match_total_sum = t.get_total_data
+    match_total_sum = match_data.get_total_data
     for i in result:
         oldData: DB_PlayerData = i
         k = TPlayerMatchData(playerData[oldData.playerId])
@@ -272,24 +275,24 @@ async def update_match_data2(request):
             k.set_old_score(oldData.rank)
 
             if match_total_sum.attacker_rounds < match_total_sum.defender_rounds:
-                if k.player_id in t.left_players:
+                if k.player_id in match_data.left_players:
                     print(
                         f"{k.player_name} .分数{match_total_sum.attacker_rounds}-{match_total_sum.defender_rounds}，false")
                     k.set_is_lose(True)
-                elif k.player_id in t.right_players:
+                elif k.player_id in match_data.right_players:
                     print(
                         f"{k.player_name} .分数{match_total_sum.attacker_rounds}-{match_total_sum.defender_rounds}，win")
                     k.set_is_lose(False)
             elif match_total_sum.attacker_rounds == match_total_sum.defender_rounds:
                 print(f"{k.player_name} .分数{match_total_sum.attacker_rounds}-{match_total_sum.defender_rounds}")
-                if k.player_id in t.left_players or k.player_id in t.right_players:
+                if k.player_id in match_data.left_players or k.player_id in match_data.right_players:
                     k.set_is_lose(False)
             elif match_total_sum.attacker_rounds > match_total_sum.defender_rounds:
-                if k.player_id in t.left_players:
+                if k.player_id in match_data.left_players:
                     print(
                         f"{k.player_name} .分数{match_total_sum.attacker_rounds}-{match_total_sum.defender_rounds}，win")
                     k.set_is_lose(False)
-                elif k.player_id in t.right_players:
+                elif k.player_id in match_data.right_players:
                     print(
                         f"{k.player_name} .分数{match_total_sum.attacker_rounds}-{match_total_sum.defender_rounds}，false")
                     k.set_is_lose(True)
@@ -300,6 +303,11 @@ async def update_match_data2(request):
             oldData.rank += calculate_score(match_total_sum, k)
             k.set_new_score(oldData.rank)
             show_data.append(k)
+
+            if k.player_id in match_data.left_players:
+                team_a_data.append(k)
+            else:
+                team_b_data.append(k)
         else:
             LogHelper.log("跳过")
 
@@ -318,13 +326,26 @@ async def update_match_data2(request):
         # 积分
         k.set_old_score(newData.rank)
         if not k.is_spectator_by_score():
-            if k.win_rounds >= 3:
-                k.set_is_lose(False)
-            else:
-                k.set_is_lose(True)
+            if k.player_id in match_data.left_players:
+                if match_total_sum.attacker_rounds < match_total_sum.defender_rounds:
+                    k.set_is_lose(True)
+                else:
+                    k.set_is_lose(False)
+            elif k.player_id in match_data.right_players:
+                if match_total_sum.attacker_rounds > match_total_sum.defender_rounds:
+                    k.set_is_lose(False)
+                else:
+                    k.set_is_lose(True)
+
             newData.rank += calculate_score(match_total_sum, k)
             k.set_new_score(newData.rank)
             show_data.append(k)
+
+            if k.player_id in match_data.left_players:
+                team_a_data.append(k)
+            elif k.player_id in match_data.left_players:
+                team_b_data.append(k)
+
         # 积分
         newData.add_match_data(k)
 
@@ -334,11 +355,11 @@ async def update_match_data2(request):
     session.commit()
 
     server_name = ServerManager.getServerName(ServerEnum.Server_1)
-    server_name_withou_clear: str = t.server_name
+    server_name_withou_clear: str = match_data.server_name
     if '-' in server_name_withou_clear:
         server_name_withou_clear = server_name_withou_clear.split('-')[0]
     z = session.query(DB_WillMatchs).filter(DB_WillMatchs.server_name == server_name_withou_clear,
-                                            DB_WillMatchs.match_id_2 == t.get_match_id)
+                                            DB_WillMatchs.match_id_2 == match_data.get_match_id)
     if z.count() > 0:
         for i in z:
             db_x: DB_WillMatchs = i
@@ -349,11 +370,12 @@ async def update_match_data2(request):
 
     # (session.query(DB_WillMatchs).filter(DB_WillMatchs.match_id_2 == )
     # 保存数据到静态 , 转为有比赛结果
-    MatchConditionEx.server_name = t.server_name
+    MatchConditionEx.server_name = match_data.server_name
     MatchConditionEx.round_count = round_count
     MatchConditionEx.data = show_data
-    MatchConditionEx.attacker_score = t.left_win_rounds
-    MatchConditionEx.defender_score = t.right_win_rounds
+    MatchConditionEx.data2 = team_a_data + team_b_data
+    MatchConditionEx.attacker_score = match_data.left_win_rounds
+    MatchConditionEx.defender_score = match_data.right_win_rounds
     if is_match_ending:
         # 存放到 静态类中，让机器人输出
         MatchConditionEx.end_game = True

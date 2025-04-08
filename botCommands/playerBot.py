@@ -131,7 +131,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 is_exclude_es = True
             elif i == 'n':
                 is_no_move = True
-            elif i == 'x':
+            elif i == 'x' or i == '2':
                 is_force_use_2 = True
             elif i == 'z':
                 not_open_server = True

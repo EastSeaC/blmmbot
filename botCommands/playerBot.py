@@ -251,7 +251,6 @@ def init(bot: Bot, es_channels: EsChannels):
                 else:
                     await msg.reply('暂无服务器，请稍等')
                     return
-                return
 
         z_config = sqlSession.query(DB_ScoreLimit).filter(DB_ScoreLimit.score_type == 'default').first()
         # name_x = 'CN_BTL_SHAOXING_6'

@@ -156,7 +156,7 @@ async def task1():
             )
         )
         cm.append(c1)
-        cm.append(Module.Divider())
+
         z2 = z[6:]
 
         name_str = ''

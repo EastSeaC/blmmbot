@@ -112,8 +112,10 @@ def init(bot: Bot, es_channels: EsChannels):
     @bot.command(name='testSelect', case_sensitive=False, aliases=['test-sm'])
     async def test_select(msg: Message, *args):
 
+        # user_list = ['482714005', '1555061634', '755654595', '304648463', '3484257139', '2806603494', '3394658957',
+        #              '2806603494', '1384765669', '1510300409', '828555933', '3784439652']
         user_list = ['482714005', '1555061634', '755654595', '304648463', '3484257139', '2806603494', '3394658957',
-                     '2806603494', '1384765669', '1510300409', '828555933', '3784439652']
+                     '2806603494', '1384765669', '1510300409', '2977084297', '3167451943']
         first_team_o = '482714005'
         second_team_o = '1555061634'
         remove_team_manager_user_list = [i for i in user_list if i != first_team_o or i != second_team_o]
@@ -160,14 +162,17 @@ def init(bot: Bot, es_channels: EsChannels):
             will_match_data.is_finished = False
             will_match_data.server_name = 'CN_BTL_NINGBO_1'
 
-            card8 = Card(Module.Header(text='服务器: [font]CN_BTL_NINGBO_1[font](success)'), Module.Divider(), )
+            card8 = Card(Module.Header(text='服务器: CN_BTL_NINGBO_1'),
+                         Module.Divider(), )
             for i in z:
                 t: Player = i[0]
                 print(f"{t.kookName},{t.rank} ")
                 if t.kookId == first_team_o or t.kookId == second_team_o:
                     continue
                 card8.append(Module.Section(
-                    Element.Text(f"{t.kookName}({t.rank}) ", type=Types.Text.KMD),
+                    Element.Text(
+                        f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
+                        type=Types.Text.KMD),
                     Element.Button(
                         "选取",
                         value=json.dumps({'type': 'match_select_players', 'kookId': t.kookId, 'match_id': '9'}),

@@ -71,9 +71,9 @@ class ChannelManager:
     emoji_farmer = __base_emoji.format('农民', '2784764957685998/ScZtMJaGPk0b40b4')
     emoji_joker = __base_emoji.format('小丑', '2784764957685998/3xeNeLlxjz0b40b4')
 
-    emoji_infantry = __base_emoji.format('步兵', '9019084812125033/JocVn6QOR305k05k')
-    emoji_archer = __base_emoji.format('射手', '9019084812125033/6TVExOo8JI05k05k')
-    emoji_calvary = __base_emoji.format('骑士', '9019084812125033/ZX8cEXrjXk06n05k')
+    emoji_infantry = __base_emoji.format('步兵', '9019084812125033/WN0jvQAtEY00o01r')
+    emoji_archer = __base_emoji.format('射手', '9019084812125033/usVMZodUDl01700u')
+    emoji_calvary = __base_emoji.format('骑士', '9019084812125033/Miw85Tj2UO01900u')
 
     image_joker = 'https://img.kookapp.cn/assets/2024-12/30/amsrdVMzVI0b40b4.png'
     image_farmer = 'https://img.kookapp.cn/assets/2024-12/30/jxTLdruutF0b40b4.png'
@@ -92,6 +92,16 @@ class ChannelManager:
     image_type_archer = 'https://img.kookapp.cn/assets/2024-12/30/jCU7Ajes1Q01700u.png'
     image_type_knight = 'https://img.kookapp.cn/assets/2024-12/30/3N44Nt0Cdl01900u.png'
     image_type_infantry = 'https://img.kookapp.cn/assets/2024-12/31/lWP0puaPuH074074.png'
+
+    @staticmethod
+    def get_troop_emoji(a: int):
+        if a == 0:
+            return ChannelManager.emoji_infantry
+        elif a == 1:
+            return ChannelManager.emoji_calvary
+        elif a == 2:
+            return ChannelManager.emoji_archer
+        return ChannelManager.emoji_infantry
 
     @staticmethod
     def is_common_user(kook_id: str):

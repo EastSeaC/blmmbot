@@ -212,6 +212,7 @@ def init(bot: Bot, es_channels: EsChannels):
         #     player_list.pop()
         # 2服
         # sqlSession.query(DB_WillMatchs)
+        use_server_x = ServerEnum.Server_1
         if is_force_use_2:
             use_server_x = ServerEnum.Server_2
         else:
@@ -235,16 +236,22 @@ def init(bot: Bot, es_channels: EsChannels):
                       .filter(DB_WillMatchs.server_name == name_x_initial,
                               DB_WillMatchs.is_cancel == 0,
                               DB_WillMatchs.is_finished == 0,
-                              )).limit(
-                1).count()
+                              )).limit(1).count()
             if result == 0:
                 use_server_x = ServerEnum.Server_2
             if result > 0:
-                await msg.reply('暂无服务器，请稍后')
+                name_x_initial = ServerManager.getServerName(ServerEnum.Server_3)
+                result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                          .filter(DB_WillMatchs.server_name == name_x_initial,
+                                  DB_WillMatchs.is_cancel == 0,
+                                  DB_WillMatchs.is_finished == 0,
+                                  )).limit(1).count()
+                if result == 0:
+                    use_server_x = ServerEnum.Server_3
+                else:
+                    await msg.reply('暂无服务器，请稍等')
+                    return
                 return
-        else:
-            use_server_x = ServerEnum.Server_3
-            pass
 
         z_config = sqlSession.query(DB_ScoreLimit).filter(DB_ScoreLimit.score_type == 'default').first()
         # name_x = 'CN_BTL_SHAOXING_6'

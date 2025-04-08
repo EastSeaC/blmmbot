@@ -71,6 +71,10 @@ class ChannelManager:
     emoji_farmer = __base_emoji.format('农民', '2784764957685998/ScZtMJaGPk0b40b4')
     emoji_joker = __base_emoji.format('小丑', '2784764957685998/3xeNeLlxjz0b40b4')
 
+    emoji_infantry = __base_emoji.format('步兵', '9019084812125033/JocVn6QOR305k05k')
+    emoji_archer = __base_emoji.format('射手', '9019084812125033/6TVExOo8JI05k05k')
+    emoji_calvary = __base_emoji.format('骑士', '9019084812125033/ZX8cEXrjXk06n05k')
+
     image_joker = 'https://img.kookapp.cn/assets/2024-12/30/amsrdVMzVI0b40b4.png'
     image_farmer = 'https://img.kookapp.cn/assets/2024-12/30/jxTLdruutF0b40b4.png'
     image_big_knight = 'https://img.kookapp.cn/assets/2024-12/30/4Nnslswg3g0b40b4.png'

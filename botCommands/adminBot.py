@@ -336,7 +336,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
         k: User = await bot.client.fetch_user(kook_id)
 
-        if re.match(r'\d+'):
+        if re.match(r'\d+', day):
             real_day = float(day)
         else:
             await msg.reply('时间错误')

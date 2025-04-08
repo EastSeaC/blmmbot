@@ -163,11 +163,10 @@ async def task1():
         game_info = ''
         kill_info = ''
         for i in z2:
-            for i in z1:
-                player: TPlayerMatchData = i
-                name_str += f'\n{player.truncate_by_width()}'
-                game_info += f'\n{player.get_score_info_2}'
-                kill_info += f'\n{player.get_kill_info_2}'
+            player: TPlayerMatchData = i
+            name_str += f'\n{player.truncate_by_width()}'
+            game_info += f'\n{player.get_score_info_2}'
+            kill_info += f'\n{player.get_kill_info_2}'
 
         c2 = Card(
             Module.Section(

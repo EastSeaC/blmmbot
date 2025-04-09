@@ -242,6 +242,7 @@ def init(bot: Bot, es_channels: EsChannels):
             LogHelper.log(f'first_result {use_server_x} {result}')
             pass
         elif result > 0:
+            use_server_x = ServerEnum.Server_2
             name_x_initial = ServerManager.getServerName(use_server_x)
             result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
                       .filter(DB_WillMatchs.server_name == name_x_initial,

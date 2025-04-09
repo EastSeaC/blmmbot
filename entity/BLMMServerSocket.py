@@ -1,62 +1,36 @@
 import asyncio
 import json
+from typing import Dict, Set
+
+import aiohttp
+from aiohttp import web
 
 from lib.LogHelper import LogHelper
+from init_db import get_session
+
+# 创建事件
+match_cancelled_event = asyncio.Event()
 
 
-class SocketKeyNames:
-    type = 'type'
+async def websocket_handler(request):
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
 
-    pass
+    async for msg in ws:
+        if msg.type == aiohttp.WSMsgType.TEXT:
+            received_message = msg.data
+            print(f"Received: {received_message}")  # 打印接收到的消息到控制台
+            await ws.send_str(f"Received: {received_message}")
 
+            try:
+                data_str: dict = json.loads(received_message)
+                op = data_str.get('op', 'none')
 
-class AsyncSocketServer:
-    def __init__(self, host='127.0.0.1', port=65432):
-        self.host = host
-        self.port = port
+                if op == 'clear':
+                    await ws.send_str('已清空')
+            except Exception as e:
+                pass
+        elif msg.type == aiohttp.WSMsgType.ERROR:
+            print(f"WebSocket Error: {ws.exception()}")
 
-    async def handle_client(self, reader, writer):
-        """
-        处理客户端连接
-        """
-        client_address = writer.get_extra_info('peername')
-        print(f"Socket 服务器: 已连接到 {client_address}")
-
-        while True:
-            # 接收数据
-            data = await reader.read(1024)
-            if not data:
-                # 如果没有数据，关闭连接
-                print(f"Socket 服务器: 与 {client_address} 的连接已关闭")
-                writer.close()
-                await writer.wait_closed()
-                break
-
-            # 处理数据
-            message = data.decode('utf-8')
-            print(f"Socket 服务器: 收到来自 {client_address} 的数据: {message}")
-
-            json_obj = json.loads(message)
-            if SocketKeyNames.type in json_obj:
-                type_a = json_obj[SocketKeyNames.type]
-
-                if type_a == 'cancel-match':
-                    LogHelper.log('取消比赛')
-
-            # 发送响应
-            writer.write(data)
-            await writer.drain()
-
-    async def start_server(self):
-        """
-        启动异步 Socket 服务器
-        """
-        server = await asyncio.start_server(
-            self.handle_client, self.host, self.port
-        )
-
-        addr = server.sockets[0].getsockname()
-        print(f"Socket 服务器: 正在 {addr} 上监听...")
-
-        async with server:
-            await server.serve_forever()
+    return ws

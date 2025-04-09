@@ -132,6 +132,7 @@ async def add_player_name(request):
     if not player_id or not name:
         return Response(text='不得为空')
 
+    session = get_session()
     z1 = session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId == player_id).count()
     if z1 == 0:
         player_name = DB_PlayerNames()

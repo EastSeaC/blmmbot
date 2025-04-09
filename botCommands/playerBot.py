@@ -250,6 +250,7 @@ def init(bot: Bot, es_channels: EsChannels):
                               )).limit(1).count()
             if result == 0:
                 use_server_x = ServerEnum.Server_2
+                LogHelper.log(f'server result: {use_server_x} {result}')
             if result > 0:
                 name_x_initial = ServerManager.getServerName(ServerEnum.Server_3)
                 result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
@@ -259,6 +260,7 @@ def init(bot: Bot, es_channels: EsChannels):
                                   )).limit(1).count()
                 if result == 0:
                     use_server_x = ServerEnum.Server_3
+                    LogHelper.log(f'server result: {use_server_x} {result}')
                 else:
                     await msg.reply('暂无服务器，请稍等')
                     return

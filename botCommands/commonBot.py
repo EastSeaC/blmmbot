@@ -181,7 +181,8 @@ def show_server_state():
         for i in result:
             will_match: DB_WillMatchs = i
             card.append(Module.Section(
-                Element.Text(f'{i}: {will_match.get_match_description()} 比赛ID:{will_match.match_id_2}'),
+                Element.Text(
+                    f'{will_match.server_name}: {will_match.get_match_description()} 比赛ID:{will_match.match_id_2}'),
                 Element.Button(text='取消比赛',
                                value=json.dumps({'type': 'admin-cancel-match',
                                                  'match_id_2': will_match.match_id_2,

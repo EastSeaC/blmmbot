@@ -174,41 +174,25 @@ def show_server_state():
             Module.Header('服务器状态:' + get_time_str()),
         )
 
-        for i in server_names:
-            print(i)
-            result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
-                      .filter(DB_WillMatchs.server_name == i,
-                              DB_WillMatchs.is_cancel == 0, )).limit(1).first()
-            print('first_test', result)
-            if result:
-                print(result.match_id_2)
-            result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
-                      .filter(DB_WillMatchs.server_name == i,
-                              DB_WillMatchs.is_cancel == 0,
-                              DB_WillMatchs.time_match >= datetime.now() - dt_or.timedelta(minutes=15))
-                      .limit(1)
-                      .first())
-            will_match: DB_WillMatchs
-            print(result)
-            if result:
-                will_match = result
-                card.append(Module.Section(
-                    Element.Text(f'{i}: {will_match.get_match_description()} 比赛ID:{will_match.match_id_2}'),
-                    Element.Button(text='取消比赛',
-                                   value=json.dumps({'type': 'admin-cancel-match',
-                                                     'match_id_2': will_match.match_id_2,
-                                                     'server_name': i}),
-                                   theme=Types.Theme.DANGER)
-                ))
+        result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                  .filter(DB_WillMatchs.is_cancel == 0,
+                          DB_WillMatchs.is_finished == 0)).limit(1).all()
 
-            else:
-                card.append(Module.Section(
-                    Element.Text(f'{i}:空闲'),
-                ))
+        for i in result:
+            will_match: DB_WillMatchs = i
+            card.append(Module.Section(
+                Element.Text(f'{i}: {will_match.get_match_description()} 比赛ID:{will_match.match_id_2}'),
+                Element.Button(text='取消比赛',
+                               value=json.dumps({'type': 'admin-cancel-match',
+                                                 'match_id_2': will_match.match_id_2,
+                                                 'server_name': i}),
+                               theme=Types.Theme.DANGER)
+            ))
             card.append(Module.Divider())
+    return card
 
-        return card
-    pass
+
+pass
 
 
 def cancel_match(author_name: str, match_id_2: int):

@@ -176,7 +176,7 @@ def show_server_state():
 
         result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
                   .filter(DB_WillMatchs.is_cancel == 0,
-                          DB_WillMatchs.is_finished == 0)).limit(1).all()
+                          DB_WillMatchs.is_finished == 0)).all()
 
         for i in result:
             will_match: DB_WillMatchs = i

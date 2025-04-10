@@ -21,8 +21,6 @@ async def websocket_handler(request):
         if msg.type == aiohttp.WSMsgType.TEXT:
             received_message = msg.data
             print(f"Received: {received_message}")  # 打印接收到的消息到控制台
-            await ws.send_str(f"Received: {received_message}")
-
             try:
                 data_str: dict = json.loads(received_message)
                 op = data_str.get('op', 'none')

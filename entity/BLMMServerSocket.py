@@ -7,6 +7,7 @@ from aiohttp import web
 
 from lib.LogHelper import LogHelper
 from init_db import get_session
+from services.DataSyncService import DataSyncService
 
 # 创建事件
 match_cancelled_event = asyncio.Event()
@@ -28,6 +29,11 @@ async def websocket_handler(request):
 
                 if op == 'clear':
                     await ws.send_str('已清空')
+                elif op == 'sync_base':
+                    data_to_send = {}
+                    z = DataSyncService.get_admin()
+                    for i in z:
+                        print(z)
             except Exception as e:
                 pass
         elif msg.type == aiohttp.WSMsgType.ERROR:

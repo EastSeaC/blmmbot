@@ -185,7 +185,7 @@ def show_server_state():
                 Element.Button(text='取消比赛',
                                value=json.dumps({'type': 'admin-cancel-match',
                                                  'match_id_2': will_match.match_id_2,
-                                                 'server_name': i}),
+                                                 'server_name': will_match.server_name}),
                                theme=Types.Theme.DANGER)
             ))
             card.append(Module.Divider())

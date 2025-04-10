@@ -29,7 +29,11 @@ async def websocket_handler(request):
                     await ws.send_str('已清空')
                 elif op == 'sync_base':
                     data_to_send = DataSyncService.get_sync()
-                    await ws.send_str(json.dumps(data_to_send))
+                    await ws.send_str(json.dumps({
+                        'op': 'sync_base',
+                        'data': data_to_send,
+                        'type': 'from_main_server',
+                    }))
             except Exception as e:
                 pass
         elif msg.type == aiohttp.WSMsgType.ERROR:

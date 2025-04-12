@@ -158,7 +158,7 @@ def init(bot: Bot, es_channels: EsChannels):
             for i in ban_player_kook_id:
                 if i in dict_for_kook_id:
                     player_x_ban: DB_Player = dict_for_kook_id[i]
-                    await msg.reply(f'有被封印玩家 {player_x_ban.kookName} 停止匹配')
+                    await msg.reply(f'有被封印玩家 {player_x_ban.kookName} (met){player_x_ban.kookId}(met) 停止匹配')
                     return
         except Exception as e:
             print(e)

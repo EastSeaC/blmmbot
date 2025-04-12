@@ -73,18 +73,18 @@ def init(bot: Bot, es_channels: EsChannels):
                     x = cancel_match(e_body_user_info, btn_value_dict['match_id_2'])
                     await channel.send(x)
                     pass
-        # 重启服务器
-        elif value == AdminButtonValue.Restart_Server_1:
+
+        elif value == AdminButtonValue.Restart_Server_1: # 重启服务器
             if not ChannelManager.is_admin(user_id):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
             ServerManager.RestartBLMMServerEx(ServerEnum.Server_1)
-        elif value == AdminButtonValue.Restart_Server_2:
+        elif value == AdminButtonValue.Restart_Server_2:  # 重启服务器2
             if not ChannelManager.is_admin(user_id):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
             ServerManager.RestartBLMMServerEx(ServerEnum.Server_2)
-        elif value == AdminButtonValue.Restart_Server_3:
+        elif value == AdminButtonValue.Restart_Server_3:  # 重启服务器3
             if not ChannelManager.is_admin(user_id):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
@@ -99,7 +99,7 @@ def init(bot: Bot, es_channels: EsChannels):
             channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
             cx = await get_score_list_card()
             await channel.send(cx)
-        elif value == AdminButtonValue.Show_OrganizationPlayers:
+        elif value == AdminButtonValue.Show_OrganizationPlayers:  # 查看组织管理
             channel = await b.client.fetch_public_channel(channel_id)
             await channel.send(
                 f'(met){user_id}(met) ' + ' '.join(ChannelManager.organization_user_ids))

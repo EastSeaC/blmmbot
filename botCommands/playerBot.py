@@ -161,7 +161,6 @@ def init(bot: Bot, es_channels: EsChannels):
         if number_of_user % 2 == 1 or number_of_user == 0:
             await msg.reply(f'人数异常, 当前人数为 {len(k)} , 必须为非0偶数')
             return
-        player_list = []
 
         sqlSession = get_session()
         z = sqlSession.query(DB_Player).filter(DB_Player.kookId.in_([i.id for i in k])).all()
@@ -171,7 +170,7 @@ def init(bot: Bot, es_channels: EsChannels):
             dict_for_kook_id[t.kookId] = t
 
         try:
-            ban_player_kook_id = sqlSession.execute(select(DB_Ban.kookId).where(DB_Ban.endAt <= datetime.now())).all()
+            ban_player_kook_id = sqlSession.execute(select(DB_Ban.kookId).where(DB_Ban.endAt >= datetime.now())).all()
             for i in ban_player_kook_id:
                 if i in dict_for_kook_id:
                     player_x_ban: DB_Player = dict_for_kook_id[i]

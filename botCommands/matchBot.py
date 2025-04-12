@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from khl import Bot, Message, EventTypes, Event, GuildUser, PublicVoiceChannel
 from sqlalchemy import select
@@ -323,6 +323,19 @@ def init(bot: Bot, es_channels: EsChannels):
             #     print(t.id, t.joined_at)
             # stateMachine.add_player_to_wait_list(t.id)
             pass
+        pass
+
+    @bot.task.add_interval(minutes=5)
+    async def cancel_outdated_match():
+        with get_session() as session:
+            outdated_matches = session.query(DB_WillMatchs).where(
+                DB_WillMatchs.time_match < datetime.now() - timedelta(hours=1)).all()
+            for i in outdated_matches:
+                i.is_cancel = True
+                i.cancel_reason = f'机器人于 {get_time_str()} 取消，超时'
+                session.merge(i)
+
+            session.commit()
         pass
 
     @bot.task.add_interval(seconds=3)

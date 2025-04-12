@@ -75,10 +75,19 @@ def init(bot: Bot, es_channels: EsChannels):
                     pass
         # 重启服务器
         elif value == AdminButtonValue.Restart_Server_1:
+            if not ChannelManager.is_admin(user_id):
+                await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
+                return
             ServerManager.RestartBLMMServerEx(ServerEnum.Server_1)
         elif value == AdminButtonValue.Restart_Server_2:
+            if not ChannelManager.is_admin(user_id):
+                await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
+                return
             ServerManager.RestartBLMMServerEx(ServerEnum.Server_2)
         elif value == AdminButtonValue.Restart_Server_3:
+            if not ChannelManager.is_admin(user_id):
+                await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
+                return
             ServerManager.RestartBLMMServerEx(ServerEnum.Server_3)
 
         elif value == PlayerButtonValue.player_score:  # 玩家个人积分和 勋章

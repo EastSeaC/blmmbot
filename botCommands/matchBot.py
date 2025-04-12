@@ -154,7 +154,7 @@ def init(bot: Bot, es_channels: EsChannels):
             dict_for_kook_id[t.kookId] = t
 
         try:
-            ban_player_kook_id = sqlSession.execute(select(DB_Ban.kookId).where(DB_Ban.endAt <= datetime.now())).all()
+            ban_player_kook_id = sqlSession.execute(select(DB_Ban.kookId).where(DB_Ban.endAt >= datetime.now())).all()
             for i in ban_player_kook_id:
                 if i in dict_for_kook_id:
                     player_x_ban: DB_Player = dict_for_kook_id[i]

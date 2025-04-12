@@ -93,12 +93,12 @@ def init(bot: Bot, es_channels: EsChannels):
             await msg.reply("禁止使用管理员指令")
             return
         with get_session() as sql_session:
-            result = sql_session.execute(select(Player).where(Player.kookId == user_id)).first()
+            result = sql_session.execute(select(DB_Player).where(DB_Player.kookId == user_id)).first()
             if result is None or len(result) == 0:
                 await msg.reply(f'该账号{user_id}未注册')
                 return ""
 
-            player: Player = result[0]
+            player: DB_Player = result[0]
             db_player_data = sql_session.query(DB_PlayerData).filter(DB_PlayerData.playerId == player.playerId)
             # print(db_player_data)
             if db_player_data.count() >= 1:
@@ -248,9 +248,9 @@ def init(bot: Bot, es_channels: EsChannels):
             return
 
         with get_session() as sql_session:
-            p = sql_session.query(Player).filter(Player.kookId == target_kook_id)
+            p = sql_session.query(DB_Player).filter(DB_Player.kookId == target_kook_id)
             if p.count() == 1:
-                player: Player = p.first()
+                player: DB_Player = p.first()
 
                 # 当初写成playerId了，要谨慎
                 admin_record = sql_session.query(DB_Admin).filter(DB_Admin.kookId == target_kook_id)
@@ -291,7 +291,7 @@ def init(bot: Bot, es_channels: EsChannels):
             await msg.reply('禁止使用es指令')
 
         with get_session() as sql_session:
-            p = sql_session.query(Player).filter(Player.kookId == target_kook_id)
+            p = sql_session.query(DB_Player).filter(DB_Player.kookId == target_kook_id)
             if p.count() != 1:
                 await msg.reply('该玩家未注册')
                 return

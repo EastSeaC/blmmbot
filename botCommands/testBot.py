@@ -46,10 +46,10 @@ def init(bot: Bot, es_channels: EsChannels):
             print('排除东海')
             user_list = [i for i in user_list if i.id != ChannelManager.es_user_id]
 
-        z = sqlSession.query(Player).filter(Player.kookId.in_([i.id for i in user_list])).all()
+        z = sqlSession.query(DB_Player).filter(DB_Player.kookId.in_([i.id for i in user_list])).all()
         dict_for_kook_id = {}
         for i in z:
-            t: Player = i
+            t: DB_Player = i
             dict_for_kook_id[t.kookId] = t
 
         player_list = []
@@ -59,7 +59,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 print(f'{t.id} no register')
                 # await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
                 # await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
-            player: Player = dict_for_kook_id[t.id]
+            player: DB_Player = dict_for_kook_id[t.id]
             player_info = PlayerBasicInfo({'username': t.username})
             player_info.score = player.rank
             player_info.user_id = t.id
@@ -121,17 +121,17 @@ def init(bot: Bot, es_channels: EsChannels):
         remove_team_manager_user_list = [i for i in user_list if i != first_team_o or i != second_team_o]
 
         with get_session() as z_session:
-            z = z_session.execute(select(Player).where(Player.kookId.in_(user_list))).all()
+            z = z_session.execute(select(DB_Player).where(DB_Player.kookId.in_(user_list))).all()
             dict_for_kook_id = {}
             for i in z:
-                t: Player = i[0]
+                t: DB_Player = i[0]
                 print(f"ZX{t.kookName},{t.rank} ")
                 dict_for_kook_id[t.kookId] = t
 
             player_list = []
             print(dict_for_kook_id)
             for id, user in enumerate(user_list):
-                player: Player = dict_for_kook_id[user]
+                player: DB_Player = dict_for_kook_id[user]
                 player_info = PlayerBasicInfo({'username': player.kookName})
                 player_info.score = player.rank
                 player_info.user_id = player.kookId
@@ -165,7 +165,7 @@ def init(bot: Bot, es_channels: EsChannels):
             card8 = Card(Module.Header(text='服务器: CN_BTL_NINGBO_1'),
                          Module.Divider(), )
             for i in z:
-                t: Player = i[0]
+                t: DB_Player = i[0]
                 print(f"{t.kookName},{t.rank} ")
                 if t.kookId == first_team_o or t.kookId == second_team_o:
                     continue
@@ -221,16 +221,16 @@ def init(bot: Bot, es_channels: EsChannels):
         print('123')
         global sqlSession
         sqlSession = get_session()
-        z = sqlSession.execute(select(Player).where(Player.kookId.in_(user_list))).scalars()
+        z = sqlSession.execute(select(DB_Player).where(DB_Player.kookId.in_(user_list))).scalars()
         # z = sqlSession.query(Player).filter(Player.kookId.in_(user_list)).all()
         dict_for_kook_id = {}
         for i in z:
-            t: Player = i
+            t: DB_Player = i
             dict_for_kook_id[t.kookId] = t
 
         player_list = []
         for id, user in enumerate(user_list):
-            player: Player = dict_for_kook_id[user]
+            player: DB_Player = dict_for_kook_id[user]
             player_info = PlayerBasicInfo({'username': player.kookName})
             player_info.score = player.rank
             player_info.user_id = player.kookId
@@ -318,16 +318,16 @@ def init(bot: Bot, es_channels: EsChannels):
         print('123')
         global sqlSession
         sqlSession = get_session()
-        z = sqlSession.execute(select(Player).where(Player.kookId.in_(user_list))).scalars()
+        z = sqlSession.execute(select(DB_Player).where(DB_Player.kookId.in_(user_list))).scalars()
         # z = sqlSession.query(Player).filter(Player.kookId.in_(user_list)).all()
         dict_for_kook_id = {}
         for i in z:
-            t: Player = i
+            t: DB_Player = i
             dict_for_kook_id[t.kookId] = t
 
         player_list = []
         for id, user in enumerate(user_list):
-            player: Player = dict_for_kook_id[user]
+            player: DB_Player = dict_for_kook_id[user]
             player_info = PlayerBasicInfo({'username': player.kookName})
             player_info.score = player.rank
             player_info.user_id = player.kookId

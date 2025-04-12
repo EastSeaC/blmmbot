@@ -21,6 +21,8 @@ async def websocket_handler(request):
         if msg.type == aiohttp.WSMsgType.TEXT:
             received_message = msg.data
             print(f"Received: {received_message}")  # 打印接收到的消息到控制台
+
+            # DataSyncService.
             try:
                 data_str: dict = json.loads(received_message)
                 op = data_str.get('op', 'none')
@@ -34,6 +36,7 @@ async def websocket_handler(request):
                         'data': data_to_send,
                         'type': 'from_main_server',
                     }))
+
             except Exception as e:
                 pass
         elif msg.type == aiohttp.WSMsgType.ERROR:

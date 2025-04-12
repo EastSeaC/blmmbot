@@ -55,7 +55,7 @@ async def index(request):
 @bp.get('/get_player_info/{player_id}')
 async def get_player_info(request):
     player_id = request.match_info['player_id']
-    query = session.query(Player).filter(Player.playerId == player_id)
+    query = session.query(DB_Player).filter(DB_Player.playerId == player_id)
     z1 = query.count()
 
     player_reg = PlayerInfo()

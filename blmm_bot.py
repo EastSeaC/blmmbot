@@ -10,7 +10,7 @@ from khl import Bot, Message, GuildUser
 from khl.card import Card, Module, Struct, Element, Types, CardMessage
 from sqlalchemy import select
 
-from entity.BLMMServerSocket import  websocket_handler
+from lib.BLMMServerSocket import  websocket_handler
 from lib.LogHelper import LogHelper
 from botCommands import adminBot, regBot, playerBot, configBot, matchBot, testBot, commonBot
 from convert.PlayerMatchData import TPlayerMatchData

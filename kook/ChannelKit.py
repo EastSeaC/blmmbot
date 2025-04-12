@@ -21,6 +21,7 @@ class ChannelManager:
     match_defend_channel = '7704290253382922'
 
     match_set_channel = '9152989485766507'  # 淘汰休息室
+    match_high_score_match_channel = '8860007123246981' # 高分频道
     # 警告频道
     error_channel = '3489054506196442'
     es_user_id = '482714005'

@@ -1,4 +1,4 @@
-from .players import Player
+from .players import DB_Player
 from .verifys import Verify
 from .MatchInfo import DB_Matchs
 from .PlayerData import DB_PlayerData

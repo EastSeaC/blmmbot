@@ -136,11 +136,11 @@ def init(bot: Bot, es_channels: EsChannels):
 
         else:
             with get_session() as sql_session:
-                t = sql_session.query(Player).filter(Player.kookId == user_id)
+                t = sql_session.query(DB_Player).filter(DB_Player.kookId == user_id)
                 channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
 
                 if t.count() == 1:
-                    player: Player = t.first()
+                    player: DB_Player = t.first()
 
                     is_first_troop = False
                     if value.startswith('f'):

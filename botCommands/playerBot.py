@@ -73,10 +73,10 @@ def init(bot: Bot, es_channels: EsChannels):
     @bot.command(name='log_history', case_sensitive=False, aliases=['l'])
     async def show_player_match_history(msg: Message, *args):
         sqlSession = get_session()
-        z = sqlSession.query(Player).filter(Player.kookId == msg.author_id)
+        z = sqlSession.query(DB_Player).filter(DB_Player.kookId == msg.author_id)
 
         if z.count() == 1:
-            player: Player = z.first()
+            player: DB_Player = z.first()
             playerId = player.playerId
 
             match_history = (sqlSession.query(DB_Matchs).order_by(desc(DB_Matchs.time_match))
@@ -164,17 +164,17 @@ def init(bot: Bot, es_channels: EsChannels):
         player_list = []
 
         sqlSession = get_session()
-        z = sqlSession.query(Player).filter(Player.kookId.in_([i.id for i in k])).all()
+        z = sqlSession.query(DB_Player).filter(DB_Player.kookId.in_([i.id for i in k])).all()
         dict_for_kook_id = {}
         for i in z:
-            t: Player = i
+            t: DB_Player = i
             dict_for_kook_id[t.kookId] = t
 
         try:
             ban_player_kook_id = sqlSession.execute(select(DB_Ban.kookId).where(DB_Ban.endAt <= datetime.now())).all()
             for i in ban_player_kook_id:
                 if i in dict_for_kook_id:
-                    player_x_ban: Player = dict_for_kook_id[i]
+                    player_x_ban: DB_Player = dict_for_kook_id[i]
                     await msg.reply(f'有被封印玩家 {player_x_ban.kookName} 停止匹配')
                     return
         except Exception as e:
@@ -190,7 +190,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 if t.id not in dict_for_kook_id:
                     await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
                     await move_a_to_b_ex(OldGuildChannel.match_set_channel, [t.id])
-                player: Player = dict_for_kook_id[t.id]
+                player: DB_Player = dict_for_kook_id[t.id]
                 px: DB_PlayerData = sqlSession.query(DB_PlayerData).filter(
                     DB_PlayerData.playerId == player.playerId).first()
                 if px is None:
@@ -402,9 +402,9 @@ def init(bot: Bot, es_channels: EsChannels):
         # 处理玩家随便输入的时候， 在函数原型中加入 , *args
         # sqlSession.commit()
         sqlSession = get_session()
-        t: Player = sqlSession.query(Player).filter(Player.kookId == msg.author_id).first()
+        t: DB_Player = sqlSession.query(DB_Player).filter(DB_Player.kookId == msg.author_id).first()
         if t:
-            player: Player = t
+            player: DB_Player = t
             player_change_names_obj = sqlSession.query(DB_PlayerChangeNames).filter(
                 DB_PlayerChangeNames.kookId == msg.author_id).first()
             if player_change_names_obj:
@@ -484,9 +484,9 @@ def init(bot: Bot, es_channels: EsChannels):
     async def show_score(msg: Message, *args):
         # 处理玩家随便输入的时候， 在函数原型中加入 , *args
         sql_session = get_session()
-        t = sql_session.query(Player).filter(Player.kookId == msg.author_id)
+        t = sql_session.query(DB_Player).filter(DB_Player.kookId == msg.author_id)
         if t.count() == 1:
-            player: Player = t.first()
+            player: DB_Player = t.first()
 
             db_playerdata = sql_session.query(DB_PlayerData).filter(DB_PlayerData.playerId == player.playerId)
             if db_playerdata.count() >= 1:

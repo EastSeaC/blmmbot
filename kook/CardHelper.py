@@ -3,7 +3,7 @@ from khl.card import CardMessage, Card, Module, Element, Struct, Types
 from config import get_rank_name
 from init_db import get_session
 from kook.ChannelKit import kim, get_troop_type_image
-from tables import Player, DB_PlayerData
+from tables import DB_Player, DB_PlayerData
 from tables.PlayerMedal import DB_PlayerMedal
 
 
@@ -44,9 +44,9 @@ async def get_score_list_card():
 
 async def get_player_score_card(kook_id: str):
     sql_session = get_session()
-    t = sql_session.query(Player).filter(Player.kookId == kook_id)
+    t = sql_session.query(DB_Player).filter(DB_Player.kookId == kook_id)
     if t.count() == 1:
-        player: Player = t.first()
+        player: DB_Player = t.first()
 
         db_playerdata = sql_session.query(DB_PlayerData).filter(DB_PlayerData.playerId == player.playerId)
         if db_playerdata.count() >= 1:

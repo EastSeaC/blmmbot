@@ -5,10 +5,7 @@ from sqlalchemy import *
 from .base import Base
 
 
-
-
-
-class Player(Base):
+class DB_Player(Base):
     __tablename__ = "players"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -46,6 +43,12 @@ class Player(Base):
 
     first_troop = Column(Integer, nullable=True, default=0)
     second_troop = Column(Integer, nullable=True, default=0)
+
+    # 三兵种系数
+    infantry_score = Column(Integer, nullable=False, default=0)
+    cavalry_score = Column(Integer, nullable=False, default=0)
+    archer_score = Column(Integer, nullable=False, default=0)
+
 
     def is_banned(self):
         return self.ban_until_time is not None and self.ban_until_time > datetime.datetime.now()

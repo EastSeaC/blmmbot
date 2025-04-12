@@ -3,12 +3,15 @@ from datetime import datetime
 from khl import Bot, Message, EventTypes, Event, GuildUser, PublicVoiceChannel
 from sqlalchemy import select
 
+from botCommands.playerBot import convert_timestamp
+from lib.DividePlayerEx2 import balance_teams
 from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
-from kook.ChannelKit import ChannelManager, EsChannels
+from kook.ChannelKit import ChannelManager, EsChannels, OldGuildChannel
 from lib.match_guard import MatchGuard
 from lib.match_state import PlayerBasicInfo, MatchState, DivideData, MatchCondition
 from tables import *
+from tables.Ban import DB_Ban
 from tables.DB_WillMatch import DB_WillMatchs
 
 session = get_session()
@@ -71,8 +74,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
                 sql_session = get_session()
                 today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-                z = sql_session.execute(select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight,
-                                                                    DB_WillMatchs.match_id_2 == match_id_2)).first()
+                z = sql_session.execute(select(DB_WillMatchs).where(DB_WillMatchs.match_id_2 == match_id_2)).first()
 
                 # print(z)
                 if z is None or len(z) == 0:
@@ -94,6 +96,110 @@ def init(bot: Bot, es_channels: EsChannels):
         else:
             await msg.reply('指令异常')
 
+    @bot.command(name='ae', case_sensitive=False, aliases=['a'])
+    async def american_style_divide(msg: Message, arg: str):
+        if not ChannelManager.is_organization_user(msg.author_id):
+            await msg.reply('禁止使用管理员指令')
+            return
+
+        is_no_move = False
+        is_exclude_es = False
+        is_force_use_2 = False
+        is_force_use_3 = False
+        not_open_server = False
+        for i in arg:
+            if i == 'e':
+                is_exclude_es = True
+            elif i == 'n':
+                is_no_move = True
+            elif i == 'x' or i == '2':
+                is_force_use_2 = True
+            elif i == 'z':
+                not_open_server = True
+            elif i == '1':
+                is_force_use_2 = False
+                is_force_use_3 = False
+            elif i == 't':
+                is_force_use_2 = False
+                is_force_use_3 = True
+            elif i == '3':
+                is_force_use_2 = False
+                is_force_use_3 = True
+
+        channel = await bot.client.fetch_public_channel(
+            ChannelManager.match_high_score_match_channel)
+        voice_channel: PublicVoiceChannel = channel
+
+        k = await es_channels.wait_channel.fetch_user_list()
+        for i in k:
+            z: GuildUser = i
+            print(z.__dict__)
+            print(convert_timestamp(z.active_time))
+            if is_exclude_es:
+                if z.id == ChannelManager.es_user_id:
+                    k.remove(z)
+
+        number_of_user = len(k)
+        if number_of_user % 2 == 1 or number_of_user == 0:
+            await msg.reply(f'人数异常, 当前人数为 {len(k)} , 必须为非0偶数')
+            return
+        player_list = []
+        player_list_ax = []
+
+        sqlSession = get_session()
+        z = sqlSession.query(DB_Player).filter(DB_Player.kookId.in_([i.id for i in k])).all()
+        dict_for_kook_id = {}
+        for i in z:
+            t: DB_Player = i
+            dict_for_kook_id[t.kookId] = t
+
+        try:
+            ban_player_kook_id = sqlSession.execute(select(DB_Ban.kookId).where(DB_Ban.endAt <= datetime.now())).all()
+            for i in ban_player_kook_id:
+                if i in dict_for_kook_id:
+                    player_x_ban: DB_Player = dict_for_kook_id[i]
+                    await msg.reply(f'有被封印玩家 {player_x_ban.kookName} 停止匹配')
+                    return
+        except Exception as e:
+            print(e)
+
+        try:
+            for id, user in enumerate(k):
+                t: GuildUser = user
+                if t.id not in dict_for_kook_id:
+                    await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
+                    await move_a_to_b_ex(OldGuildChannel.match_set_channel, [t.id])  # 移动到普通频道
+                player: DB_Player = dict_for_kook_id[t.id]
+                px: DB_PlayerData = sqlSession.query(DB_PlayerData).filter(
+                    DB_PlayerData.playerId == player.playerId).first()
+                if px is None:
+                    px = DB_PlayerData()
+                    px.playerId = player.playerId
+                    px.playerName = player.kookName
+                    px.rank = 1000
+                    sqlSession.add(px)
+                    sqlSession.commit()
+
+                player_info = PlayerBasicInfo({'username': player.kookName})
+                player_info.score = px.rank  # 分数采用总分评价
+                player_info.user_id = player.kookId
+                player_info.username = player.kookName
+                player_info.player_id = player.playerId
+                # print(player_info.username)
+                player_list.append(player_info)
+
+                player_list_ax.append(
+                    (player.kookId, player.infantry_score, player.cavalry_score, player.archer_score))
+
+        except Exception as e:
+            print(repr(e))
+            LogHelper.log(f"没有注册 {t.id} {t.username}")
+            await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册 Exception!')
+            await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
+            return
+
+        team_a, team_b, score_diff = balance_teams(player_list_ax)
+
     @bot.command(name='rtc', case_sensitive=False, aliases=['yc'])
     async def tojadx(msg: Message):
         if ChannelManager.is_common_user(msg.author_id):
@@ -108,10 +214,10 @@ def init(bot: Bot, es_channels: EsChannels):
         player_list = []
 
         session.commit()
-        z = session.query(Player).filter(Player.kookId.in_([i.id for i in k])).all()
+        z = session.query(DB_Player).filter(DB_Player.kookId.in_([i.id for i in k])).all()
         dict_for_kook_id = {}
         for i in z:
-            t: Player = i
+            t: DB_Player = i
             dict_for_kook_id[t.kookId] = t
 
         # print([i.__dict__ for i in z])
@@ -119,7 +225,7 @@ def init(bot: Bot, es_channels: EsChannels):
         try:
             for id, user in enumerate(k):
                 t: GuildUser = user
-                player: Player = dict_for_kook_id[t.id]
+                player: DB_Player = dict_for_kook_id[t.id]
                 player_info = PlayerBasicInfo({})
                 player_info.score = player.rank
                 player_info.user_id = t.id
@@ -159,6 +265,20 @@ def init(bot: Bot, es_channels: EsChannels):
             LogHelper.log(z)
 
             pass
+        elif channel_id == ChannelManager.match_high_score_match_channel:
+            with get_session() as session:
+                p = session.query(DB_Player).filter(DB_Player.kookId == user_id).first()
+                remove = False
+                if p is None:
+                    remove = True
+                else:
+                    player: DB_Player = p
+                    if player.rank <= 1100:
+                        remove = True
+
+                # 移除
+                if remove:
+                    await move_a_to_b_ex(ChannelManager.match_wait_channel, [user_id])
         pass
 
     @bot.on_event(EventTypes.EXITED_CHANNEL)

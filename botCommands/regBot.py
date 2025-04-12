@@ -59,8 +59,8 @@ def init(bot: Bot, es_channels):
             return
 
             # 检测是否已被注册
-        t = sql_session.query(Player).filter(
-            or_(Player.playerId == player_id, Player.kookId == user_id)).count()
+        t = sql_session.query(DB_Player).filter(
+            or_(DB_Player.playerId == player_id, DB_Player.kookId == user_id)).count()
         if t > 0:
             failed_text += '该kook_id 或player_id已被注册,如果你确认这个账号是你的，请联系管理员'
             await msg.reply(failed_text)
@@ -74,7 +74,7 @@ def init(bot: Bot, es_channels):
             await msg.reply(failed_text)
             return
 
-        player = Player()
+        player = DB_Player()
         player.playerId = player_id
         player.kookId = user_id
         player.kookName = user.username

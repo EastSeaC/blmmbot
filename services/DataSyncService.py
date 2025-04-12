@@ -1,5 +1,5 @@
 from init_db import get_session
-from tables import Player, DB_PlayerData
+from tables import DB_Player, DB_PlayerData
 from tables.Admin import DB_Admin
 
 from sqlalchemy.orm import class_mapper
@@ -31,7 +31,7 @@ class DataSyncService:
     def get_sync(cls):
         with get_session() as session:
             list_of_admin = session.query(DB_Admin).all()
-            list_of_players = session.query(Player).all()
+            list_of_players = session.query(DB_Player).all()
             list_of_players_name = session.query(DB_PlayerNames).all()
             list_of_players_data = session.query(DB_PlayerData).all()
 

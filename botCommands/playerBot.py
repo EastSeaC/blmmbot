@@ -396,6 +396,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel_2, divide_data.attacker_list)
                 await move_a_to_b_ex(OldGuildChannel.match_defend_channel_2, divide_data.defender_list)
             elif use_server_x == ServerEnum.Server_3:
+                not_open_server = True
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel_3, divide_data.attacker_list)
                 await move_a_to_b_ex(OldGuildChannel.match_defend_channel_3, divide_data.defender_list)
                 pass

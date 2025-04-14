@@ -44,6 +44,8 @@ async def websocket_handler(request):
                     print(f"Received: {received_message}")
 
                     try:
+                        if not str(received_message).startswith('{'):
+                            continue
                         data_str: dict = json.loads(received_message)
                         op = data_str.get('op', 'none')
 

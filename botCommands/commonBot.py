@@ -70,6 +70,9 @@ def init(bot: Bot, es_channels: EsChannels):
                         print('你不是队长，禁止选取队员')
                     selectPlayerMatchData.need_to_select = selectPlayerMatchData.need_to_select.remove(selected_players)
                 elif type == ESActionType.Admin_Cancel_Match:
+                    if not ChannelManager.is_admin(user_id):
+                        await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
+                        return
                     x = cancel_match(e_body_user_info, btn_value_dict['match_id_2'])
                     await channel.send(x)
                     pass

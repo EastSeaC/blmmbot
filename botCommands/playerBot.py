@@ -330,7 +330,7 @@ def init(bot: Bot, es_channels: EsChannels):
             async with aiohttp.ClientSession() as session:
                 async with session.post('http://localhost:14725/send_match_info',
                                         json=will_match_data.to_dict()) as response:
-                    return await response.text()
+                    text = await response.text()
             pass
         # 获取今天的日期并设置时间为 00:00:00
         today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)

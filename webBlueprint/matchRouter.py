@@ -1,5 +1,6 @@
 import datetime
 import json
+from asyncio import Queue
 
 from aiohttp import web
 from aiohttp.web_response import Response
@@ -117,6 +118,18 @@ async def divide_players_to_2_group(req):
     MatchState.divide_player_ex(list_a)
     return Response(text='123')
     pass
+
+
+@matchRouter.post('/send_match_info')
+async def send_match_info(req):
+    print('测试测试')
+    message: Queue =  req.app['message_queue']
+    data = await req.json()
+    print(data)
+    print(type(data))
+    await message.put(data)
+    req.app['message_queue'] = message
+    return web.json_response(text='123')
 
 
 @matchRouter.post('/upload_player_list')

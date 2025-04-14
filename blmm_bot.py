@@ -10,7 +10,7 @@ from khl import Bot, Message, GuildUser
 from khl.card import Card, Module, Struct, Element, Types, CardMessage
 from sqlalchemy import select
 
-from lib.BLMMServerSocket import  websocket_handler
+from lib.BLMMServerSocket import websocket_handler
 from lib.LogHelper import LogHelper
 from botCommands import adminBot, regBot, playerBot, configBot, matchBot, testBot, commonBot
 from convert.PlayerMatchData import TPlayerMatchData
@@ -82,33 +82,6 @@ async def fetch(url):
 
 def get_time_str():
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-
-@bot.command(name='help', case_sensitive=False, aliases=['h'])
-async def help_x(msg: Message):
-    t = '''    /help 或 /h 查看所有指令
-    /score_list 或 /sl 查看分数榜单
-    /score 或 /s 查看自己的分数
-    **(font)/t 或 /type 修改自己的 第一兵种，第二兵种(font)[warning]**
-    /change_name 或 /cn 修改名字
-    **(font)/e 开启匹配(font)[success]**
-    **(font)/cnm (font)[warning]** 【比赛ID】 取消比赛 ，例如 /cnm 10
-     
-    **(font)注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：(font)[warning]**
-    /v [playerId] [code]  例如 /v 2.0.0.76561198104994845 600860
-    '''
-    file_path = 'satic/img/reg-1.png'
-    img_url = await bot.client.create_asset(file_path)
-    await msg.reply(CardMessage(Card(
-        Module.Header('指令说明'),
-        Module.Section(
-            Struct.Paragraph(
-                1,
-                Element.Text(t, type=Types.Text.KMD),
-            )
-        ),
-        Module.Container(Element.Image(src=img_url)),
-    )))
 
 
 @bot.task.add_interval(seconds=1)
@@ -209,39 +182,43 @@ async def CheckDataBase():
             except Exception as e:
                 sql_session.rollback()
 
+        #  检查服务区频道
         result = sql_session.execute(
             select(DB_KookChannelGroup).where(DB_KookChannelGroup.guild_id == OldGuildChannel.sever)).all()
         print('服务器ID', result)
         if len(result) == 0:
             guild = await bot.client.fetch_guild(OldGuildChannel.sever)
+            print(guild)
             category_list = await guild.fetch_channel_category_list(True)
             current_category_names = [i.name for i in category_list]
+            print(current_category_names)
             category_names = OldGuildChannel.get_category_list_name()
+            print(category_names)
             for i in category_names:
+                print(i)
+                print(type(i))
                 if i not in current_category_names:
                     try:
-
                         blmm_5_category = await guild.create_channel_category(i)
                         channel_group = DB_KookChannelGroup()
                         team_a_channel = await guild.create_voice_channel(OldGuildChannel.channel_a_team,
                                                                           blmm_5_category, )
                         team_b_channel = await guild.create_voice_channel(OldGuildChannel.channel_b_team,
                                                                           blmm_5_category)
-                        team_eliminate_channel = await guild.create_voice_channel(
-                            OldGuildChannel.channel_eliminate_room, blmm_5_category)
+                        # team_eliminate_channel = await guild.create_voice_channel(
+                        #     OldGuildChannel.channel_eliminate_room, blmm_5_category)
                         channel_group.group_name = i
                         channel_group.group_id = blmm_5_category.id
                         channel_group.guild_id = OldGuildChannel.sever
                         channel_group.team_a_channel = team_a_channel.id
                         channel_group.team_b_channel = team_b_channel.id
-                        channel_group.wait_channel = team_eliminate_channel.id
-                        try:
-                            sql_session.add(channel_group)
-                            sql_session.commit()
-                        except Exception as e:
-                            sql_session.rollback()
-                        print('创建服务器 I 频道 成功')
+                        # channel_group.wait_channel = team_eliminate_channel.id
+                        sql_session.add(channel_group)
+                        sql_session.commit()
+                        # sql_session.rollback()
+                        print(f'创建服务器 {channel_group.group_name} 频道 成功')
                     except Exception as e:
+                        sql_session.rollback()
                         print(e)
         else:
             pass
@@ -272,6 +249,10 @@ async def bot_init(bot1: Bot):
 HOST, PORT = '0.0.0.0', 14725
 if __name__ == '__main__':
     app.router.add_static('/satic', 'satic')
+    # 初始化全局消息队列
+    app['message_queue'] = asyncio.Queue()
+    # 保存所有活跃的 WebSocket 连接
+    app['websockets'] = set()
 
     app.add_routes([web.get('/ws', websocket_handler)])
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('satic'))

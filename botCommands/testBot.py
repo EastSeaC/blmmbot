@@ -3,6 +3,8 @@ import json
 import random
 import uuid
 
+import aiohttp
+import requests
 from khl import Bot, Message, GuildUser, PublicVoiceChannel
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
 from sqlalchemy import desc, select
@@ -162,6 +164,8 @@ def init(bot: Bot, es_channels: EsChannels):
             will_match_data.is_finished = False
             will_match_data.server_name = 'CN_BTL_NINGBO_1'
 
+
+
             card8 = Card(Module.Header(text='服务器: CN_BTL_NINGBO_1'),
                          Module.Divider(), )
             for i in z:
@@ -216,8 +220,9 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='show_match', case_sensitive=False, aliases=['sm'])
     async def show_match(msg: Message):
-        user_list = ['482714005', '1555061634', '1932416737', '3006824740', '3484257139', '180475151', '3394658957',
-                     '2806603494', '1384765669', '1510300409', '828555933', '3784439652']
+        user_list = ['482714005', '1555061634', '1932416737', '3551233689', '3484257139', '180475151', '3394658957',
+                     '2806603494', '1384765669', '1510300409', '569326827', '3784439652']
+        # user_list = ['482714005', '1555061634']
         print('123')
         global sqlSession
         sqlSession = get_session()
@@ -260,7 +265,13 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.is_cancel = False
         will_match_data.is_finished = False
         will_match_data.server_name = 'CN_BTL_NINGBO_1'
+        will_match_data.match_id_2 = 100
 
+        print(1213)
+        async with aiohttp.ClientSession() as session:
+            async with session.post('http://localhost:14725/send_match_info',
+                                    json=will_match_data.to_dict()) as response:
+                return await response.text()
         # 获取今天的日期并设置时间为 00:00:00
         today_midnight = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
         result_temp = len(sqlSession.execute(

@@ -126,8 +126,9 @@ class OldGuildChannel:
     match_group = '8867447588765353'
     # 候选频道语音
     match_wait_channel = '9263713909740224'
-    match_attack_channel = '4829289747409514'
-    match_defend_channel = '1565042036823961'
+    # 1队频道
+    match_attack_channel = '5436769046749546'
+    match_defend_channel = '8246783800929740'
 
     match_set_channel = '6713919713207768'  # 淘汰休息室
     # 警告频道
@@ -139,11 +140,11 @@ class OldGuildChannel:
     command_channel = '1451138349000890'
     manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
 
-    match_attack_channel_2 = '5436769046749546'
-    match_defend_channel_2 = '8246783800929740'
+    match_attack_channel_2 = '5889652844944800'
+    match_defend_channel_2 = '8324383899171681'
 
-    match_attack_channel_3 = '5889652844944800'
-    match_defend_channel_3 = '8324383899171681'
+    match_attack_channel_3 = '4653727651132216'
+    match_defend_channel_3 = '7136051179773177'
 
     def get_match_attack_channel(self, server: ServerEnum):
         if server == ServerEnum.Server_1:
@@ -159,7 +160,7 @@ class OldGuildChannel:
 
     @classmethod
     def get_category_list_name(cls):
-        return [f'BLMM_{i}' for i in range(1, 6 + 1)]
+        return [f'BLMM_{i}' for i in range(1, 4 + 1)]
 
     command_channel_name = '指令频道'
     channel_a_team = 'A队'

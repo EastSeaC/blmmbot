@@ -83,7 +83,7 @@ class DB_WillMatchs(Base):
             "is_cancel": self.is_cancel,
             "cancel_reason": self.cancel_reason,
             "is_finished": self.is_finished,
-            "finished_time": self.finished_time.isoformat() if self.finished_time else None,
+            "finished_time": self.finished_time.isoformat() if self.finished_time is not None else None,
             "match_id": self.match_id,
             'match_id_2': self.match_id_2,
             "server_name": self.server_name,

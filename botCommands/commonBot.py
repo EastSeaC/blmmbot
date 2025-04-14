@@ -53,8 +53,11 @@ def init(bot: Bot, es_channels: EsChannels):
         # 这个代码虽然可以让所有人自由使用机器人，但是这会导致
         # 鸡婆拉屎，到处都是
         # channel = await b.client.fetch_public_channel(channel_id)
-
         channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
+        if AdminButtonValue.is_admin_command(value):
+            if not ChannelManager.is_admin(user_id):
+                await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
+                return
         if value.startswith('{'):
             btn_value_dict: dict = json.loads(value)
             if 'type' in btn_value_dict.keys():

@@ -13,6 +13,15 @@ class AdminButtonValue:
     Restart_Server_2 = 'Refresh_Server_Force_2'
     Restart_Server_3 = 'Refresh_Server_Force_3'
 
+    @classmethod
+    def is_admin_command(cls, a: str):
+        # Get all class attributes (excluding methods and special vars)
+        admin_values = {
+            value for key, value in vars(cls).items()
+            if not key.startswith('__') and not callable(value)
+        }
+        return a in admin_values
+
 
 class PlayerButtonValue:
     ShowServerState = 'ShowServerState'

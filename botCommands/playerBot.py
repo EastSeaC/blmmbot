@@ -5,6 +5,7 @@ import re
 import uuid
 from datetime import datetime
 
+import requests
 from khl import Bot, Message, GuildUser, EventTypes, Event, PublicVoiceChannel
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
 from sqlalchemy import select, desc
@@ -70,6 +71,32 @@ def init(bot: Bot, es_channels: EsChannels):
         cm.append(c2)
         await msg.reply(cm)
 
+    @bot.command(name='help', case_sensitive=False, aliases=['h'])
+    async def help_x(msg: Message):
+        t = '''    /help 或 /h 查看所有指令
+        /score_list 或 /sl 查看分数榜单
+        /score 或 /s 查看自己的分数
+        **(font)/t 或 /type 修改自己的 第一兵种，第二兵种(font)[warning]**
+        /change_name 或 /cn 修改名字
+        **(font)/e 开启匹配(font)[success]**
+        **(font)/cnm (font)[warning]** 【比赛ID】 取消比赛 ，例如 /cnm 10
+
+        **(font)注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：(font)[warning]**
+        /v [playerId] [code]  例如 /v 2.0.0.76561198104994845 600860
+        '''
+        file_path = 'satic/img/reg-1.png'
+        img_url = await bot.client.create_asset(file_path)
+        await msg.reply(CardMessage(Card(
+            Module.Header('指令说明'),
+            Module.Section(
+                Struct.Paragraph(
+                    1,
+                    Element.Text(t, type=Types.Text.KMD),
+                )
+            ),
+            Module.Container(Element.Image(src=img_url)),
+        )))
+
     @bot.command(name='log_history', case_sensitive=False, aliases=['l'])
     async def show_player_match_history(msg: Message, *args):
         sqlSession = get_session()
@@ -116,7 +143,8 @@ def init(bot: Bot, es_channels: EsChannels):
         开启匹配指令
         n:  表示 不移动玩家，仅用作测试
         e:  不包括东海
-
+        /e 2 强制使用2服开始
+        /e 3 强制使用3服开始
         """
         if not ChannelManager.is_organization_user(msg.author_id):
             await msg.reply('禁止使用管理员指令')
@@ -169,6 +197,7 @@ def init(bot: Bot, es_channels: EsChannels):
             t: DB_Player = i
             dict_for_kook_id[t.kookId] = t
 
+        # 检查封印玩家
         try:
             ban_player_kook_id = sqlSession.execute(select(DB_Ban.kookId).where(DB_Ban.endAt >= datetime.now())).all()
             for i in ban_player_kook_id:
@@ -183,6 +212,7 @@ def init(bot: Bot, es_channels: EsChannels):
         # print([i.__dict__ for i in z])
         # print('this is dict_for_kook_id')
         # print([i.__dict__ for i in dict_for_kook_id.values()])
+        player_list = []
         try:
             for id, user in enumerate(k):
                 t: GuildUser = user
@@ -294,6 +324,9 @@ def init(bot: Bot, es_channels: EsChannels):
             use_server_x = ServerEnum.Server_3
         will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
 
+        if use_server_x == ServerEnum.Server_3:
+            # requests.post('http://localhost:14725/send_match_info', json=will_match_data)
+            pass
         # 获取今天的日期并设置时间为 00:00:00
         today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
         # 更新session

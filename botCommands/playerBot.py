@@ -5,6 +5,7 @@ import re
 import uuid
 from datetime import datetime
 
+import aiohttp
 import requests
 from khl import Bot, Message, GuildUser, EventTypes, Event, PublicVoiceChannel
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
@@ -326,6 +327,10 @@ def init(bot: Bot, es_channels: EsChannels):
 
         if use_server_x == ServerEnum.Server_3:
             # requests.post('http://localhost:14725/send_match_info', json=will_match_data)
+            async with aiohttp.ClientSession() as session:
+                async with session.post('http://localhost:14725/send_match_info',
+                                        json=will_match_data.to_dict()) as response:
+                    return await response.text()
             pass
         # 获取今天的日期并设置时间为 00:00:00
         today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)

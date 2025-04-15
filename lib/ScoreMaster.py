@@ -34,12 +34,12 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
         ally_total_assist_times = all_player_data.first_team_total_assist_times if player_data.team == BannerlordTeam.FirstTeam else all_player_data.second_team_total_spawn_times
 
         # 计算队伍分数
-        team_score = (all_player_data.attacker_rounds - all_player_data.defender_rounds) * 30
+        team_score = abs(all_player_data.attacker_rounds - all_player_data.defender_rounds) * 30
         if player_data.team == BannerlordTeam.FirstTeam:
-            if all_player_data.attacker_rounds <= all_player_data.defender_rounds:
+            if all_player_data.attacker_rounds < all_player_data.defender_rounds:
                 team_score = -team_score
         elif player_data.team == BannerlordTeam.SecondTeam:
-            if all_player_data.attacker_rounds >= all_player_data.defender_rounds:
+            if all_player_data.attacker_rounds > all_player_data.defender_rounds:
                 team_score = -team_score
 
         kill_score = clamp(score_limit.max_kill_score * player_data.kill / enemy_total_spawn_times,

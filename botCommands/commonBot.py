@@ -95,6 +95,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
             ServerManager.RestartBLMMServerEx(ServerEnum.Server_3)
+            await channel.send(f'(met){user_id}(met) 服务器Server_3 已重启')
 
         elif value == PlayerButtonValue.player_score:  # 玩家个人积分和 勋章
             channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))

@@ -168,10 +168,7 @@ def init(bot: Bot, es_channels: EsChannels):
             elif i == '1':
                 is_force_use_2 = False
                 is_force_use_3 = False
-            elif i == 't':
-                is_force_use_2 = False
-                is_force_use_3 = True
-            elif i == '3':
+            elif i == 't' or i == '3':
                 is_force_use_2 = False
                 is_force_use_3 = True
 
@@ -396,7 +393,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel_2, divide_data.attacker_list)
                 await move_a_to_b_ex(OldGuildChannel.match_defend_channel_2, divide_data.defender_list)
             elif use_server_x == ServerEnum.Server_3:
-                not_open_server = True
+                not_open_server = True  # 3服要交给其他服务器启动，因此不需要
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel_3, divide_data.attacker_list)
                 await move_a_to_b_ex(OldGuildChannel.match_defend_channel_3, divide_data.defender_list)
                 pass

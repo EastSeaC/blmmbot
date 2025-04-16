@@ -20,7 +20,9 @@ class SelectPlayerMatchData:
     @classmethod
     def get_cur_select_master(cls):
         try:
+            print('选人索引', cls.cur_index)
             x = cls.select_order[cls.cur_index]
+            print('选人索引x', x)
             return x
         except Exception as e:
             print(repr(e))

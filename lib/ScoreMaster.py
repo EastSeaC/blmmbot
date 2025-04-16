@@ -72,8 +72,8 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
             # 'damage'
         )
 
-        # match_lose_minus = score_limit.failed_minus if player_data.is_lose else 0
-        match_lose_minus = 0
+        match_lose_minus = score_limit.failed_minus if player_data.is_lose else 0
+        # match_lose_minus = 0
         sum_score = ceil(kill_score + death_score + assist_score + damage_score) + team_score - match_lose_minus
         score_dick = {
             'player_id': player_data.player_id,

@@ -185,7 +185,7 @@ async def CheckDataBase():
         #  检查服务区频道
         result = sql_session.execute(
             select(DB_KookChannelGroup).where(DB_KookChannelGroup.guild_id == OldGuildChannel.sever)).all()
-        print('服务器ID', result)
+        # print('服务器ID', result)
         if len(result) == 0:
             guild = await bot.client.fetch_guild(OldGuildChannel.sever)
             print(guild)

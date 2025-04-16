@@ -1,4 +1,5 @@
 class AdminButtonValue:
+    Show_Admin_Command = 'Show_Admin_Command'
     Show_OrganizationPlayers = 'Show_OrganizationPlayers'
     Show_Server_State = 'show_server_state'
     Show_Last_Match = 'show_last_match'

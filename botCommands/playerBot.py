@@ -53,7 +53,7 @@ def init(bot: Bot, es_channels: EsChannels):
             kill_scoreboard += f"\n{player_data.playerName}:{player_data.rank}"
 
         game_scoreboard = '**对局榜单**'
-        t = sqlSession.query(DB_PlayerData).order_by(DB_PlayerData.win.desc()).limit(10).all()
+        t = sqlSession.query(DB_PlayerData).order_by(DB_PlayerData.match.desc()).limit(10).all()
         for id, k in enumerate(t):
             player: DB_PlayerData = k
             game_scoreboard += f"\n{player.playerName}:{player.win}"
@@ -79,11 +79,13 @@ def init(bot: Bot, es_channels: EsChannels):
         /score 或 /s 查看自己的分数
         **(font)/t 或 /type 修改自己的 第一兵种，第二兵种(font)[warning]**
         /change_name 或 /cn 修改名字
+        ##### 匹配指令 #####
+        **(font)/ae 美式匹配(font)[success]**
         **(font)/e 开启匹配(font)[success]**
         **(font)/cnm (font)[warning]** 【比赛ID】 取消比赛 ，例如 /cnm 10
 
-        **(font)注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：(font)[warning]**
-        /v [playerId] [code]  例如 /v 2.0.0.76561198104994845 600860
+        **(font)注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：(font)[danger]**
+/v [playerId] [code]  例如 /v 76561198104994845 600860
         '''
         file_path = 'satic/img/reg-1.png'
         img_url = await bot.client.create_asset(file_path)
@@ -183,10 +185,11 @@ def init(bot: Bot, es_channels: EsChannels):
                 if z.id == ChannelManager.es_user_id:
                     k.remove(z)
 
+        # ####################### 检查人数 #######################
         number_of_user = len(k)
-        if number_of_user % 2 == 1 or number_of_user == 0:
-            await msg.reply(f'人数异常, 当前人数为 {len(k)} , 必须为非0偶数')
-            return
+        # if number_of_user % 2 == 1 or number_of_user == 0 or number_of_user != 12:
+        #     await msg.reply(f'人数异常, 当前人数为 {len(k)} , 必须为12个人')
+        #     return
 
         sqlSession = get_session()
         z = sqlSession.query(DB_Player).filter(DB_Player.kookId.in_([i.id for i in k])).all()
@@ -195,13 +198,15 @@ def init(bot: Bot, es_channels: EsChannels):
             t: DB_Player = i
             dict_for_kook_id[t.kookId] = t
 
-        # 检查封印玩家
+        # ####################### 检查封印玩家 #######################
         try:
-            ban_player_kook_id = sqlSession.execute(select(DB_Ban.kookId).where(DB_Ban.endAt >= datetime.now())).all()
+            ban_player_kook_id = sqlSession.execute(select(DB_Ban.kookId).where(DB_Ban.endAt > datetime.now())).scalars().all()
+            print(ban_player_kook_id)
             for i in ban_player_kook_id:
+                print(i)
                 if i in dict_for_kook_id:
                     player_x_ban: DB_Player = dict_for_kook_id[i]
-                    await msg.reply(f'有被封印玩家 {player_x_ban.kookName} 停止匹配')
+                    await msg.reply(f'有被封印玩家 {player_x_ban.kookName} (met){player_x_ban.kookId}(met) 停止匹配')
                     return
         except Exception as e:
             print(e)

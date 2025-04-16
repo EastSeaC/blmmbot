@@ -3,7 +3,7 @@ import re
 
 from khl import Bot, Message, GuildUser, PublicChannel, User
 from khl.card import Card, Module, Element, Types, CardMessage, Struct
-from sqlalchemy import desc, text, select
+from sqlalchemy import desc, text, select, update
 
 from botCommands.ButtonValueImpl import AdminButtonValue
 from config import INITIAL_SCORE
@@ -145,35 +145,39 @@ def init(bot: Bot, es_channels: EsChannels):
                 Element.Button("查看组织管理", value=AdminButtonValue.Show_OrganizationPlayers,
                                click=Types.Click.RETURN_VAL,
                                theme=Types.Theme.INFO),
-            ),
+                Element.Button('管理员指令', value=AdminButtonValue.Show_Admin_Command,
+                               click=Types.Click.RETURN_VAL,
+                               theme=Types.Theme.INFO),
+
+            )
         )
         cm.append(c8)
         await msg.reply(cm)
         pass
 
-    # @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
-    # async def btn_click_event(b: Bot, e: Event):
-    #     """按钮点击事件"""
-    #     print(e.target_id)
-    #     print('*' * 45)
-    #     print(e.body, "\n")
-    #
-    #     kook_id = e.body['user_id']
-    #     value = e.body['value']
-    #
-    #     q = session.query(DBAdmin).filter(DBAdmin.kookId == kook_id)
-    #     z = session.query(literal(True)).filter(q.exists()).scalar()
-    #     print(z)
-    #     if not z:
-    #         await es_channels.command_channel.send("你不是管理员")
-    #         return
-    #
-    #     if value == AdminButtonValue.Refresh_All_VerifyCode:
-    #         z = RefreshAllPlayerVerifyCode()
-    #         if z:
-    #             await es_channels.command_channel.send('刷新所有人验证码成功')
-    #     elif value == AdminButtonValue.Show_Last_Match:
-    #         await ShowLastMatch()
+        # @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
+        # async def btn_click_event(b: Bot, e: Event):
+        #     """按钮点击事件"""
+        #     print(e.target_id)
+        #     print('*' * 45)
+        #     print(e.body, "\n")
+        #
+        #     kook_id = e.body['user_id']
+        #     value = e.body['value']
+        #
+        #     q = session.query(DBAdmin).filter(DBAdmin.kookId == kook_id)
+        #     z = session.query(literal(True)).filter(q.exists()).scalar()
+        #     print(z)
+        #     if not z:
+        #         await es_channels.command_channel.send("你不是管理员")
+        #         return
+        #
+        #     if value == AdminButtonValue.Refresh_All_VerifyCode:
+        #         z = RefreshAllPlayerVerifyCode()
+        #         if z:
+        #             await es_channels.command_channel.send('刷新所有人验证码成功')
+        #     elif value == AdminButtonValue.Show_Last_Match:
+        #         await ShowLastMatch()
 
     @bot.command(name='test_move_old_wait_channel_to_bot_channel', case_sensitive=False, aliases=['test_mowctbc'])
     async def move_from_old_wait_channel_to_x(msg: Message, custom_channel_id: str = ''):
@@ -328,8 +332,22 @@ def init(bot: Bot, es_channels: EsChannels):
 
             await channel_b.move_user(ChannelManager.match_attack_channel, d.id)
 
+    @bot.command(name='unban', case_sensitive=False, aliases=['uban'])
+    async def unban_player(msg: Message, kook_id: str):
+        if not ChannelManager.is_admin(msg.author_id):
+            await msg.reply('禁止使用管理员指令')
+            return
+
+        k: User = await bot.client.fetch_user(kook_id)
+
+        with get_session() as sql_session:
+            sql_session.execute(
+                update(DB_Ban).where(DB_Ban.kookId == kook_id).values(endAt=datetime.datetime.now()))
+            sql_session.commit()
+            await msg.reply(f'已解除 (met){kook_id}(met) 的封印')
+
     @bot.command(name='ban', case_sensitive=False)
-    async def ban_player(msg: Message, kook_id: str, day: str):
+    async def ban_player(msg: Message, kook_id: str, day: str = '1'):
         if not ChannelManager.is_admin(msg.author_id):
             await msg.reply('禁止使用管理员指令')
             return
@@ -354,6 +372,38 @@ def init(bot: Bot, es_channels: EsChannels):
             sql_session.commit()
 
             await msg.reply(f'已封印 {ban_record.playerName} {real_day}天')
+
+    @bot.command(name='add_score', case_sensitive=False)
+    async def add_score(msg: Message, kook_id: str, score: str):
+        if not ChannelManager.is_admin(msg.author_id):
+            await msg.reply('禁止使用管理员指令')
+            return
+
+        # 参数检查
+        real_score = 0
+        if re.match(r'-?\d+', score):
+            real_score = int(score)
+        else:
+            await msg.reply('输入分数错误')
+            return
+
+        with get_session() as sql_session:
+            x = sql_session.query(DB_Player).filter(DB_Player.kookId == kook_id)
+
+            if x.count() == 0:
+                await msg.reply('该用户未注册')
+                return
+
+            player: DB_Player = x.first()
+
+            player_data: DB_PlayerData = sql_session.query(DB_PlayerData).filter(
+                DB_PlayerData.playerId == player.playerId).fist()
+            old_rank = player_data.rank
+            player_data.rank += real_score
+            sql_session.merge(player_data)
+            sql_session.commit()
+
+            await msg.reply(f'(met){kook_id}(met) 分数 {old_rank}->{player_data.rank}')
 
     async def check_admin(msg: Message):
         if msg.author_id != ChannelManager.es_user_id or not msg.author_id in ChannelManager.manager_user_id:
@@ -440,7 +490,6 @@ async def ShowLastMatch():
 # @bot.command(name='add_admin', case_sensitive=False)
 # async def add_admin(msg: Message, kook_id: str):
 #     pass
-
 
 # async def ban(msg: Message, type: str = 'gi', condition: str = ''):
 #     cm = CardMessage()

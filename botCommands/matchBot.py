@@ -197,6 +197,8 @@ def init(bot: Bot, es_channels: EsChannels):
             print(f"{t.kookName},{t.rank} ")
             if t.kookId == first_team_o or t.kookId == second_team_o:
                 continue
+            SelectPlayerMatchData.add_attacker(first_team_o)
+            SelectPlayerMatchData.add_defender(second_team_o)
             SelectPlayerMatchData.need_to_select.append(t.kookId)
             card8.append(Module.Section(
                 Element.Text(

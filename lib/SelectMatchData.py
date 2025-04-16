@@ -11,8 +11,18 @@ class SelectPlayerMatchData:
     total_list = []
     need_to_select = []
 
+    cur_select_master = 0
     cur_index = 0
     select_order = '2112212121'
+
+    @classmethod
+    def get_cur_select_master(cls):
+        try:
+            x = cls.select_order[cls.cur_index]
+            return x
+        except Exception as e:
+            print(repr(e))
+            return -1
 
     @classmethod
     def start_run(cls):

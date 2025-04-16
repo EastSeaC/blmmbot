@@ -1,4 +1,5 @@
 import json
+import uuid
 from datetime import datetime
 import datetime as dt_or
 
@@ -8,11 +9,13 @@ from sqlalchemy import desc, select
 
 from botCommands.ButtonValueImpl import AdminButtonValue, ESActionType, PlayerButtonValue
 from entity.ServerEnum import ServerEnum
+from entity.WillMatchType import WillMatchType
 from kook.CardHelper import get_player_score_card, get_score_list_card
 from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager
 from lib.SelectMatchData import SelectPlayerMatchData
+from lib.ServerGameConfig import get_random_faction_2
 from lib.ServerManager import ServerManager
 from lib.match_state import MatchConditionEx
 from tables import *
@@ -63,22 +66,52 @@ def init(bot: Bot, es_channels: EsChannels):
             if 'type' in btn_value_dict.keys():
                 type = str(btn_value_dict.get('type', 'invalid'))
                 selected_players = btn_value_dict.get('kookId')
+                target_player_id = btn_value_dict.get('playerId')
                 if type == 'match_select_players':
                     # selectPlayerMatchData: SelectPlayerMatchData = MatchConditionEx.blmm_1
                     # if user_id in '482714005':
                     # selectPlayerMatchData.first_team_player_ids.append(selected_players)
                     # elif user_id in '1555061634':
                     #     selectPlayerMatchData.second_team_player_ids.append(selected_players)
+
                     if user_id == SelectPlayerMatchData.first_team_master:
-                        SelectPlayerMatchData.add_attacker(selected_players)
+                        if SelectPlayerMatchData.get_cur_select_master() == '1':
+                            SelectPlayerMatchData.add_attacker(target_player_id)
+                        else:
+                            await channel.send(ChannelManager.get_at(user_id) + ':不是你的回合，禁止选人')
                     elif user_id == SelectPlayerMatchData.second_team_master:
-                        SelectPlayerMatchData.add_defender(selected_players)
+                        if SelectPlayerMatchData.get_cur_select_master() == '2':
+                            SelectPlayerMatchData.add_defender(target_player_id)
+                        else:
+                            await channel.send(ChannelManager.get_at(user_id) + ':不是你的回合，禁止选人')
                     else:
                         await channel.send(f'{ChannelManager.get_at(user_id)} 你不是队长，禁止选取队员')
-                    SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(selected_players)
 
+                    print('变化前', SelectPlayerMatchData.need_to_select)
+                    SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(selected_players)
+                    print('变化后', SelectPlayerMatchData.need_to_select)
                     if len(SelectPlayerMatchData.need_to_select) == 0:
                         print('选人完毕')
+                        will_match_data = DB_WillMatchs()
+                        will_match_data.time_match = datetime.now()
+                        will_match_data.match_id = str(uuid.uuid1())
+                        will_match_data.set_first_team_player_ids(SelectPlayerMatchData.first_team_player_ids())
+                        will_match_data.set_second_team_player_ids(SelectPlayerMatchData.second_team_player_ids())
+
+                        first_faction, second_faction = get_random_faction_2()
+                        will_match_data.first_team_culture = first_faction
+                        will_match_data.second_team_culture = second_faction
+
+                        will_match_data.match_type = WillMatchType.get_match_type_with_player_num(
+                            len(SelectPlayerMatchData.first_team_player_ids))
+                        will_match_data.is_cancel = False
+                        will_match_data.is_finished = False
+
+                        with get_session() as session:
+                            session.add(will_match_data)
+                            session.commit()
+
+
                 elif type == ESActionType.Admin_Cancel_Match:
                     if not ChannelManager.is_admin(user_id):
                         await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')

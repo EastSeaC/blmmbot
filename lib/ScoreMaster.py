@@ -35,14 +35,15 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
 
         # 计算队伍分数
         team_score = abs(all_player_data.attacker_rounds - all_player_data.defender_rounds) * 20
+        if not 500 < player_data.get_old_score() < 3000:
+            team_score = 30
+
         if player_data.team == BannerlordTeam.FirstTeam:
             if all_player_data.attacker_rounds < all_player_data.defender_rounds:
                 team_score = -team_score
         elif player_data.team == BannerlordTeam.SecondTeam:
             if all_player_data.attacker_rounds > all_player_data.defender_rounds:
                 team_score = -team_score
-        if not 500 < player_data.get_old_score() < 3000:
-            team_score = 30
 
         kill_score = clamp(score_limit.max_kill_score * player_data.kill / enemy_total_spawn_times,
                            score_limit.min_kill_score,

@@ -21,7 +21,10 @@ class SelectPlayerMatchData:
     def get_cur_select_master(cls):
         try:
             print('选人索引', cls.cur_index)
-            x = cls.select_order[cls.cur_index]
+            if cls.cur_index <= len(cls.select_order):
+                x = cls.select_order[cls.cur_index]
+            else:
+                x = -1
             print('选人索引x', x)
             return x
         except Exception as e:

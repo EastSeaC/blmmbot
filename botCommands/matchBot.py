@@ -199,7 +199,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 continue
             SelectPlayerMatchData.add_attacker(first_team_o)
             SelectPlayerMatchData.add_defender(second_team_o)
-            SelectPlayerMatchData.need_to_select.append(t.kookId)
+            SelectPlayerMatchData.need_to_select.append(t.playerId)
             card8.append(Module.Section(
                 Element.Text(
                     f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",

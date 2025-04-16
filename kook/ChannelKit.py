@@ -21,7 +21,7 @@ class ChannelManager:
     match_defend_channel = '7704290253382922'
 
     match_set_channel = '9152989485766507'  # 淘汰休息室
-    match_high_score_match_channel = '8860007123246981' # 高分频道
+    match_high_score_match_channel = '8860007123246981'  # 高分频道
     # 警告频道
     error_channel = '3489054506196442'
     es_user_id = '482714005'
@@ -145,6 +145,8 @@ class OldGuildChannel:
 
     match_attack_channel_3 = '4653727651132216'
     match_defend_channel_3 = '7136051179773177'
+
+    match_select_channel = '2645329202100415' # 选人频道
 
     def get_match_attack_channel(self, server: ServerEnum):
         if server == ServerEnum.Server_1:

@@ -77,6 +77,9 @@ class DB_PlayerData(Base):
         self.death += match_data.death
         self.assist += match_data.assist
         self.match += 1
+
+        self.win += 0 if match_data.is_lose else 1
+        self.lose += 1 if match_data.is_lose else 0
         pass
 
     def refresh_data_soft(self):

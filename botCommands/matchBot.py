@@ -96,6 +96,18 @@ def init(bot: Bot, es_channels: EsChannels):
         else:
             await msg.reply('指令异常')
 
+    @bot.command(name='selectMode', case_sensitive=False)
+    async def select_mode_play_match(msg: Message, arg: str = ''):
+        """
+        选人模式
+        """
+        print(msg)
+        print(123)
+        sqlSession = get_session()
+        await msg.reply('选人开')
+        return
+        pass
+
     @bot.command(name='ae', case_sensitive=False, aliases=['a'])
     async def american_style_divide(msg: Message, arg: str):
         if not ChannelManager.is_organization_user(msg.author_id):
@@ -329,7 +341,10 @@ def init(bot: Bot, es_channels: EsChannels):
     async def cancel_outdated_match():
         with get_session() as session:
             outdated_matches = session.query(DB_WillMatchs).where(
-                DB_WillMatchs.time_match < datetime.now() - timedelta(hours=1)).all()
+                DB_WillMatchs.time_match < datetime.now() - timedelta(hours=1),
+                DB_WillMatchs.is_cancel == 0,
+                DB_WillMatchs.is_finished == 0,
+            ).all()
             for i in outdated_matches:
                 i.is_cancel = True
                 i.cancel_reason = f'机器人于 {get_time_str()} 取消，超时'

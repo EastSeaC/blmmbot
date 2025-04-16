@@ -164,8 +164,6 @@ def init(bot: Bot, es_channels: EsChannels):
             will_match_data.is_finished = False
             will_match_data.server_name = 'CN_BTL_NINGBO_1'
 
-
-
             card8 = Card(Module.Header(text='服务器: CN_BTL_NINGBO_1'),
                          Module.Divider(), )
             for i in z:
@@ -179,7 +177,10 @@ def init(bot: Bot, es_channels: EsChannels):
                         type=Types.Text.KMD),
                     Element.Button(
                         "选取",
-                        value=json.dumps({'type': 'match_select_players', 'kookId': t.kookId, 'match_id': '9'}),
+                        value=json.dumps({'type': 'match_select_players',
+                                          'kookId': t.kookId,
+                                          'playerId': t.playerId,
+                                          'match_id': '9'}),
                         click=Types.Click.RETURN_VAL,
                         theme=Types.Theme.INFO,
                     ),

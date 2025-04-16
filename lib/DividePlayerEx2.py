@@ -114,14 +114,29 @@ def print_results(team_a: List[Divide_Player_Item2], team_b: List[Divide_Player_
 def main():
     print("=== 6v6比赛分组系统 ===")
     print("生成随机玩家数据...")
-    players_data = generate_players()
+    # players_data = generate_players()
 
-    print("\n玩家初始数据：")
-    for i, (c, i, a) in enumerate(players_data):
-        primary = ['cavalry', 'infantry', 'archer'][np.argmax([c, i, a])]
-        print(f"ID:{i} {primary}({max(c, i, a)}) C:{c} I:{i} A:{a}")
+    # 骑步射
+    players_data = [
+        ('米子3173112866', 3000, 1300, 1000),
+        ('[TGoS] 渣蛇恶霸', 544, 386, 786),
+        ('梦寐', 786, 786, 786),
+        ('大C', 2802, 1100, 1786),
+        ('万哥海豹', 500, 500, 500),
+        ('章作之', 3500, 3500, 500),
+        ('[FRKZ] chongfeng', 1200, 2500, 500),
+        ('[TGoS] Acilec', 2400, 2100, 500),
+        ('[TCHC] 圣城的幽灵蓝', 1400, 2400, 500),
+        ('[DH] 月祭祀', 2080, 1400, 500),
+        ('[ARBT] Rocinante', 1600, 2110, 500),
+        ('[KR] Legendarydogegg', 1500, 1910, 500),
+    ]
+    # print("\n玩家初始数据：")
+    # for i, (c, i, a) in enumerate(players_data):
+    #     primary = ['cavalry', 'infantry', 'archer'][np.argmax([c, i, a])]
+    #     print(f"ID:{i} {primary}({max(c, i, a)}) C:{c} I:{i} A:{a}")
 
-    print("\n计算最优分组...")
+    # print("\n计算最优分组...")
     team_a, team_b, diff = balance_teams(players_data)
     print_results(team_a, team_b, diff)
 

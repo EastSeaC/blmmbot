@@ -32,6 +32,8 @@ from tables.ScoreLimit import DB_ScoreLimit
 sqlSession = get_session()
 g_channels: EsChannels
 
+selectPlayerData = SelectPlayerMatchData()
+
 
 def init(bot: Bot, es_channels: EsChannels):
     global g_channels
@@ -81,7 +83,8 @@ def init(bot: Bot, es_channels: EsChannels):
         /change_name 或 /cn 修改名字
         ##### 匹配指令 #####
         **(font)/ae 美式匹配(font)[success]**
-        **(font)/e 开启匹配(font)[success]**
+        **(font)/e 均分匹配(font)[success]**
+        **(font)/select_mode 选人匹配(font)[info]**
         **(font)/cnm (font)[warning]** 【比赛ID】 取消比赛 ，例如 /cnm 10
 
         **(font)注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：(font)[danger]**
@@ -200,7 +203,8 @@ def init(bot: Bot, es_channels: EsChannels):
 
         # ####################### 检查封印玩家 #######################
         try:
-            ban_player_kook_id = sqlSession.execute(select(DB_Ban.kookId).where(DB_Ban.endAt > datetime.now())).scalars().all()
+            ban_player_kook_id = sqlSession.execute(
+                select(DB_Ban.kookId).where(DB_Ban.endAt > datetime.now())).scalars().all()
             print(ban_player_kook_id)
             for i in ban_player_kook_id:
                 print(i)

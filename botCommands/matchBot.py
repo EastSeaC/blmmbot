@@ -188,6 +188,7 @@ def init(bot: Bot, es_channels: EsChannels):
         #
         SelectPlayerMatchData.first_team_master = first_team_o
         SelectPlayerMatchData.second_team_master = second_team_o
+        SelectPlayerMatchData.data = dict_for_kook_id
         card8 = Card(
             Module.Section(f'队长1：{ChannelManager.get_at(first_team_o)}，队长2：{ChannelManager.get_at(second_team_o)}'),
             Module.Divider(),
@@ -199,7 +200,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 continue
             SelectPlayerMatchData.add_attacker(first_team_o)
             SelectPlayerMatchData.add_defender(second_team_o)
-            SelectPlayerMatchData.need_to_select.append(t.playerId)
+            SelectPlayerMatchData.need_to_select.append(t.kookId)
             card8.append(Module.Section(
                 Element.Text(
                     f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",

@@ -76,13 +76,13 @@ def init(bot: Bot, es_channels: EsChannels):
 
                     if user_id == SelectPlayerMatchData.first_team_master:
                         if SelectPlayerMatchData.get_cur_select_master() == '1':
-                            SelectPlayerMatchData.add_attacker(target_player_id)
+                            SelectPlayerMatchData.add_attacker(selected_players)
                         else:
                             await channel.send(ChannelManager.get_at(user_id) + ':不是你的回合，禁止选人')
                             return
                     elif user_id == SelectPlayerMatchData.second_team_master:
                         if SelectPlayerMatchData.get_cur_select_master() == '2':
-                            SelectPlayerMatchData.add_defender(target_player_id)
+                            SelectPlayerMatchData.add_defender(selected_players)
                         else:
                             await channel.send(ChannelManager.get_at(user_id) + ':不是你的回合，禁止选人')
                             return
@@ -93,6 +93,28 @@ def init(bot: Bot, es_channels: EsChannels):
                     print('变化前', SelectPlayerMatchData.need_to_select)
                     SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(selected_players)
                     print('变化后', SelectPlayerMatchData.need_to_select)
+
+                    card8 = Card()
+
+                    for i, t in SelectPlayerMatchData.data.items():
+                        if i in SelectPlayerMatchData.need_to_select:
+                            card8.append(Module.Section(
+                                Element.Text(
+                                    f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
+                                    type=Types.Text.KMD),
+                                Element.Button(
+                                    "选取",
+                                    value=json.dumps({'type': 'match_select_players',
+                                                      'kookId': t.kookId,
+                                                      'playerId': t.playerId,
+                                                      'match_id': '9'}),
+                                    click=Types.Click.RETURN_VAL,
+                                    theme=Types.Theme.INFO,
+                                ),
+                            ))
+                    card8.append(Module.Divider())
+                    await channel.send(CardMessage(card8))
+
                     if len(SelectPlayerMatchData.need_to_select) == 0:
                         print('选人完毕')
                         will_match_data = DB_WillMatchs()

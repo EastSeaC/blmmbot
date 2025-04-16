@@ -15,6 +15,8 @@ class SelectPlayerMatchData:
     cur_index = 0
     select_order = '2112212121'
 
+    data = []
+
     @classmethod
     def get_cur_select_master(cls):
         try:

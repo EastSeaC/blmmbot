@@ -192,7 +192,10 @@ def init(bot: Bot, es_channels: EsChannels):
         SelectPlayerMatchData.first_team_player_ids = []
         SelectPlayerMatchData.second_team_player_ids = []
         SelectPlayerMatchData.data = dict_for_kook_id
+        SelectPlayerMatchData.add_attacker(first_team_o)
+        SelectPlayerMatchData.add_defender(second_team_o)
         SelectPlayerMatchData.cur_index = 0
+
         card8 = Card(
             Module.Section(f'队长1：{ChannelManager.get_at(first_team_o)}，队长2：{ChannelManager.get_at(second_team_o)}'),
             Module.Divider(),
@@ -202,8 +205,7 @@ def init(bot: Bot, es_channels: EsChannels):
             print(f"{t.kookName},{t.rank} ")
             if t.kookId == first_team_o or t.kookId == second_team_o:
                 continue
-            SelectPlayerMatchData.add_attacker(first_team_o)
-            SelectPlayerMatchData.add_defender(second_team_o)
+
             SelectPlayerMatchData.need_to_select.append(t.kookId)
             card8.append(Module.Section(
                 Element.Text(

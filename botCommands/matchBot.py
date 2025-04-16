@@ -188,6 +188,9 @@ def init(bot: Bot, es_channels: EsChannels):
         #
         SelectPlayerMatchData.first_team_master = first_team_o
         SelectPlayerMatchData.second_team_master = second_team_o
+        SelectPlayerMatchData.need_to_select = []
+        SelectPlayerMatchData.first_team_player_ids = []
+        SelectPlayerMatchData.second_team_player_ids = []
         SelectPlayerMatchData.data = dict_for_kook_id
         SelectPlayerMatchData.cur_index = 0
         card8 = Card(

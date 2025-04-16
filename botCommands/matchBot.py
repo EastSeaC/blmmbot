@@ -189,6 +189,7 @@ def init(bot: Bot, es_channels: EsChannels):
         SelectPlayerMatchData.first_team_master = first_team_o
         SelectPlayerMatchData.second_team_master = second_team_o
         SelectPlayerMatchData.data = dict_for_kook_id
+        SelectPlayerMatchData.cur_index = 0
         card8 = Card(
             Module.Section(f'队长1：{ChannelManager.get_at(first_team_o)}，队长2：{ChannelManager.get_at(second_team_o)}'),
             Module.Divider(),

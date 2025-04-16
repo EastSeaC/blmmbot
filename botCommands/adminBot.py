@@ -397,7 +397,7 @@ def init(bot: Bot, es_channels: EsChannels):
             player: DB_Player = x.first()
 
             player_data: DB_PlayerData = sql_session.query(DB_PlayerData).filter(
-                DB_PlayerData.playerId == player.playerId).fist()
+                DB_PlayerData.playerId == player.playerId).first()
             old_rank = player_data.rank
             player_data.rank += real_score
             sql_session.merge(player_data)

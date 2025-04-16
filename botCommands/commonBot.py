@@ -64,14 +64,21 @@ def init(bot: Bot, es_channels: EsChannels):
                 type = str(btn_value_dict.get('type', 'invalid'))
                 selected_players = btn_value_dict.get('kookId')
                 if type == 'match_select_players':
-                    selectPlayerMatchData: SelectPlayerMatchData = MatchConditionEx.blmm_1
-                    if user_id in '482714005':
-                        selectPlayerMatchData.first_team_player_ids.append(selected_players)
-                    elif user_id in '1555061634':
-                        selectPlayerMatchData.second_team_player_ids.append(selected_players)
+                    # selectPlayerMatchData: SelectPlayerMatchData = MatchConditionEx.blmm_1
+                    # if user_id in '482714005':
+                    # selectPlayerMatchData.first_team_player_ids.append(selected_players)
+                    # elif user_id in '1555061634':
+                    #     selectPlayerMatchData.second_team_player_ids.append(selected_players)
+                    if user_id == SelectPlayerMatchData.first_team_master:
+                        SelectPlayerMatchData.add_attacker(selected_players)
+                    elif user_id == SelectPlayerMatchData.second_team_master:
+                        SelectPlayerMatchData.add_defender(selected_players)
                     else:
-                        print('你不是队长，禁止选取队员')
-                    selectPlayerMatchData.need_to_select = selectPlayerMatchData.need_to_select.remove(selected_players)
+                        await channel.send(f'{ChannelManager.get_at(user_id)} 你不是队长，禁止选取队员')
+                    SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(selected_players)
+
+                    if len(SelectPlayerMatchData.need_to_select) == 0:
+                        print('选人完毕')
                 elif type == ESActionType.Admin_Cancel_Match:
                     if not ChannelManager.is_admin(user_id):
                         await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')

@@ -11,6 +11,7 @@ from lib.DividePlayerEx2 import balance_teams
 from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
 from kook.ChannelKit import ChannelManager, EsChannels, OldGuildChannel
+from lib.SelectMatchData import SelectPlayerMatchData
 from lib.match_guard import MatchGuard
 from lib.match_state import PlayerBasicInfo, MatchState, DivideData, MatchCondition
 from tables import *
@@ -185,15 +186,18 @@ def init(bot: Bot, es_channels: EsChannels):
         second_team_o = sorted_player_list[1].user_id
         print(sorted_player_list[1].score)
         #
-
+        SelectPlayerMatchData.first_team_master = first_team_o
+        SelectPlayerMatchData.second_team_master = second_team_o
         card8 = Card(
-            Module.Section(f'队长1：{ChannelManager.get_at(first_team_o)}，队长2：{ChannelManager.get_at(second_team_o)}')
+            Module.Section(f'队长1：{ChannelManager.get_at(first_team_o)}，队长2：{ChannelManager.get_at(second_team_o)}'),
+            Module.Divider(),
         )
         for i, v in dict_for_kook_id.items():
             t: DB_Player = v
             print(f"{t.kookName},{t.rank} ")
             if t.kookId == first_team_o or t.kookId == second_team_o:
                 continue
+            SelectPlayerMatchData.need_to_select.append(t.kookId)
             card8.append(Module.Section(
                 Element.Text(
                     f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
@@ -228,9 +232,7 @@ def init(bot: Bot, es_channels: EsChannels):
         # cm = CardMessage(Card(
         #
         # ))
-        await msg.reply('选人开')
         return
-        pass
 
     @bot.command(name='ae', case_sensitive=False, aliases=['a'])
     async def american_style_divide(msg: Message, arg: str):

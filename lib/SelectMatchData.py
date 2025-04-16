@@ -1,6 +1,19 @@
 class SelectPlayerMatchData:
     is_running = False
 
+    first_team_master = ''
+    second_team_master = ''
+
+    first_team_player_ids = []
+    second_team_player_ids = []
+
+    origin_list = []
+    total_list = []
+    need_to_select = []
+
+    cur_index = 0
+    select_order = '2112212121'
+
     @classmethod
     def start_run(cls):
         cls.is_running = True
@@ -25,19 +38,22 @@ class SelectPlayerMatchData:
         self.select_order = '2112212121'
         self.cur_index = 0
 
-    def get_cur_index(self):
-        return self.cur_index
+    @classmethod
+    def get_cur_index(cls):
+        return cls.cur_index
 
-    def add_attacker(self, player_id: str):
-        self.first_team_player_ids.append(player_id)
-        self.total_list.append(player_id)
-        self.need_to_select = list(set(self.origin_list) - set(self.total_list))
+    @classmethod
+    def add_attacker(cls, player_id: str):
+        cls.first_team_player_ids.append(player_id)
+        cls.total_list.append(player_id)
+        cls.need_to_select = list(set(cls.origin_list) - set(cls.total_list))
 
-        self.cur_index += 1
+        cls.cur_index += 1
 
-    def add_defender(self, player_id: str):
-        self.second_team_player_ids.append(player_id)
-        self.total_list.append(player_id)
-        self.need_to_select = list(set(self.origin_list) - set(self.total_list))
+    @classmethod
+    def add_defender(cls, player_id: str):
+        cls.second_team_player_ids.append(player_id)
+        cls.total_list.append(player_id)
+        cls.need_to_select = list(set(cls.origin_list) - set(cls.total_list))
 
-        self.cur_index += 1
+        cls.cur_index += 1

@@ -79,13 +79,16 @@ def init(bot: Bot, es_channels: EsChannels):
                             SelectPlayerMatchData.add_attacker(target_player_id)
                         else:
                             await channel.send(ChannelManager.get_at(user_id) + ':不是你的回合，禁止选人')
+                            return
                     elif user_id == SelectPlayerMatchData.second_team_master:
                         if SelectPlayerMatchData.get_cur_select_master() == '2':
                             SelectPlayerMatchData.add_defender(target_player_id)
                         else:
                             await channel.send(ChannelManager.get_at(user_id) + ':不是你的回合，禁止选人')
+                            return
                     else:
                         await channel.send(f'{ChannelManager.get_at(user_id)} 你不是队长，禁止选取队员')
+                        return
 
                     print('变化前', SelectPlayerMatchData.need_to_select)
                     SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(selected_players)

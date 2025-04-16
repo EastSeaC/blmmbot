@@ -333,7 +333,7 @@ def init(bot: Bot, es_channels: EsChannels):
             await channel_b.move_user(ChannelManager.match_attack_channel, d.id)
 
     @bot.command(name='unban', case_sensitive=False, aliases=['uban'])
-    async def unban_player(msg: Message, kook_id: str):
+    async def unban_player_x(msg: Message, kook_id: str):
         if not ChannelManager.is_admin(msg.author_id):
             await msg.reply('禁止使用管理员指令')
             return

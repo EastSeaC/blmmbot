@@ -1,6 +1,9 @@
+import json
+import uuid
 from datetime import datetime, timedelta
 
 from khl import Bot, Message, EventTypes, Event, GuildUser, PublicVoiceChannel
+from khl.card import CardMessage, Card, Module, Element, Types
 from sqlalchemy import select
 
 from botCommands.playerBot import convert_timestamp
@@ -96,14 +99,133 @@ def init(bot: Bot, es_channels: EsChannels):
         else:
             await msg.reply('指令异常')
 
-    @bot.command(name='selectMode', case_sensitive=False)
+    @bot.command(name='select_mode', case_sensitive=False)
     async def select_mode_play_match(msg: Message, arg: str = ''):
         """
         选人模式
         """
-        print(msg)
-        print(123)
+        if not ChannelManager.is_organization_user(msg.author_id):
+            await msg.reply('禁止使用管理员指令')
+            return
+
+        channel = await bot.client.fetch_public_channel(OldGuildChannel.match_select_channel)
+        voice_channel: PublicVoiceChannel = channel
+
+        k = await voice_channel.fetch_user_list()
+        for i in k:
+            z: GuildUser = i
+            # print(z.__dict__)
+            # print(convert_timestamp(z.active_time))
+
+        number_of_user = len(k)
+        if number_of_user % 2 == 1 or number_of_user == 0:
+            await msg.reply(f'人数异常, 当前人数为 {len(k)} , 必须为非0偶数')
+            return
+
+        player_list = []
+        player_list_ax = []
+
         sqlSession = get_session()
+        z = sqlSession.query(DB_Player).filter(DB_Player.kookId.in_([i.id for i in k])).all()
+        dict_for_kook_id = {}
+        for i in z:
+            t: DB_Player = i
+            dict_for_kook_id[t.kookId] = t
+
+        try:
+            ban_player_kook_id = sqlSession.execute(
+                select(DB_Ban.kookId).where(DB_Ban.endAt >= datetime.now())).scalars().all()
+            for i in ban_player_kook_id:
+                if i in dict_for_kook_id:
+                    player_x_ban: DB_Player = dict_for_kook_id[i]
+                    await msg.reply(f'有被封印玩家 {player_x_ban.kookName} (met){player_x_ban.kookId}(met) 停止匹配')
+                    return
+        except Exception as e:
+            print(e)
+
+        try:
+            for id, user in enumerate(k):
+                t: GuildUser = user
+                if t.id not in dict_for_kook_id:
+                    await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
+                    await move_a_to_b_ex(OldGuildChannel.match_set_channel, [t.id])  # 移动到普通频道
+                player: DB_Player = dict_for_kook_id[t.id]
+                px: DB_PlayerData = sqlSession.query(DB_PlayerData).filter(
+                    DB_PlayerData.playerId == player.playerId).first()
+                if px is None:
+                    px = DB_PlayerData()
+                    px.playerId = player.playerId
+                    px.playerName = player.kookName
+                    px.rank = 1000
+                    sqlSession.add(px)
+                    sqlSession.commit()
+
+                player_info = PlayerBasicInfo({'username': player.kookName})
+                player_info.score = px.rank  # 分数采用总分评价
+                player_info.user_id = player.kookId
+                player_info.username = player.kookName
+                player_info.player_id = player.playerId
+                # print(player_info.username)
+                player_list.append(player_info)
+
+                player_list_ax.append(
+                    (player.kookId, player.infantry_score, player.cavalry_score, player.archer_score))
+
+        except Exception as e:
+            print(repr(e))
+            LogHelper.log(f"没有注册 {t.id} {t.username}")
+            await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册 Exception!')
+            await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
+            return
+
+        # 降序排列（从大到小）
+        sorted_player_list = sorted(player_list, key=lambda x: x.score, reverse=True)
+        first_team_o = sorted_player_list[0].user_id
+        print(sorted_player_list[0].score)
+        second_team_o = sorted_player_list[1].user_id
+        print(sorted_player_list[1].score)
+        #
+
+        card8 = Card()
+        for i, v in dict_for_kook_id.items():
+            t: DB_Player = v
+            print(f"{t.kookName},{t.rank} ")
+            if t.kookId == first_team_o or t.kookId == second_team_o:
+                continue
+            card8.append(Module.Section(
+                Element.Text(
+                    f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
+                    type=Types.Text.KMD),
+                Element.Button(
+                    "选取",
+                    value=json.dumps({'type': 'match_select_players',
+                                      'kookId': t.kookId,
+                                      'playerId': t.playerId,
+                                      'match_id': '9'}),
+                    click=Types.Click.RETURN_VAL,
+                    theme=Types.Theme.INFO,
+                ),
+            ))
+            card8.append(Module.Divider())
+        await g_channels.command_channel.send(CardMessage(card8))
+        # await msg.reply(CardMessage(card8))
+        # will_match_data = DB_WillMatchs()
+        # will_match_data.time_match = datetime.now()
+        # will_match_data.match_id = str(uuid.uuid1())
+        # will_match_data.set_first_team_player_ids(divide_data.get_first_team_player_ids())
+        # # will_match_data.set_second_team_player_ids(divide_data.get_second_team_player_ids())
+        #
+        # first_faction, second_faction = get_random_faction_2()
+        # will_match_data.first_team_culture = first_faction
+        # will_match_data.second_team_culture = second_faction
+        #
+        # will_match_data.match_type = WillMatchType.Match88
+        # will_match_data.is_cancel = False
+        # will_match_data.is_finished = False
+        # will_match_data.server_name = 'CN_BTL_NINGBO_1'
+        # cm = CardMessage(Card(
+        #
+        # ))
         await msg.reply('选人开')
         return
         pass

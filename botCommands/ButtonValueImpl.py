@@ -25,6 +25,7 @@ class AdminButtonValue:
 
 
 class PlayerButtonValue:
+    player_start_select_mode_match = 'player_start_select_mode_match'
     ShowServerState = 'ShowServerState'
     player_wonder_server_state = 'player_wonder_server_state'
     player_score = 'player_score'

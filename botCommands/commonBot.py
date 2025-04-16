@@ -79,7 +79,6 @@ def init(bot: Bot, es_channels: EsChannels):
                     x = cancel_match(e_body_user_info, btn_value_dict['match_id_2'])
                     await channel.send(x)
                     pass
-
         elif value == AdminButtonValue.Restart_Server_1:  # 重启服务器
             if not ChannelManager.is_admin(user_id):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
@@ -97,6 +96,10 @@ def init(bot: Bot, es_channels: EsChannels):
             ServerManager.RestartBLMMServerEx(ServerEnum.Server_3)
             await channel.send(f'(met){user_id}(met) 服务器Server_3 已重启')
         elif value == AdminButtonValue.Show_Admin_Command:
+            pass
+
+        # 玩家指令
+        elif value == PlayerButtonValue.player_start_select_mode_match:
             pass
 
         elif value == PlayerButtonValue.player_score:  # 玩家个人积分和 勋章

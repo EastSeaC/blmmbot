@@ -108,7 +108,7 @@ async def task1():
 
         name_str = '姓名:'
         game_info = '分数:'
-        kill_info = 'KDA伤:'
+        kill_info = 'KAD伤:'
 
         cm = CardMessage()
         z1 = z[0:6]
@@ -186,7 +186,7 @@ async def CheckDataBase():
         result = sql_session.execute(
             select(DB_KookChannelGroup).where(DB_KookChannelGroup.guild_id == OldGuildChannel.sever)).all()
         # print('服务器ID', result)
-        if len(result) == 0:
+        if len(result) == 0 and False:
             guild = await bot.client.fetch_guild(OldGuildChannel.sever)
             print(guild)
             category_list = await guild.fetch_channel_category_list(True)
@@ -254,7 +254,7 @@ if __name__ == '__main__':
     # 保存所有活跃的 WebSocket 连接
     app['websockets'] = set()
 
-    app.add_routes([web.get('/ws', websocket_handler)])
+    # app.add_routes([web.get('/ws', websocket_handler)])
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('satic'))
 
     asyncio.get_event_loop().run_until_complete(

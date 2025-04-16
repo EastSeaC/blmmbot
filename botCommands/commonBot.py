@@ -137,6 +137,8 @@ def init(bot: Bot, es_channels: EsChannels):
                             session.commit()
 
 
+
+
                 elif type == ESActionType.Admin_Cancel_Match:
                     if not ChannelManager.is_admin(user_id):
                         await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')

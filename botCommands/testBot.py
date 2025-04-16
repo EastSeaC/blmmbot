@@ -165,7 +165,8 @@ def init(bot: Bot, es_channels: EsChannels):
             will_match_data.server_name = 'CN_BTL_NINGBO_1'
 
             card8 = Card(Module.Header(text='服务器: CN_BTL_NINGBO_1'),
-                         Module.Divider(), )
+                         Module.Divider(),
+                         )
             for i in z:
                 t: DB_Player = i[0]
                 print(f"{t.kookName},{t.rank} ")

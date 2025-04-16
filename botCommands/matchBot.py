@@ -186,7 +186,9 @@ def init(bot: Bot, es_channels: EsChannels):
         print(sorted_player_list[1].score)
         #
 
-        card8 = Card()
+        card8 = Card(
+            Module.Section(f'队长1：{ChannelManager.get_at(first_team_o)}，队长2：{ChannelManager.get_at(second_team_o)}')
+        )
         for i, v in dict_for_kook_id.items():
             t: DB_Player = v
             print(f"{t.kookName},{t.rank} ")

@@ -112,6 +112,9 @@ class ChannelManager:
     def get_server_name(cls, index: int = 0):
         return f'BLMM_{index}'
 
+    @classmethod
+    def get_at(cls, kook_id: str):
+        return f'(met){kook_id}(met)'
 
 class OldGuildChannel:
     # 服务器
@@ -146,7 +149,7 @@ class OldGuildChannel:
     match_attack_channel_3 = '4653727651132216'
     match_defend_channel_3 = '7136051179773177'
 
-    match_select_channel = '2645329202100415' # 选人频道
+    match_select_channel = '2645329202100415'  # 选人频道
 
     def get_match_attack_channel(self, server: ServerEnum):
         if server == ServerEnum.Server_1:
@@ -155,6 +158,10 @@ class OldGuildChannel:
             return OldGuildChannel.match_attack_channel_2
         elif server == ServerEnum.Server_3:
             return OldGuildChannel.match_attack_channel_3
+
+    @classmethod
+    def get_at(cls, kook_id: str):
+        return f'(met){kook_id}(met)'
 
     @classmethod
     def get_server_name(cls, index: int = 0):

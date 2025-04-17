@@ -13,7 +13,7 @@ from init_db import get_session
 from kook.ChannelKit import ChannelManager, EsChannels, OldGuildChannel
 from lib.SelectMatchData import SelectPlayerMatchData
 from lib.match_guard import MatchGuard
-from lib.match_state import PlayerBasicInfo, MatchState, DivideData, MatchCondition
+from lib.match_state import PlayerBasicInfo, MatchState, DivideData, MatchCondition, MatchConditionEx
 from tables import *
 from tables.Ban import DB_Ban
 from tables.DB_WillMatch import DB_WillMatchs
@@ -186,14 +186,32 @@ def init(bot: Bot, es_channels: EsChannels):
         second_team_o = sorted_player_list[1].user_id
         print(sorted_player_list[1].score)
         #
+        SelectPlayerMatchData.start_run()
         SelectPlayerMatchData.first_team_master = first_team_o
         SelectPlayerMatchData.second_team_master = second_team_o
-        SelectPlayerMatchData.first_team_player_ids.clear()
-        SelectPlayerMatchData.second_team_player_ids.clear()
-        SelectPlayerMatchData.data = dict_for_kook_id
-        SelectPlayerMatchData.add_attacker(first_team_o)
-        SelectPlayerMatchData.add_defender(second_team_o)
+        SelectPlayerMatchData.need_to_select = [i.user_id for i in player_list]
+        SelectPlayerMatchData.origin_list = SelectPlayerMatchData.need_to_select
+        MatchConditionEx.blmm_2 = SelectPlayerMatchData.need_to_select
+        print(SelectPlayerMatchData.need_to_select)
         SelectPlayerMatchData.cur_index = 0
+        SelectPlayerMatchData.first_team_player_ids = [first_team_o]
+        SelectPlayerMatchData.second_team_player_ids = [second_team_o]
+        SelectPlayerMatchData.total_list = [first_team_o, second_team_o]
+        SelectPlayerMatchData.data = dict_for_kook_id
+
+        card8 = Card()
+
+        CommandChannel = await bot.client.fetch_public_channel(OldGuildChannel.command_channel)
+        await CommandChannel.send(f'(met){first_team_o}(met) 第1队伍队长')
+        await CommandChannel.send(f'(met){second_team_o}(met) 第2队伍队长')
+        await msg.reply(CardMessage(card8))
+        await CommandChannel.send(
+            f'{ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex())} 你该选人了（10s)')
+        await CommandChannel.send(CardMessage(Card(
+            Module.Countdown(
+                datetime.datetime.now() + datetime.timedelta(seconds=12), mode=Types.CountdownMode.SECOND
+            )
+        )))
 
         need_to_select_list = []
         card8 = Card(

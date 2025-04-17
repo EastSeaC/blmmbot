@@ -84,6 +84,7 @@ def init(bot: Bot, es_channels: EsChannels):
                         card8.append(Module.Divider())
 
                 if SelectPlayerMatchData.get_cur_select_master_ex() == -1:
+                    print('test---------------------')
                     await channel.send(
                         f'{ChannelManager.get_at(SelectPlayerMatchData.first_team_master)} {ChannelManager.get_at(SelectPlayerMatchData.second_team_master)} 选人结束，请进入比赛服务器')
 

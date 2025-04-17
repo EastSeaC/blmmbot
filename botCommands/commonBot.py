@@ -83,6 +83,8 @@ def init(bot: Bot, es_channels: EsChannels):
                         ))
                         card8.append(Module.Divider())
 
+                print(
+                    f'SelectPlayerMatchData.get_cur_select_master_ex() {SelectPlayerMatchData.get_cur_select_master_ex()}')
                 if SelectPlayerMatchData.get_cur_select_master_ex() == -1:
                     print('test---------------------')
                     await channel.send(

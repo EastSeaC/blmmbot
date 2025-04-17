@@ -25,6 +25,7 @@ from tables.ResetPlayer import DB_ResetPlayer
 
 session = get_session()
 g_channels: EsChannels
+select_player_data = SelectPlayerMatchData()
 
 
 def get_troop_type_name(a: int):

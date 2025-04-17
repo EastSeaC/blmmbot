@@ -1,4 +1,5 @@
 import json
+import random
 import uuid
 from datetime import datetime
 import datetime as dt_or
@@ -13,7 +14,7 @@ from entity.WillMatchType import WillMatchType
 from kook.CardHelper import get_player_score_card, get_score_list_card
 from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
-from kook.ChannelKit import EsChannels, ChannelManager
+from kook.ChannelKit import EsChannels, ChannelManager, OldGuildChannel
 from lib.SelectMatchData import SelectPlayerMatchData
 from lib.ServerGameConfig import get_random_faction_2
 from lib.ServerManager import ServerManager
@@ -25,7 +26,6 @@ from tables.ResetPlayer import DB_ResetPlayer
 
 session = get_session()
 g_channels: EsChannels
-select_player_data = SelectPlayerMatchData()
 
 
 def get_troop_type_name(a: int):
@@ -43,11 +43,66 @@ def init(bot: Bot, es_channels: EsChannels):
     global g_channels
     g_channels = es_channels
 
+    @bot.task.add_interval(seconds=1)
+    async def task_for_select_match():
+        if SelectPlayerMatchData.is_running:
+            SelectPlayerMatchData.cur_waiting += 1
+            print('cur', SelectPlayerMatchData.cur_waiting)
+            if SelectPlayerMatchData.cur_waiting >= SelectPlayerMatchData.max_waiting:
+                SelectPlayerMatchData.cur_waiting = 0
+                channel = await bot.client.fetch_public_channel(OldGuildChannel.command_channel)
+
+                x = random.sample(SelectPlayerMatchData.need_to_select, k=1)[0]
+                print('x', x)
+                if SelectPlayerMatchData.get_cur_select_master() == '1':
+                    SelectPlayerMatchData.add_attacker(x)
+                    await channel.send(ChannelManager.get_at(
+                        SelectPlayerMatchData.get_cur_select_master_ex()) + f'你选取了{ChannelManager.get_at(x)}【系统随机】')
+                elif SelectPlayerMatchData.get_cur_select_master() == '2':
+                    SelectPlayerMatchData.add_defender(x)
+                    await channel.send(ChannelManager.get_at(
+                        SelectPlayerMatchData.get_cur_select_master_ex()) + f'你选取了{ChannelManager.get_at(x)}【系统随机】')
+
+                card8 = Card()
+
+                for i, t in SelectPlayerMatchData.data.items():
+                    if i in SelectPlayerMatchData.need_to_select:
+                        card8.append(Module.Section(
+                            Element.Text(
+                                f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
+                                type=Types.Text.KMD),
+                            Element.Button(
+                                "选取",
+                                value=json.dumps({'type': 'match_select_players',
+                                                  'kookId': t.kookId,
+                                                  'playerId': t.playerId,
+                                                  'match_id': '9'}),
+                                click=Types.Click.RETURN_VAL,
+                                theme=Types.Theme.INFO,
+                            ),
+                        ))
+                        card8.append(Module.Divider())
+
+                if SelectPlayerMatchData.get_cur_select_master_ex() == -1:
+                    await channel.send(
+                        f'{ChannelManager.get_at(SelectPlayerMatchData.first_team_master)} {ChannelManager.get_at(SelectPlayerMatchData.second_team_master)} 选人结束，请进入比赛服务器')
+
+                    return
+                else:
+                    await channel.send(CardMessage(card8))
+                    await channel.send(
+                        ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
+                    await channel.send(CardMessage(Card(
+                        Module.Countdown(
+                            datetime.now() + dt_or.timedelta(seconds=12), mode=Types.CountdownMode.SECOND
+                        )
+                    )))
+
     @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
     async def btn_click_event(b: Bot, e: Event):
         """按钮点击事件"""
-        print(e.target_id)
-        print(e.body, "\n")
+        # print(e.target_id)
+        # print(e.body, "\n")
         value = str(e.body['value'])
         user_id = e.body['user_id']
         guild_id = e.body['guild_id']
@@ -74,9 +129,12 @@ def init(bot: Bot, es_channels: EsChannels):
                     # selectPlayerMatchData.first_team_player_ids.append(selected_players)
                     # elif user_id in '1555061634':
                     #     selectPlayerMatchData.second_team_player_ids.append(selected_players)
-
+                    print('first_team_master', SelectPlayerMatchData.first_team_master)
+                    print('second_team_master', SelectPlayerMatchData.second_team_master)
                     if user_id == SelectPlayerMatchData.first_team_master:
                         if SelectPlayerMatchData.get_cur_select_master() == '1':
+                            await channel.send(ChannelManager.get_at(
+                                SelectPlayerMatchData.first_team_master) + f'你选取了{ChannelManager.get_at(selected_players)}')
                             SelectPlayerMatchData.add_attacker(selected_players)
                         else:
                             await channel.send(ChannelManager.get_at(user_id) + ':不是你的回合，禁止选人')
@@ -84,6 +142,8 @@ def init(bot: Bot, es_channels: EsChannels):
                     elif user_id == SelectPlayerMatchData.second_team_master:
                         if SelectPlayerMatchData.get_cur_select_master() == '2':
                             SelectPlayerMatchData.add_defender(selected_players)
+                            await channel.send(ChannelManager.get_at(
+                                SelectPlayerMatchData.second_team_master) + f'你选取了{ChannelManager.get_at(selected_players)}')
                         else:
                             await channel.send(ChannelManager.get_at(user_id) + ':不是你的回合，禁止选人')
                             return
@@ -91,8 +151,10 @@ def init(bot: Bot, es_channels: EsChannels):
                         await channel.send(f'{ChannelManager.get_at(user_id)} 你不是队长，禁止选取队员')
                         return
 
-                    print('变化前', SelectPlayerMatchData.need_to_select)
-                    SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(selected_players)
+                    print('need_to_select变化前', SelectPlayerMatchData.need_to_select)
+                    print(MatchConditionEx.blmm_2)
+                    print('目标', selected_players)
+                    # SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(selected_players)
                     print('变化后', SelectPlayerMatchData.need_to_select)
 
                     card8 = Card()
@@ -113,16 +175,20 @@ def init(bot: Bot, es_channels: EsChannels):
                                     theme=Types.Theme.INFO,
                                 ),
                             ))
+                            card8.append(Module.Divider())
                     card8.append(Module.Divider())
                     await channel.send(CardMessage(card8))
+                    await channel.send(
+                        ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
 
                     if len(SelectPlayerMatchData.need_to_select) == 0:
+                        SelectPlayerMatchData.is_running = False
                         print('选人完毕')
                         will_match_data = DB_WillMatchs()
                         will_match_data.time_match = datetime.now()
                         will_match_data.match_id = str(uuid.uuid1())
-                        will_match_data.set_first_team_player_ids(SelectPlayerMatchData.first_team_player_ids())
-                        will_match_data.set_second_team_player_ids(SelectPlayerMatchData.second_team_player_ids())
+                        will_match_data.set_first_team_player_ids(SelectPlayerMatchData.first_team_player_ids)
+                        will_match_data.set_second_team_player_ids(SelectPlayerMatchData.second_team_player_ids)
 
                         first_faction, second_faction = get_random_faction_2()
                         will_match_data.first_team_culture = first_faction
@@ -136,7 +202,6 @@ def init(bot: Bot, es_channels: EsChannels):
                         with get_session() as session:
                             session.add(will_match_data)
                             session.commit()
-
 
 
 

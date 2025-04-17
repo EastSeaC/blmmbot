@@ -15,6 +15,9 @@ class SelectPlayerMatchData:
     cur_index = 0
     select_order = '2112212121'
 
+    cur_waiting = 0
+    max_waiting = 12
+
     data = []
 
     @classmethod
@@ -23,6 +26,21 @@ class SelectPlayerMatchData:
             print('选人索引', cls.cur_index)
             if cls.cur_index <= len(cls.select_order):
                 x = cls.select_order[cls.cur_index]
+            else:
+                x = -1
+            print('选人索引x', x)
+            return x
+        except Exception as e:
+            print(repr(e))
+            return -1
+
+    @classmethod
+    def get_cur_select_master_ex(cls):
+        try:
+            print('选人索引', cls.cur_index)
+            if cls.cur_index <= len(cls.select_order):
+                x = cls.select_order[cls.cur_index]
+                return cls.second_team_master if x == '2' else cls.first_team_master
             else:
                 x = -1
             print('选人索引x', x)
@@ -65,6 +83,7 @@ class SelectPlayerMatchData:
         cls.total_list.append(player_id)
         cls.need_to_select = list(set(cls.origin_list) - set(cls.total_list))
 
+        cls.cur_waiting = 0
         cls.cur_index += 1
 
     @classmethod
@@ -74,3 +93,4 @@ class SelectPlayerMatchData:
         cls.need_to_select = list(set(cls.origin_list) - set(cls.total_list))
 
         cls.cur_index += 1
+        cls.cur_waiting = 0

@@ -118,8 +118,8 @@ def init(bot: Bot, es_channels: EsChannels):
         #              '2806603494', '1384765669', '1510300409', '828555933', '3784439652']
         user_list = ['482714005', '3173112866', '755654595', '304648463', '3484257139', '2806603494', '3394658957',
                      '2806603494', '1384765669', '1510300409', '2977084297', '3167451943']
-        first_team_o = '482714005'
-        second_team_o = '1555061634'
+        second_team_o = '482714005'
+        first_team_o = '1555061634'
         remove_team_manager_user_list = [i for i in user_list if i != first_team_o or i != second_team_o]
 
         with get_session() as z_session:
@@ -174,7 +174,7 @@ def init(bot: Bot, es_channels: EsChannels):
                     continue
                 card8.append(Module.Section(
                     Element.Text(
-                        f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
+                        f"{t.kookName}({t.rank}) {t.kookId} \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
                         type=Types.Text.KMD),
                     Element.Button(
                         "选取",
@@ -191,11 +191,30 @@ def init(bot: Bot, es_channels: EsChannels):
             z_select.need_to_select = remove_team_manager_user_list
             MatchConditionEx.blmm_1 = z_select
 
+            SelectPlayerMatchData.start_run()
+            SelectPlayerMatchData.first_team_master = first_team_o
+            SelectPlayerMatchData.second_team_master = second_team_o
+            SelectPlayerMatchData.need_to_select = [i.user_id for i in player_list]
+            SelectPlayerMatchData.origin_list = SelectPlayerMatchData.need_to_select
+            MatchConditionEx.blmm_2 = SelectPlayerMatchData.need_to_select
+            print(SelectPlayerMatchData.need_to_select)
+            SelectPlayerMatchData.cur_index = 0
+            SelectPlayerMatchData.first_team_player_ids = [first_team_o]
+            SelectPlayerMatchData.second_team_player_ids = [second_team_o]
+            SelectPlayerMatchData.total_list = [first_team_o, second_team_o]
+            SelectPlayerMatchData.data = dict_for_kook_id
+
             CommandChannel = await bot.client.fetch_public_channel(OldGuildChannel.command_channel)
             await CommandChannel.send(f'(met){first_team_o}(met) 第1队伍队长')
             await CommandChannel.send(f'(met){second_team_o}(met) 第2队伍队长')
-
             await msg.reply(CardMessage(card8))
+            await CommandChannel.send(
+                f'{ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex())} 你该选人了（10s)')
+            await CommandChannel.send(CardMessage(Card(
+                Module.Countdown(
+                    datetime.datetime.now() + datetime.timedelta(seconds=12), mode=Types.CountdownMode.SECOND
+                )
+            )))
         pass
 
     @bot.command(name='test_abc', case_sensitive=False)

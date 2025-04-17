@@ -38,12 +38,21 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
         if not 500 < player_data.get_old_score() < 3000:
             team_score = 30
 
-        if player_data.team == BannerlordTeam.FirstTeam:
-            if all_player_data.attacker_rounds < all_player_data.defender_rounds:
-                team_score = -team_score
-        elif player_data.team == BannerlordTeam.SecondTeam:
-            if all_player_data.attacker_rounds > all_player_data.defender_rounds:
-                team_score = -team_score
+        print(player_data.player_name, 'team', player_data.team)
+        if player_data.is_lose:
+            team_score = -team_score
+        #
+        # if player_data.team == BannerlordTeam.FirstTeam:
+        #     if all_player_data.attacker_rounds < all_player_data.defender_rounds:
+        #         print('zxxx' + player_data.player_name)
+        #     else:
+        #         print('zxxxPTX' + player_data.player_name)
+        # elif player_data.team == BannerlordTeam.SecondTeam:
+        #     if all_player_data.attacker_rounds > all_player_data.defender_rounds:
+        #         team_score = -team_score
+        #         print('zxxxPTX111' + player_data.player_name)
+        #     else:
+        #         print('zxxxPTX222' + player_data.player_name)
 
         kill_score = clamp(score_limit.max_kill_score * player_data.kill / enemy_total_spawn_times,
                            score_limit.min_kill_score,

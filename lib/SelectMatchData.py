@@ -16,7 +16,8 @@ class SelectPlayerMatchData:
     select_order = '2112212121'
 
     cur_waiting = 0
-    max_waiting = 12
+    # max_waiting = 12
+    max_waiting = 15
 
     data = []
 
@@ -79,18 +80,18 @@ class SelectPlayerMatchData:
 
     @classmethod
     def add_attacker(cls, player_id: str):
+        cls.cur_waiting = 0
+        cls.cur_index += 1
+
         cls.first_team_player_ids.append(player_id)
         cls.total_list.append(player_id)
         cls.need_to_select = list(set(cls.origin_list) - set(cls.total_list))
 
+    @classmethod
+    def add_defender(cls, player_id: str):
         cls.cur_waiting = 0
         cls.cur_index += 1
 
-    @classmethod
-    def add_defender(cls, player_id: str):
         cls.second_team_player_ids.append(player_id)
         cls.total_list.append(player_id)
         cls.need_to_select = list(set(cls.origin_list) - set(cls.total_list))
-
-        cls.cur_index += 1
-        cls.cur_waiting = 0

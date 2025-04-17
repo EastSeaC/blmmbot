@@ -4,14 +4,16 @@ from datetime import datetime, timedelta
 
 from khl import Bot, Message, EventTypes, Event, GuildUser, PublicVoiceChannel
 from khl.card import CardMessage, Card, Module, Element, Types
-from sqlalchemy import select
+from sqlalchemy import select, desc
 
 from botCommands.playerBot import convert_timestamp
+from entity.ServerEnum import ServerEnum
 from lib.DividePlayerEx2 import balance_teams
 from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
 from kook.ChannelKit import ChannelManager, EsChannels, OldGuildChannel
 from lib.SelectMatchData import SelectPlayerMatchData
+from lib.ServerManager import ServerManager
 from lib.match_guard import MatchGuard
 from lib.match_state import PlayerBasicInfo, MatchState, DivideData, MatchCondition, MatchConditionEx
 from tables import *
@@ -108,6 +110,51 @@ def init(bot: Bot, es_channels: EsChannels):
         if not ChannelManager.is_organization_user(msg.author_id):
             await msg.reply('禁止使用管理员指令')
             return
+        print(msg)
+
+        sqlSession = get_session()
+        # use_server_x = ServerEnum.Server_1
+        # if is_force_use_2:
+        #     use_server_x = ServerEnum.Server_2
+        # else:
+        #     use_server_x = ServerEnum.Server_1
+        # import datetime as dt_or
+        name_x_initial = ServerManager.getServerName(ServerEnum.Server_1)
+        LogHelper.log('name_x_initial: ' + name_x_initial)
+        result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                  .filter(DB_WillMatchs.server_name == name_x_initial,
+                          DB_WillMatchs.is_cancel == 0,
+                          DB_WillMatchs.is_finished == 0,
+                          )).limit(1).count()
+
+        if result == 0:
+            use_server_x = ServerEnum.Server_1
+            LogHelper.log(f'first_result {use_server_x} {result}')
+            pass
+        elif result > 0:
+            use_server_x = ServerEnum.Server_2
+            name_x_initial = ServerManager.getServerName(use_server_x)
+            result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                      .filter(DB_WillMatchs.server_name == name_x_initial,
+                              DB_WillMatchs.is_cancel == 0,
+                              DB_WillMatchs.is_finished == 0,
+                              )).limit(1).count()
+            if result == 0:
+                use_server_x = ServerEnum.Server_2
+                LogHelper.log(f'server result: {use_server_x} {result}')
+            if result > 0:
+                name_x_initial = ServerManager.getServerName(ServerEnum.Server_3)
+                result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                          .filter(DB_WillMatchs.server_name == name_x_initial,
+                                  DB_WillMatchs.is_cancel == 0,
+                                  DB_WillMatchs.is_finished == 0,
+                                  )).limit(1).count()
+                if result == 0:
+                    use_server_x = ServerEnum.Server_3
+                    LogHelper.log(f'server result: {use_server_x} {result}')
+                else:
+                    await msg.reply('暂无服务器，请稍等')
+                    return
 
         channel = await bot.client.fetch_public_channel(OldGuildChannel.match_select_channel)
         voice_channel: PublicVoiceChannel = channel

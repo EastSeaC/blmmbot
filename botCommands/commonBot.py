@@ -5,7 +5,7 @@ from datetime import datetime
 import datetime as dt_or
 
 from khl import Bot, EventTypes, Event
-from khl.card import CardMessage, Card, Module, Element, Types
+from khl.card import CardMessage, Card, Module, Element, Types, Struct
 from sqlalchemy import desc, select
 
 from botCommands.ButtonValueImpl import AdminButtonValue, ESActionType, PlayerButtonValue
@@ -47,42 +47,54 @@ def init(bot: Bot, es_channels: EsChannels):
     async def task_for_select_match():
         if SelectPlayerMatchData.is_running:
             SelectPlayerMatchData.cur_waiting += 1
-            print('cur', SelectPlayerMatchData.cur_waiting)
-            if SelectPlayerMatchData.cur_waiting >= SelectPlayerMatchData.max_waiting:
+            # print('cur', SelectPlayerMatchData.cur_waiting)
+
+            channel = await bot.client.fetch_public_channel(OldGuildChannel.command_select_channel)
+            if SelectPlayerMatchData.cur_waiting >= SelectPlayerMatchData.max_waiting:  # 等待超时
                 SelectPlayerMatchData.cur_waiting = 0
-                channel = await bot.client.fetch_public_channel(OldGuildChannel.command_channel)
 
-                x = random.sample(SelectPlayerMatchData.need_to_select, k=1)[0]
-                print('x', x)
-                if SelectPlayerMatchData.get_cur_select_master() == '1':
-                    SelectPlayerMatchData.add_attacker(x)
-                    await channel.send(ChannelManager.get_at(
-                        SelectPlayerMatchData.get_cur_select_master_ex()) + f'你选取了{ChannelManager.get_at(x)}【系统随机】')
-                elif SelectPlayerMatchData.get_cur_select_master() == '2':
-                    SelectPlayerMatchData.add_defender(x)
-                    await channel.send(ChannelManager.get_at(
-                        SelectPlayerMatchData.get_cur_select_master_ex()) + f'你选取了{ChannelManager.get_at(x)}【系统随机】')
+                if len(SelectPlayerMatchData.need_to_select) >= 1:
+                    x = random.sample(SelectPlayerMatchData.need_to_select, k=1)[0]
+                    print('x', x)
+                    if SelectPlayerMatchData.get_cur_select_master() == '1':
+                        SelectPlayerMatchData.add_attacker(x)
+                        await channel.send(ChannelManager.get_at(
+                            SelectPlayerMatchData.get_cur_select_master_ex()) + f'你选取了{ChannelManager.get_at(x)}【系统随机】')
+                    elif SelectPlayerMatchData.get_cur_select_master() == '2':
+                        SelectPlayerMatchData.add_defender(x)
+                        await channel.send(ChannelManager.get_at(
+                            SelectPlayerMatchData.get_cur_select_master_ex()) + f'你选取了{ChannelManager.get_at(x)}【系统随机】')
 
-                card8 = Card()
+                    else:
+                        await channel.send(
+                            ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
 
-                for i, t in SelectPlayerMatchData.data.items():
-                    if i in SelectPlayerMatchData.need_to_select:
-                        card8.append(Module.Section(
-                            Element.Text(
-                                f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
-                                type=Types.Text.KMD),
-                            Element.Button(
-                                "选取",
-                                value=json.dumps({'type': 'match_select_players',
-                                                  'kookId': t.kookId,
-                                                  'playerId': t.playerId,
-                                                  'match_id': '9'}),
-                                click=Types.Click.RETURN_VAL,
-                                theme=Types.Theme.INFO,
-                            ),
-                        ))
-                        card8.append(Module.Divider())
+                        CommandChannel = await bot.client.fetch_public_channel(OldGuildChannel.command_select_channel)
+                        await CommandChannel.send(CardMessage(Card(
+                            Module.Countdown(
+                                datetime.now() + dt_or.timedelta(seconds=12), mode=Types.CountdownMode.SECOND
+                            )
+                        )))
+                    card8 = Card()
 
+                    for i, t in SelectPlayerMatchData.data.items():
+                        if i in SelectPlayerMatchData.need_to_select:
+                            card8.append(Module.Section(
+                                Element.Text(
+                                    f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
+                                    type=Types.Text.KMD),
+                                Element.Button(
+                                    "选取",
+                                    value=json.dumps({'type': 'match_select_players',
+                                                      'kookId': t.kookId,
+                                                      'playerId': t.playerId,
+                                                      'match_id': '9'}),
+                                    click=Types.Click.RETURN_VAL,
+                                    theme=Types.Theme.INFO,
+                                ),
+                            ))
+                            card8.append(Module.Divider())
+                    await channel.send(CardMessage(card8))
                 print(
                     f'SelectPlayerMatchData.get_cur_select_master_ex() {SelectPlayerMatchData.get_cur_select_master_ex()}')
                 if SelectPlayerMatchData.get_cur_select_master_ex() == -1:
@@ -90,16 +102,136 @@ def init(bot: Bot, es_channels: EsChannels):
                     await channel.send(
                         f'{ChannelManager.get_at(SelectPlayerMatchData.first_team_master)} {ChannelManager.get_at(SelectPlayerMatchData.second_team_master)} 选人结束，请进入比赛服务器')
 
-                    return
-                else:
-                    await channel.send(CardMessage(card8))
-                    await channel.send(
-                        ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
-                    await channel.send(CardMessage(Card(
-                        Module.Countdown(
-                            datetime.now() + dt_or.timedelta(seconds=12), mode=Types.CountdownMode.SECOND
+            if len(SelectPlayerMatchData.need_to_select) == 0:
+                SelectPlayerMatchData.close_run()
+
+                first_team_player_ids_x = []
+                first_team_player_names_x = []
+                first_team_player_scores_x = []
+
+                second_team_player_namex_x = []
+                second_team_player_ids_x = []
+                second_team_player_score_x = []
+
+                print('first_team_player_ids_x' + str(first_team_player_ids_x))
+                print('second_team_player_ids_x' + str(second_team_player_ids_x))
+
+                for i, v in SelectPlayerMatchData.data.items():
+                    # print(v)
+                    if i in SelectPlayerMatchData.first_team_player_ids:
+                        first_team_player_ids_x.append(v.playerId)
+                        first_team_player_names_x.append(v.kookName)
+                        first_team_player_scores_x.append(v.rank)
+                    elif i in SelectPlayerMatchData.second_team_player_ids:
+                        second_team_player_ids_x.append(v.playerId)
+                        second_team_player_namex_x.append(v.kookName)
+                        second_team_player_score_x.append(v.rank)
+
+                print('first_team_player_ids_x' + str(first_team_player_ids_x))
+                print('first_team_player_names_x', first_team_player_names_x)
+                print('first_team_player_scores_x', first_team_player_scores_x)
+                print('second_team_player_ids_x' + str(second_team_player_ids_x))
+                print('选人完毕')
+
+                with get_session() as session:
+                    will_match_data = DB_WillMatchs()
+                    will_match_data.time_match = datetime.now()
+                    will_match_data.match_id = str(uuid.uuid1())
+                    will_match_data.set_first_team_player_ids(first_team_player_ids_x)
+                    will_match_data.set_second_team_player_ids(second_team_player_ids_x)
+
+                    first_faction, second_faction = get_random_faction_2()
+                    will_match_data.first_team_culture = first_faction
+                    will_match_data.second_team_culture = second_faction
+
+                    will_match_data.match_type = WillMatchType.get_match_type_with_player_num(
+                        len(SelectPlayerMatchData.first_team_player_ids))
+                    will_match_data.is_cancel = False
+                    will_match_data.is_finished = False
+                    will_match_data.match_id_2 = 100
+
+
+
+                    use_server_x = ServerEnum.Server_1
+                    # if is_force_use_2:
+                    #     use_server_x = ServerEnum.Server_2
+                    # else:
+                    #     use_server_x = ServerEnum.Server_1
+                    # import datetime as dt_or
+                    name_x_initial = ServerManager.getServerName(ServerEnum.Server_1)
+                    LogHelper.log('name_x_initial: ' + name_x_initial)
+                    result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                              .filter(DB_WillMatchs.server_name == name_x_initial,
+                                      DB_WillMatchs.is_cancel == 0,
+                                      DB_WillMatchs.is_finished == 0,
+                                      )).limit(1).count()
+
+                    if result == 0:
+                        use_server_x = ServerEnum.Server_1
+                        LogHelper.log(f'first_result {use_server_x} {result}')
+                        pass
+                    elif result > 0:
+                        use_server_x = ServerEnum.Server_2
+                        name_x_initial = ServerManager.getServerName(use_server_x)
+                        result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                                  .filter(DB_WillMatchs.server_name == name_x_initial,
+                                          DB_WillMatchs.is_cancel == 0,
+                                          DB_WillMatchs.is_finished == 0,
+                                          )).limit(1).count()
+                        if result == 0:
+                            use_server_x = ServerEnum.Server_2
+                            LogHelper.log(f'server result: {use_server_x} {result}')
+                        if result > 0:
+                            name_x_initial = ServerManager.getServerName(ServerEnum.Server_3)
+                            result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                                      .filter(DB_WillMatchs.server_name == name_x_initial,
+                                              DB_WillMatchs.is_cancel == 0,
+                                              DB_WillMatchs.is_finished == 0,
+                                              )).limit(1).count()
+                            if result == 0:
+                                use_server_x = ServerEnum.Server_3
+                                LogHelper.log(f'server result: {use_server_x} {result}')
+                            else:
+                                await channel.send('暂无服务器，请稍等')
+                                return
+
+                    will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
+
+                    session.add(will_match_data)
+                    session.commit()
+                    await channel.send(CardMessage(
+                        Card(
+                            Module.Header(f'服务器: {will_match_data.server_name}-{will_match_data.match_id_2}'),
+                            Module.Divider(),
+                            Module.Header('分队情况表'),
+                            Module.Divider(),
+                            Module.Header(f'时间:{get_time_str()}'),
+                            Module.Section(
+                                Struct.Paragraph(
+                                    3,
+                                    Element.Text('\n'.join(first_team_player_names_x),
+                                                 type=Types.Text.KMD),
+                                    Element.Text('\n'.join([str(i) for i in first_team_player_scores_x]),
+                                                 type=Types.Text.KMD),
+                                    Element.Text(f'game_info\n{first_faction}', type=Types.Text.KMD),
+                                )
+                            ),
+                            Module.Divider(),
+                            Module.Section(
+                                Struct.Paragraph(
+                                    3,
+                                    Element.Text('\n'.join(second_team_player_namex_x), type=Types.Text.KMD),
+                                    Element.Text('\n'.join([str(i) for i in second_team_player_score_x]),
+                                                 type=Types.Text.KMD),
+                                    Element.Text(f'game_info\n{second_faction}', type=Types.Text.KMD),
+                                )
+                            ),
+                            Module.Divider(),
+                            # Module.Header(f'服务器: {will_match_data.server_name}'),
+                            # Module.Divider(),
+                            Module.Header(f'比赛ID：{will_match_data.match_id_2}')
                         )
-                    )))
+                    ))
 
     @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
     async def btn_click_event(b: Bot, e: Event):
@@ -159,72 +291,50 @@ def init(bot: Bot, es_channels: EsChannels):
                     print('目标', selected_players)
                     # SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(selected_players)
                     print('变化后', SelectPlayerMatchData.need_to_select)
+                    # card8 = Card()
+                    #
+                    # for i, t in SelectPlayerMatchData.data.items():
+                    #     if i in SelectPlayerMatchData.need_to_select:
+                    #         card8.append(Module.Section(
+                    #             Element.Text(
+                    #                 f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
+                    #                 type=Types.Text.KMD),
+                    #             Element.Button(
+                    #                 "选取",
+                    #                 value=json.dumps({'type': 'match_select_players',
+                    #                                   'kookId': t.kookId,
+                    #                                   'playerId': t.playerId,
+                    #                                   'match_id': '9'}),
+                    #                 click=Types.Click.RETURN_VAL,
+                    #                 theme=Types.Theme.INFO,
+                    #             ),
+                    #         ))
+                    #         card8.append(Module.Divider())
 
-                    card8 = Card()
+                    # else:
+                    # await channel.send(CardMessage(card8))
+                    # await channel.send(
+                    #     ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
+            elif type == ESActionType.Admin_Cancel_Match:
+                if not ChannelManager.is_admin(user_id):
+                    await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
+                    return
+                x = cancel_match(e_body_user_info, btn_value_dict['match_id_2'])
+                await channel.send(x)
+                pass
 
-                    for i, t in SelectPlayerMatchData.data.items():
-                        if i in SelectPlayerMatchData.need_to_select:
-                            card8.append(Module.Section(
-                                Element.Text(
-                                    f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
-                                    type=Types.Text.KMD),
-                                Element.Button(
-                                    "选取",
-                                    value=json.dumps({'type': 'match_select_players',
-                                                      'kookId': t.kookId,
-                                                      'playerId': t.playerId,
-                                                      'match_id': '9'}),
-                                    click=Types.Click.RETURN_VAL,
-                                    theme=Types.Theme.INFO,
-                                ),
-                            ))
-                            card8.append(Module.Divider())
-
-                    if len(SelectPlayerMatchData.need_to_select) == 0:
-                        SelectPlayerMatchData.is_running = False
-                        print('选人完毕')
-                        will_match_data = DB_WillMatchs()
-                        will_match_data.time_match = datetime.now()
-                        will_match_data.match_id = str(uuid.uuid1())
-                        will_match_data.set_first_team_player_ids(SelectPlayerMatchData.first_team_player_ids)
-                        will_match_data.set_second_team_player_ids(SelectPlayerMatchData.second_team_player_ids)
-
-                        first_faction, second_faction = get_random_faction_2()
-                        will_match_data.first_team_culture = first_faction
-                        will_match_data.second_team_culture = second_faction
-
-                        will_match_data.match_type = WillMatchType.get_match_type_with_player_num(
-                            len(SelectPlayerMatchData.first_team_player_ids))
-                        will_match_data.is_cancel = False
-                        will_match_data.is_finished = False
-
-                        with get_session() as session:
-                            session.add(will_match_data)
-                            session.commit()
-                    else:
-                        await channel.send(CardMessage(card8))
-                        await channel.send(
-                            ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
-
-
-
-                elif type == ESActionType.Admin_Cancel_Match:
-                    if not ChannelManager.is_admin(user_id):
-                        await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
-                        return
-                    x = cancel_match(e_body_user_info, btn_value_dict['match_id_2'])
-                    await channel.send(x)
-                    pass
         elif value == AdminButtonValue.Restart_Server_1:  # 重启服务器
             if not ChannelManager.is_admin(user_id):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
             ServerManager.RestartBLMMServerEx(ServerEnum.Server_1)
+
         elif value == AdminButtonValue.Restart_Server_2:  # 重启服务器2
             if not ChannelManager.is_admin(user_id):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
             ServerManager.RestartBLMMServerEx(ServerEnum.Server_2)
+
         elif value == AdminButtonValue.Restart_Server_3:  # 重启服务器3
             if not ChannelManager.is_admin(user_id):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
@@ -263,6 +373,7 @@ def init(bot: Bot, es_channels: EsChannels):
             if not ChannelManager.is_admin(user_id):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
+
             c9 = show_server_state()
             cm = CardMessage(c9)
             await channel.send(cm)
@@ -270,7 +381,6 @@ def init(bot: Bot, es_channels: EsChannels):
         elif value == AdminButtonValue.Reset_Server_ChannelSet:
             channel = await b.client.fetch_public_channel(ChannelManager.get_command_channel_id(guild_id))
             if ChannelManager.is_admin(user_id):
-
                 pass
             else:
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
@@ -281,6 +391,7 @@ def init(bot: Bot, es_channels: EsChannels):
             if user_id not in ChannelManager.manager_user_id:
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
+
             if value == AdminButtonValue.Refresh_Server_Force:
                 ServerManager.RestartBLMMServerEx(server_index=ServerEnum.Server_1)
                 ServerManager.RestartBLMMServerEx(ServerEnum.Server_2)

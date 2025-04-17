@@ -116,6 +116,7 @@ class ChannelManager:
     def get_at(cls, kook_id: str):
         return f'(met){kook_id}(met)'
 
+
 class OldGuildChannel:
     # 服务器
     sever = '9019084812125033'
@@ -141,6 +142,7 @@ class OldGuildChannel:
     # 通用 人类提示频道
     common_channel = '3137719365146347'
     command_channel = '1451138349000890'
+
     manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
 
     match_attack_channel_2 = '5889652844944800'
@@ -149,6 +151,7 @@ class OldGuildChannel:
     match_attack_channel_3 = '4653727651132216'
     match_defend_channel_3 = '7136051179773177'
 
+    command_select_channel = '4437897819137837'
     match_select_channel = '2645329202100415'  # 选人频道
 
     def get_match_attack_channel(self, server: ServerEnum):

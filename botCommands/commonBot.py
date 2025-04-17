@@ -179,10 +179,6 @@ def init(bot: Bot, es_channels: EsChannels):
                                 ),
                             ))
                             card8.append(Module.Divider())
-                    card8.append(Module.Divider())
-                    await channel.send(CardMessage(card8))
-                    await channel.send(
-                        ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
 
                     if len(SelectPlayerMatchData.need_to_select) == 0:
                         SelectPlayerMatchData.is_running = False
@@ -205,6 +201,10 @@ def init(bot: Bot, es_channels: EsChannels):
                         with get_session() as session:
                             session.add(will_match_data)
                             session.commit()
+                    else:
+                        await channel.send(CardMessage(card8))
+                        await channel.send(
+                            ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
 
 
 

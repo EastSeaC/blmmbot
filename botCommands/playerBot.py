@@ -374,6 +374,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 Module.Header(f'时间:{get_time_str()}'),
                 Module.Divider(),
                 Module.Section(f'地图名`{will_match_data.map_name}`'),
+                Module.Divider(),
                 Module.Section(
                     Struct.Paragraph(
                         3,

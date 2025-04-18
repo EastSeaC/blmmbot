@@ -74,7 +74,7 @@ class ServerManager:
                 time.sleep(1)
         generateBatFile(server_index)
         time.sleep(1)
-        open_bat(server_index.value[0])
+        open_bat(server_index.value)
 
     @staticmethod
     def GenerateConfigFile(config: GameConfig):
@@ -119,16 +119,16 @@ class ServerManager:
     def GetTargetPort(cls, use_server_x: ServerEnum):
         print(use_server_x.value)
         # return 7100
-        return 7100 - 1 + use_server_x.value[0]
+        return 7100 - 1 + use_server_x.value
 
 
 def generateBatFile(use_server_x: ServerEnum):
-    path_a = f'C:\\Users\\Administrator\\Desktop\\启动BLMM{use_server_x.value[0]}_x.bat'
+    path_a = f'C:\\Users\\Administrator\\Desktop\\启动BLMM{use_server_x.value}_x.bat'
     if not os.path.exists(path_a):
         with open(path_a, 'w') as f:
             text_a = '\n'.join([
                 'cd /d "C:\\Users\\Administrator\\Desktop\\server files license\\bin\\Win64_Shipping_Server"',
-                f'start DedicatedCustomServer.Starter.exe /no_watchdog /dedicatedcustomserverconfigfile blmm_{use_server_x.value[0]}_x.txt /port {ServerManager.GetTargetPort(use_server_x)} /LogOutputPath "C:\\Users\\Administrator\\Documents\\log" /multiplayer _MODULES_*Native*Multiplayer*BLMMX*_MODULES_'
+                f'start DedicatedCustomServer.Starter.exe /no_watchdog /dedicatedcustomserverconfigfile blmm_{use_server_x.value}_x.txt /port {ServerManager.GetTargetPort(use_server_x)} /LogOutputPath "C:\\Users\\Administrator\\Documents\\log" /multiplayer _MODULES_*Native*Multiplayer*BLMMX*_MODULES_'
             ])
             f.write(text_a)
 

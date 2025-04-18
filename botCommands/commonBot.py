@@ -194,7 +194,7 @@ def init(bot: Bot, es_channels: EsChannels):
                                 await channel.send('暂无服务器，请稍等')
                                 return
 
-                    will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
+                    will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value)
 
                     session.add(will_match_data)
                     session.commit()

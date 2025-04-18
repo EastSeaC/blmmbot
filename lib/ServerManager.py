@@ -102,9 +102,9 @@ class ServerManager:
     @classmethod
     def CheckConfitTextFile(cls, use_server_x: ServerEnum):
         if cls.MB_Path != '':
-            tart_path = cls.MB_Path + f'\\blmm_{use_server_x.value[0]}_x.txt'
+            tart_path = cls.MB_Path + f'\\blmm_{use_server_x.value}_x.txt'
         else:
-            tart_path = f'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mount & Blade II Dedicated Server\\Modules\\Native\\blmm_{use_server_x.value[0]}_x.txt'
+            tart_path = f'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mount & Blade II Dedicated Server\\Modules\\Native\\blmm_{use_server_x.value}_x.txt'
 
         return tart_path
 

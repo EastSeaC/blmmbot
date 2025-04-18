@@ -324,7 +324,7 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.match_type = WillMatchType.get_match_type_with_player_num(len(divide_data.first_team))
         will_match_data.is_cancel = False
         will_match_data.is_finished = False
-        will_match_data.map_name = map_sequence.get_next_map()
+        will_match_data.map_name = map_sequence.get_next_map()  # ############## 使用图序确定图名
 
         will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
         if is_force_use_2:
@@ -372,6 +372,8 @@ def init(bot: Bot, es_channels: EsChannels):
                 Module.Header('分队情况表'),
                 Module.Divider(),
                 Module.Header(f'时间:{get_time_str()}'),
+                Module.Divider(),
+                Module.Section(f'地图名`{will_match_data.map_name}`'),
                 Module.Section(
                     Struct.Paragraph(
                         3,
@@ -417,7 +419,8 @@ def init(bot: Bot, es_channels: EsChannels):
         print('txt file path' + px)
         with open(px, 'w') as f:
             text = GameConfig(server_name=f'CN_BTL_SHAOXING_{use_server_x.value[0]}',
-                              match_id=f'{will_match_data.match_id_2}')
+                              match_id=f'{will_match_data.match_id_2}',
+                              map_name=will_match_data.map_name)
             text.culture_team1 = first_faction
             text.culture_team2 = second_faction
             f.write(text.to_str())

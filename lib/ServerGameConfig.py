@@ -111,8 +111,8 @@ class GameConfig:
 class MapSequence:
     def __init__(self):
         self.maps = [
-            "mp_adimiduel_empire",
-            "mp_adimiduel_vlandia",
+            # "mp_adimiduel_empire",
+            # "mp_adimiduel_vlandia",
             "mp_bnl_fortlieve",
             "mp_bnl_ghosttown",
             "mp_bnl_lighthouse",

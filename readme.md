@@ -8,15 +8,23 @@
 
 > pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
+#### 简单 -i
+> -i https://pypi.tuna.tsinghua.edu.cn/simple
+
 更新pip
 
 # config.json文件
-> "MB_Path": ""
+> "MB_Path": 指向砍二本体路径
 
 > & : `&amps;`
 > 
 >  pip install wcwidth -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
-> 
+
+# 特殊情况讲解
+1. 地图混乱问题
+    理由：automated_battle_pool_str 不要使用这个，或者只使用一次，也就是只加一张图，这样就不会让地图混乱
+2. 阵营混乱问题
+   理由：不要使用自己写的，取消投票等指令，直接复制烤肉的指令
 
 # 开发列表
 

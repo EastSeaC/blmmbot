@@ -80,7 +80,9 @@ def init(bot: Bot, es_channels: EsChannels):
 
                 sql_session = get_session()
                 today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-                z = sql_session.execute(select(DB_WillMatchs).where(DB_WillMatchs.match_id_2 == match_id_2)).first()
+                z = sql_session.execute(select(DB_WillMatchs)
+                                        .order_by(desc(DB_WillMatchs.time_match))
+                                        .where(DB_WillMatchs.match_id_2 == match_id_2)).first()
 
                 # print(z)
                 if z is None or len(z) == 0:

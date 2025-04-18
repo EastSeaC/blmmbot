@@ -288,37 +288,13 @@ def init(bot: Bot, es_channels: EsChannels):
                     print('目标', selected_players)
                     # SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(selected_players)
                     print('变化后', SelectPlayerMatchData.need_to_select)
-                    # card8 = Card()
-                    #
-                    # for i, t in SelectPlayerMatchData.data.items():
-                    #     if i in SelectPlayerMatchData.need_to_select:
-                    #         card8.append(Module.Section(
-                    #             Element.Text(
-                    #                 f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
-                    #                 type=Types.Text.KMD),
-                    #             Element.Button(
-                    #                 "选取",
-                    #                 value=json.dumps({'type': 'match_select_players',
-                    #                                   'kookId': t.kookId,
-                    #                                   'playerId': t.playerId,
-                    #                                   'match_id': '9'}),
-                    #                 click=Types.Click.RETURN_VAL,
-                    #                 theme=Types.Theme.INFO,
-                    #             ),
-                    #         ))
-                    #         card8.append(Module.Divider())
-
-                    # else:
-                    # await channel.send(CardMessage(card8))
-                    # await channel.send(
-                    #     ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
-            elif type == ESActionType.Admin_Cancel_Match:
-                if not ChannelManager.is_admin(user_id):
-                    await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
-                    return
-                x = cancel_match(e_body_user_info, btn_value_dict['match_id_2'])
-                await channel.send(x)
-                pass
+                elif type == ESActionType.Admin_Cancel_Match:
+                    if not ChannelManager.is_admin(user_id):
+                        await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
+                        return
+                    x = cancel_match(e_body_user_info, btn_value_dict['match_id_2'])
+                    await channel.send(x)
+                    pass
 
         elif value == AdminButtonValue.Restart_Server_1:  # 重启服务器
             if not ChannelManager.is_admin(user_id):
@@ -463,9 +439,10 @@ pass
 
 def cancel_match(author_name: str, match_id_2: int):
     sql_session = get_session()
-    today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-    z = sql_session.execute(select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight,
-                                                        DB_WillMatchs.match_id_2 == match_id_2)).first()
+    # today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+    z = sql_session.execute(select(DB_WillMatchs)
+                            .order_by(desc(DB_WillMatchs.time_match))
+                            .where(DB_WillMatchs.match_id_2 == match_id_2)).first()
 
     # print(z)
     if z is None or len(z) == 0:

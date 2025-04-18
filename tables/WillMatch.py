@@ -33,6 +33,7 @@ class DB_WillMatchs(Base):
 
     match_id_2 = Column(INT, nullable=False, default=0)
     is_select_mode = Column(INT, nullable=True, default=0)
+    map_name = Column(String(255), nullable=True,default='')  # 对应 C# 的 ServerName
 
     # 方法：转换 JSON 字符串为 Python 列表
     def get_first_team_player_ids(self) -> List[str]:

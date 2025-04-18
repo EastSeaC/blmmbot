@@ -15,12 +15,18 @@ class GameConfig:
                  server_name: str,
                  match_id: str,
                  culture_team1: str = 'khuzait',
-                 culture_team2: str = 'aserai'):
+                 culture_team2: str = 'aserai',
+                 map_name: str = '',
+                 ):
         self.server_name = f"{server_name}-{match_id}"
         self.game_type = "Skirmish"
         self.admin_password = "btl626"
         self.game_password = "blmm"
-        self.automated_battle_pool = [
+        if map_name != '':
+            self.automated_battle_pool = [map_name]
+            self.map = map_name
+        else:
+            self.automated_battle_pool = [
             "mp_skirmish_map_007",
             "mp_skirmish_map_010",
             "mp_skirmish_map_020",
@@ -28,8 +34,8 @@ class GameConfig:
             "mp_skirmish_map_003_skinc",
             "mp_skirmish_map_002f",
             "mp_bnl_ghosttown"
-        ]
-        self.map = "mp_skirmish_map_007"
+            ]
+            self.map = "mp_skirmish_map_007"
         self.culture_team1 = culture_team1
         self.culture_team2 = culture_team2
         self.respawn_period_team1 = 3
@@ -102,6 +108,22 @@ class GameConfig:
                 f"AutomatedBattleSwitchingEnabled {self.automated_battle_switching_enabled}\n"
                 f"enable_automated_battle_switching\nstart_game_and_mission")
 
+class MapSequence:
+    def __init__(self):
+        self.maps = [
+            "mp_adimiduel_empire",
+            "mp_adimiduel_vlandia",
+            "mp_bnl_fortlieve",
+            "mp_bnl_ghosttown",
+            "mp_bnl_lighthouse",
+            "mp_bnl_purplehaze"
+        ]
+        self.index = 0
+
+    def get_next_map(self):
+        current_map = self.maps[self.index]
+        self.index = (self.index + 1) % len(self.maps)
+        return current_map
 
 # Example usage
 if __name__ == '__main__':

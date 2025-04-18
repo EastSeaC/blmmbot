@@ -19,7 +19,7 @@ from config import get_rank_name
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager, kim, get_troop_type_image, OldGuildChannel
 from lib.SelectMatchData import SelectPlayerMatchData
-from lib.ServerGameConfig import get_random_faction_2, GameConfig
+from lib.ServerGameConfig import get_random_faction_2, GameConfig, MapSequence
 from lib.ServerManager import ServerManager
 from lib.match_state import PlayerBasicInfo, DivideData, MatchState, MatchConditionEx
 from tables import *
@@ -33,6 +33,7 @@ sqlSession = get_session()
 g_channels: EsChannels
 
 selectPlayerData = SelectPlayerMatchData()
+map_sequence = MapSequence()
 
 
 def init(bot: Bot, es_channels: EsChannels):
@@ -323,6 +324,7 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.match_type = WillMatchType.get_match_type_with_player_num(len(divide_data.first_team))
         will_match_data.is_cancel = False
         will_match_data.is_finished = False
+        will_match_data.map_name = map_sequence.get_next_map()
 
         will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
         if is_force_use_2:

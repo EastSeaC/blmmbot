@@ -47,10 +47,24 @@ class DataSyncService:
 
             return {
                 "admins": [serialize(admin) for admin in list_of_admin],
-                # 这里原代码存在变量名错误，已修正
                 "players": [serialize(player) for player in list_of_players],
                 "player_datas": [serialize(player_data) for player_data in list_of_players_data],
                 "players_names": [serialize(player_name) for player_name in list_of_players_name],
+                "will_matchs": [serialize(will_match) for will_match in list_of_will_match_of_server_3_4]
+            }
+        
+    @classmethod
+    def get_match_sync(cls):
+        with get_session() as session:
+            list_of_will_match_of_server_3_4 = session.query(DB_WillMatchs).filter(
+                or_(
+                    DB_WillMatchs.server_name.contains('_3'),
+                    DB_WillMatchs.server_name.contains('_4')
+                )
+            ).all()
+
+            return {
+                "will_matchs": [serialize(will_match) for will_match in list_of_will_match_of_server_3_4],
             }
 
 

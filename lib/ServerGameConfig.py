@@ -78,6 +78,7 @@ class GameConfig:
                 # f"{automated_battle_pool_str}"
                 # f"enable_map_voting\n"
                 # f"enable_culture_voting\n"
+                f"add_map_to_automated_battle_pool {self.map}\n"
                 f"Map {self.map}\n"
                 f"CultureTeam1 {self.culture_team1}\n"
                 f"CultureTeam2 {self.culture_team2}\n"

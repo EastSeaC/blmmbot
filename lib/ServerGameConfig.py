@@ -67,6 +67,7 @@ class GameConfig:
         return self.__str__()
 
     def __str__(self):
+        self.automated_battle_pool = []
         automated_battle_pool_str = ''.join(
             [f"add_map_to_automated_battle_pool {i}\n" for i in self.automated_battle_pool])
 

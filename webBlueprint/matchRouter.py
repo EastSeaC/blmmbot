@@ -123,7 +123,7 @@ async def divide_players_to_2_group(req):
 @matchRouter.post('/send_match_info')
 async def send_match_info(req):
     print('测试测试')
-    message: Queue =  req.app['message_queue']
+    message: Queue = req.app['message_queue']
     data = await req.json()
     print(data)
     print(type(data))

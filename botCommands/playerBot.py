@@ -265,43 +265,67 @@ def init(bot: Bot, es_channels: EsChannels):
             use_server_x = ServerEnum.Server_2
         else:
             use_server_x = ServerEnum.Server_1
-        import datetime as dt_or
-        name_x_initial = ServerManager.getServerName(ServerEnum.Server_1)
-        LogHelper.log('name_x_initial: ' + name_x_initial)
-        result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
-                  .filter(DB_WillMatchs.server_name == name_x_initial,
-                          DB_WillMatchs.is_cancel == 0,
-                          DB_WillMatchs.is_finished == 0,
-                          )).limit(1).count()
 
-        if result == 0:
-            use_server_x = ServerEnum.Server_1
-            LogHelper.log(f'first_result {use_server_x} {result}')
-            pass
-        elif result > 0:
-            use_server_x = ServerEnum.Server_2
-            name_x_initial = ServerManager.getServerName(use_server_x)
-            result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
-                      .filter(DB_WillMatchs.server_name == name_x_initial,
-                              DB_WillMatchs.is_cancel == 0,
-                              DB_WillMatchs.is_finished == 0,
-                              )).limit(1).count()
+        # ############################ 寻找服务器 #############################
+        # 定义匿名函数
+        count_will_matchs = lambda session, name: (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                                                   .filter(DB_WillMatchs.server_name == name,
+                                                           DB_WillMatchs.is_cancel == 0,
+                                                           DB_WillMatchs.is_finished == 0,
+                                                           )).limit(1).count()
+
+        for server in ServerEnum:
+            current_server_name_str = ServerManager.getServerName(server)
+            result = count_will_matchs(sqlSession, current_server_name_str)
             if result == 0:
-                use_server_x = ServerEnum.Server_2
+                use_server_x = server
                 LogHelper.log(f'server result: {use_server_x} {result}')
-            if result > 0:
-                name_x_initial = ServerManager.getServerName(ServerEnum.Server_3)
-                result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
-                          .filter(DB_WillMatchs.server_name == name_x_initial,
-                                  DB_WillMatchs.is_cancel == 0,
-                                  DB_WillMatchs.is_finished == 0,
-                                  )).limit(1).count()
-                if result == 0:
-                    use_server_x = ServerEnum.Server_3
-                    LogHelper.log(f'server result: {use_server_x} {result}')
-                else:
-                    await msg.reply('暂无服务器，请稍等')
-                    return
+                break
+        else:
+            await msg.reply('暂无服务器，请稍等')
+            return
+
+        # result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+        #           .filter(DB_WillMatchs.server_name == name_x_initial,
+        #                   DB_WillMatchs.is_cancel == 0,
+        #                   DB_WillMatchs.is_finished == 0,
+        #                   )).limit(1).count()
+        # 当前服务器名字
+        # current_server_name_str = ServerManager.getServerName(ServerEnum.Server_1)
+        # LogHelper.log('name_x_initial: ' + current_server_name_str)
+        # server_1_result = count_will_matchs(sqlSession, current_server_name_str)
+        # if server_1_result == 0:
+        #     use_server_x = ServerEnum.Server_1
+        #     LogHelper.log(f'first_result {use_server_x} {server_1_result}')
+        #     pass
+        # elif server_1_result > 0:
+        #     use_server_x = ServerEnum.Server_2
+        #     current_server_name_str = ServerManager.getServerName(use_server_x)
+        #     result = count_will_matchs(sqlSession, current_server_name_str)
+        # result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+        #           .filter(DB_WillMatchs.server_name == current_server_name_str,
+        #                   DB_WillMatchs.is_cancel == 0,
+        #                   DB_WillMatchs.is_finished == 0,
+        #                   )).limit(1).count()
+        # if result == 0:
+        #     use_server_x = ServerEnum.Server_2
+        #     LogHelper.log(f'server result: {use_server_x} {result}')
+        # if result > 0:
+        #     current_server_name_str = ServerManager.getServerName(ServerEnum.Server_3)
+        #     result = count_will_matchs(sqlSession, current_server_name_str)
+        #     # result = (sqlSession.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+        #     #           .filter(DB_WillMatchs.server_name == current_server_name_str,
+        #     #                   DB_WillMatchs.is_cancel == 0,
+        #     #                   DB_WillMatchs.is_finished == 0,
+        #     #                   )).limit(1).count()
+        #     if result == 0:
+        #         use_server_x = ServerEnum.Server_3
+        #         LogHelper.log(f'server result: {use_server_x} {result}')
+        #     else:
+        #         await msg.reply('暂无服务器，请稍等')
+        #         return
+
+        # ############################ 寻找服务器 （→） #############################
 
         z_config = sqlSession.query(DB_ScoreLimit).filter(DB_ScoreLimit.score_type == 'default').first()
         # name_x = 'CN_BTL_SHAOXING_6'
@@ -326,21 +350,27 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.is_finished = False
         will_match_data.map_name = map_sequence.get_next_map()  # ############## 使用图序确定图名
 
-        will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
+        # will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
+        will_match_data.server_name = ServerManager.getServerName(use_server_x)
+
         if is_force_use_2:
             use_server_x = ServerEnum.Server_2
         elif is_force_use_3:
             use_server_x = ServerEnum.Server_3
-        will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
+        # will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
+        will_match_data.server_name = ServerManager.getServerName(use_server_x)
 
-        if use_server_x == ServerEnum.Server_3:
+        # 如果服务器 为3，4 需要发送到 另一个服务器
+        if use_server_x == ServerEnum.Server_3 or use_server_x == ServerEnum.Server_4:
             # requests.post('http://localhost:14725/send_match_info', json=will_match_data)
             async with aiohttp.ClientSession() as session:
                 async with session.post('http://localhost:14725/send_match_info',
                                         json=will_match_data.to_dict()) as response:
                     text = await response.text()
             pass
-        # 获取今天的日期并设置时间为 00:00:00
+
+        # 获取今天的日期并设置时间为 00:00:00 从而实现 0点充值 比赛id
+        # 所有服务器中的比赛ID都是 唯一的
         today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
         # 更新session
         result_temp = len(sqlSession.execute(

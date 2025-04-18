@@ -449,7 +449,7 @@ def init(bot: Bot, es_channels: EsChannels):
         # px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x.txt'
         print('txt file path' + px)
         with open(px, 'w') as f:
-            text = GameConfig(server_name=f'CN_BTL_SHAOXING_{use_server_x.value[0]}',
+            text = GameConfig(server_name=f'CN_BTL_SHAOXING_{use_server_x.value}',
                               match_id=f'{will_match_data.match_id_2}',
                               map_name=will_match_data.map_name)
             text.culture_team1 = first_faction

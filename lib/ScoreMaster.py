@@ -38,7 +38,7 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
         if not 500 < player_data.get_old_score() < 3000:
             team_score = 30
 
-        print(player_data.player_name, 'team', player_data.team)
+        # print(player_data.player_name, 'team', player_data.team)
         if player_data.is_lose:
             team_score = -team_score
         #
@@ -92,7 +92,7 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
             'death_score': death_score,
             'assist_score': assist_score,
             'damage_score': damage_score,
-            'match_lose_minus': match_lose_minus,
+            'match_lose_minus': -match_lose_minus,
             'team_score': team_score,
             'sum_score': sum_score,
         }

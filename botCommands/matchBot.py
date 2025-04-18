@@ -110,7 +110,10 @@ def init(bot: Bot, es_channels: EsChannels):
         if not ChannelManager.is_organization_user(msg.author_id):
             await msg.reply('禁止使用管理员指令')
             return
-        print(msg)
+        print(msg.ctx.channel)
+        if msg.ctx.channel != OldGuildChannel.command_select_channel:
+            await msg.reply('禁止在非 选人指令频道 使用')
+            return
 
         sqlSession = get_session()
         # use_server_x = ServerEnum.Server_1
@@ -156,6 +159,7 @@ def init(bot: Bot, es_channels: EsChannels):
                     await msg.reply('暂无服务器，请稍等')
                     return
 
+        command_select_channel_obj = await  bot.client.fetch_public_channel(OldGuildChannel.command_select_channel)
         channel = await bot.client.fetch_public_channel(OldGuildChannel.match_select_channel)
         voice_channel: PublicVoiceChannel = channel
 
@@ -195,7 +199,7 @@ def init(bot: Bot, es_channels: EsChannels):
             for id, user in enumerate(k):
                 t: GuildUser = user
                 if t.id not in dict_for_kook_id:
-                    await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册')
+                    await command_select_channel_obj.send(f'(met){t.id}(met) 你没有注册，请先注册')
                     await move_a_to_b_ex(OldGuildChannel.match_set_channel, [t.id])  # 移动到普通频道
                 player: DB_Player = dict_for_kook_id[t.id]
                 px: DB_PlayerData = sqlSession.query(DB_PlayerData).filter(
@@ -222,7 +226,7 @@ def init(bot: Bot, es_channels: EsChannels):
         except Exception as e:
             print(repr(e))
             LogHelper.log(f"没有注册 {t.id} {t.username}")
-            await es_channels.command_channel.send(f'(met){t.id}(met) 你没有注册，请先注册 Exception!')
+            await command_select_channel_obj.send(f'(met){t.id}(met) 你没有注册，请先注册 Exception!')
             await move_a_to_b_ex(ChannelManager.match_set_channel, [t.id])
             return
 
@@ -265,15 +269,14 @@ def init(bot: Bot, es_channels: EsChannels):
                 ))
                 card8.append(Module.Divider())
 
-        CommandChannel = await bot.client.fetch_public_channel(OldGuildChannel.command_channel)
-        await CommandChannel.send(f'(met){first_team_o}(met) 第1队伍队长')
-        await CommandChannel.send(f'(met){second_team_o}(met) 第2队伍队长')
+        await command_select_channel_obj.send(f'(met){first_team_o}(met) 第1队伍队长')
+        await command_select_channel_obj.send(f'(met){second_team_o}(met) 第2队伍队长')
         await msg.reply(CardMessage(card8))
-        await CommandChannel.send(
+        await command_select_channel_obj.send(
             f'{ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex())} 你该选人了（10s)')
-        await CommandChannel.send(CardMessage(Card(
+        await command_select_channel_obj.send(CardMessage(Card(
             Module.Countdown(
-                datetime.datetime.now() + datetime.timedelta(seconds=12), mode=Types.CountdownMode.SECOND
+                datetime.now() + timedelta(seconds=12), mode=Types.CountdownMode.SECOND
             )
         )))
 
@@ -308,7 +311,7 @@ def init(bot: Bot, es_channels: EsChannels):
             card8.append(Module.Divider())
         # 考虑？
         SelectPlayerMatchData.need_to_select = need_to_select_list
-        await g_channels.command_channel.send(CardMessage(card8))
+        await command_select_channel_obj.send(CardMessage(card8))
         # await msg.reply(CardMessage(card8))
         # will_match_data = DB_WillMatchs()
         # will_match_data.time_match = datetime.now()

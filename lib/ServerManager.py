@@ -22,7 +22,7 @@ class ServerManager:
     """
     toke_file_path = r'C:\Users\Administrator\Documents\Mount and Blade II Bannerlord\Tokens\DedicatedCustomServerAuthToken.txt'
     server_1_handle = None
-    MB_Path =''
+    MB_Path = ''
     server_1_pid = None
 
     @staticmethod
@@ -110,6 +110,8 @@ class ServerManager:
 
     @classmethod
     def getServerName(cls, server_x: ServerEnum):
+        if isinstance(server_x, int):
+            return f'CN_BTL_SHAOXING_{server_x}'
         return 'CN_BTL_SHAOXING_' + str(server_x.value[0])
 
     @classmethod

@@ -114,9 +114,15 @@ class MapSequence:
             # "mp_adimiduel_empire",
             # "mp_adimiduel_vlandia",
             "mp_bnl_fortlieve",
-            "mp_bnl_ghosttown",
+            # "mp_bnl_ghosttown",
             "mp_bnl_lighthouse",
-            "mp_bnl_purplehaze"
+            "mp_bnl_purplehaze",
+            "mp_skirmish_map_007",
+            "mp_skirmish_map_010",
+            "mp_skirmish_map_020",
+            "mp_skirmish_map_008_skin",
+            "mp_skirmish_map_003_skinc",
+            "mp_skirmish_map_002f",
         ]
         self.index = 0
 

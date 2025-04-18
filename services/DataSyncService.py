@@ -45,14 +45,20 @@ class DataSyncService:
                 )
             ).all()
 
+            list_of_will_match_of_server_3_4_temp = []
+            for i in list_of_will_match_of_server_3_4:
+                k: DB_WillMatchs = i
+                k.time_match = k.time_match.isoformat()
+                list_of_will_match_of_server_3_4_temp.append(k)
+
             return {
                 "admins": [serialize(admin) for admin in list_of_admin],
                 "players": [serialize(player) for player in list_of_players],
                 "player_datas": [serialize(player_data) for player_data in list_of_players_data],
                 "players_names": [serialize(player_name) for player_name in list_of_players_name],
-                "will_matchs": [serialize(will_match) for will_match in list_of_will_match_of_server_3_4]
+                "will_matchs": [serialize(will_match) for will_match in list_of_will_match_of_server_3_4_temp]
             }
-        
+
     @classmethod
     def get_match_sync(cls):
         with get_session() as session:

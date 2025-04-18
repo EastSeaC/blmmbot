@@ -20,7 +20,7 @@ from lib.ServerGameConfig import get_random_faction_2
 from lib.ServerManager import ServerManager
 from lib.match_state import PlayerBasicInfo, MatchState, DivideData, MatchConditionEx
 from tables import *
-from tables.DB_WillMatch import DB_WillMatchs
+from tables.WillMatch import DB_WillMatchs
 
 sqlSession = get_session()
 g_channels: EsChannels

@@ -18,7 +18,7 @@ from lib.match_guard import MatchGuard
 from lib.match_state import PlayerBasicInfo, MatchState, DivideData, MatchCondition, MatchConditionEx
 from tables import *
 from tables.Ban import DB_Ban
-from tables.DB_WillMatch import DB_WillMatchs
+from tables.WillMatch import DB_WillMatchs
 
 session = get_session()
 g_channels: EsChannels

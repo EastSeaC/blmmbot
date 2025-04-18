@@ -19,7 +19,7 @@ from lib.ScoreMaster import calculate_score
 from lib.ServerManager import ServerManager
 from lib.match_state import MatchConditionEx
 from tables import *
-from tables.DB_WillMatch import DB_WillMatchs
+from tables.WillMatch import DB_WillMatchs
 from tables.PlayerNames import DB_PlayerNames
 
 # 创建一个蓝图

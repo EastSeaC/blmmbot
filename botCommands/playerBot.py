@@ -24,7 +24,7 @@ from lib.ServerManager import ServerManager
 from lib.match_state import PlayerBasicInfo, DivideData, MatchState, MatchConditionEx
 from tables import *
 from tables.Ban import DB_Ban
-from tables.DB_WillMatch import DB_WillMatchs
+from tables.WillMatch import DB_WillMatchs
 from tables.PlayerChangeName import DB_PlayerChangeNames
 from tables.PlayerMedal import DB_PlayerMedal
 from tables.ScoreLimit import DB_ScoreLimit

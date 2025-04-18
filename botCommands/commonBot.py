@@ -20,8 +20,8 @@ from lib.ServerGameConfig import get_random_faction_2
 from lib.ServerManager import ServerManager
 from lib.match_state import MatchConditionEx
 from tables import *
-from tables import DB_WillMatch
-from tables.DB_WillMatch import DB_WillMatchs
+from tables import WillMatch
+from tables.WillMatch import DB_WillMatchs
 from tables.ResetPlayer import DB_ResetPlayer
 
 session = get_session()

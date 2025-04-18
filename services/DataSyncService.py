@@ -5,6 +5,8 @@ from tables.Admin import DB_Admin
 from sqlalchemy.orm import class_mapper
 
 from tables.PlayerNames import DB_PlayerNames
+from tables.WillMatch import DB_WillMatchs
+from sqlalchemy import or_  # 导入 or_ 函数
 
 
 def safe_deserialize(model_class, data_dict):
@@ -35,11 +37,20 @@ class DataSyncService:
             list_of_players_name = session.query(DB_PlayerNames).all()
             list_of_players_data = session.query(DB_PlayerData).all()
 
+            # 修改查询条件，使用 or_ 函数筛选包含 '_3' 或 '_4' 的记录
+            list_of_will_match_of_server_3_4 = session.query(DB_WillMatchs).filter(
+                or_(
+                    DB_WillMatchs.server_name.contains('_3'),
+                    DB_WillMatchs.server_name.contains('_4')
+                )
+            ).all()
+
             return {
                 "admins": [serialize(admin) for admin in list_of_admin],
-                "players": [serialize(admin) for admin in list_of_players],
-                "player_datas": [serialize(admin) for admin in list_of_players_data],
-                "players_names": [serialize(admin) for admin in list_of_players_name],
+                # 这里原代码存在变量名错误，已修正
+                "players": [serialize(player) for player in list_of_players],
+                "player_datas": [serialize(player_data) for player_data in list_of_players_data],
+                "players_names": [serialize(player_name) for player_name in list_of_players_name],
             }
 
 

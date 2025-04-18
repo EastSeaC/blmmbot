@@ -11,7 +11,7 @@ from entity.webEntity.ControllerResponse import ControllerResponse
 from init_db import get_session
 from lib.match_state import PlayerBasicInfo, MatchState
 from tables import DB_PlayerData
-from tables.DB_WillMatch import DB_WillMatchs
+from tables.WillMatch import DB_WillMatchs
 
 matchRouter = web.RouteTableDef()
 

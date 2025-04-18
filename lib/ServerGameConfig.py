@@ -101,7 +101,7 @@ class GameConfig:
                 # f"AutomatedBattleCount {self.automated_battle_count}\n"
                 # f"AutomatedBattleSwitchingEnabled {self.automated_battle_switching_enabled}\n"
                 f"end_game_after_mission_is_over\n"
-                f"enable_automated_battle_switching\n"
+                # f"enable_automated_battle_switching\n"
                 f"start_game_and_mission"
                 )
 

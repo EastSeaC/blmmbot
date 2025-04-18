@@ -89,6 +89,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 will_match: DB_WillMatchs = z[0]
                 if will_match.is_cancel == 1 or will_match.is_finished == 1:
                     await msg.reply(f'比赛ID {will_match.match_id_2} 已结束或者取消， 不再接受操作')
+                    return
                 else:
                     will_match.is_cancel = True
                     will_match.cancel_reason = f'管理员{msg.author.username}于{get_time_str()}取消'

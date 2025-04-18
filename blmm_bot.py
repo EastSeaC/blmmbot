@@ -255,7 +255,7 @@ if __name__ == '__main__':
     # 保存所有活跃的 WebSocket 连接
     app['websockets'] = set()
 
-    # app.add_routes([web.get('/ws', websocket_handler)])
+    app.add_routes([web.get('/ws', websocket_handler)])
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('satic'))
 
     asyncio.get_event_loop().run_until_complete(

@@ -170,7 +170,6 @@ async def move_a_to_b_ex(b: str, list_player: list):
         await channel_b.move_user(b, user_id)
 
 
-
 async def CheckDataBase():
     with  get_session() as sql_session:
         result = sql_session.execute(select(DB_ScoreLimit).where(DB_ScoreLimit.score_type == 'default')).first()

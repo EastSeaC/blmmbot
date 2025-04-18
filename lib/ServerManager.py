@@ -112,7 +112,8 @@ class ServerManager:
     def getServerName(cls, server_x: ServerEnum):
         if isinstance(server_x, int):
             return f'CN_BTL_SHAOXING_{server_x}'
-        return 'CN_BTL_SHAOXING_' + str(server_x.value[0])
+        print(server_x)
+        return 'CN_BTL_SHAOXING_' + str(server_x.value)
 
     @classmethod
     def GetTargetPort(cls, use_server_x: ServerEnum):

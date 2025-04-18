@@ -69,8 +69,7 @@ def init(bot: Bot, es_channels: EsChannels):
                         await channel.send(
                             ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
 
-                        CommandChannel = await bot.client.fetch_public_channel(OldGuildChannel.command_select_channel)
-                        await CommandChannel.send(CardMessage(Card(
+                        await channel.send(CardMessage(Card(
                             Module.Countdown(
                                 datetime.now() + dt_or.timedelta(seconds=12), mode=Types.CountdownMode.SECOND
                             )

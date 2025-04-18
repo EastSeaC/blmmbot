@@ -87,7 +87,7 @@ def init(bot: Bot, es_channels: EsChannels):
                     await msg.reply('比赛ID 错误')
                     return
                 will_match: DB_WillMatchs = z[0]
-                if will_match.is_cancel is True or will_match.is_finished is True:
+                if will_match.is_cancel == 1 or will_match.is_finished == 1:
                     await  msg.reply(f'比赛ID {will_match.match_id_2} 已结束或者取消， 不再接受操作')
                 else:
                     will_match.is_cancel = True

@@ -149,8 +149,6 @@ def init(bot: Bot, es_channels: EsChannels):
                     will_match_data.is_finished = False
                     will_match_data.match_id_2 = 100
 
-
-
                     use_server_x = ServerEnum.Server_1
                     # if is_force_use_2:
                     #     use_server_x = ServerEnum.Server_2

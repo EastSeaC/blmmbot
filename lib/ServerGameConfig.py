@@ -17,6 +17,7 @@ class GameConfig:
                  culture_team1: str = 'khuzait',
                  culture_team2: str = 'aserai',
                  map_name: str = '',
+                 use_map_pool: bool = True,
                  ):
         self.server_name = f"{server_name}-{match_id}"
         self.game_type = "Skirmish"
@@ -46,6 +47,8 @@ class GameConfig:
         self.allow_polls_to_change_maps = True
         self.automated_battle_count = -1
         self.automated_battle_switching_enabled = True
+
+        self.is_use_map_pool = use_map_pool
 
     def shuffle_all(self):
         self.automated_battle_pool = []
@@ -78,7 +81,7 @@ class GameConfig:
                 # f"{automated_battle_pool_str}"
                 # f"enable_map_voting\n"
                 # f"enable_culture_voting\n"
-                f"add_map_to_automated_battle_pool {self.map}\n"
+                f"add_map_to_automated_battle_pool {self.map}\n" if self.is_use_map_pool else '\n'
                 f"Map {self.map}\n"
                 f"CultureTeam1 {self.culture_team1}\n"
                 f"CultureTeam2 {self.culture_team2}\n"

@@ -11,7 +11,7 @@ from khl import Bot, Message, GuildUser, EventTypes, Event, PublicVoiceChannel
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
 from sqlalchemy import select, desc
 
-from botCommands.ButtonValueImpl import AdminButtonValue, PlayerButtonValue
+from botCommands.ButtonValueImpl import AdminButtonValue, PlayerButtonValue, ESActionType
 from entity.ServerEnum import ServerEnum
 from entity.WillMatchType import WillMatchType
 from lib.LogHelper import LogHelper, get_time_str
@@ -146,12 +146,16 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='e', case_sensitive=False, aliases=['e'])
     async def es_start_match(msg: Message, arg: str = ''):
-        """
+        command_description = """
         开启匹配指令
         n:  表示 不移动玩家，仅用作测试
+        m:  表示 不使用config  添加地图池子指令
         e:  不包括东海
+        z:  不启动游戏服务器
+        
         /e 2 强制使用2服开始
         /e 3 强制使用3服开始
+        /e 4 强制使用4服开始
         """
         if not ChannelManager.is_organization_user(msg.author_id):
             await msg.reply('禁止使用管理员指令')
@@ -161,30 +165,38 @@ def init(bot: Bot, es_channels: EsChannels):
         is_exclude_es = False
         is_force_use_2 = False
         is_force_use_3 = False
+        is_force_use_4 = False
         not_open_server = False
+        is_use_map_pool_config = True
         for i in arg:
             if i == 'e':
                 is_exclude_es = True
             elif i == 'n':
                 is_no_move = True
-            elif i == 'x' or i == '2':
+            elif i == '2':
                 is_force_use_2 = True
             elif i == 'z':
                 not_open_server = True
             elif i == '1':
                 is_force_use_2 = False
                 is_force_use_3 = False
-            elif i == 't' or i == '3':
+            elif i == '3':
                 is_force_use_2 = False
                 is_force_use_3 = True
+            elif i == '4':
+                is_force_use_2 = False
+                is_force_use_3 = False
+                is_force_use_4 = True
+            elif i == 'm':
+                is_use_map_pool_config = False
 
         # k: PublicVoiceChannel = await bot.client.fetch_public_channel(OldGuildChannel.match_wait_channel)
         # k = await k.fetch_user_list()
         k = await es_channels.wait_channel.fetch_user_list()
         for i in k:
             z: GuildUser = i
-            print(z.__dict__)
-            print(convert_timestamp(z.active_time))
+            # print(z.__dict__)
+            # print(convert_timestamp(z.active_time))
             if is_exclude_es:
                 if z.id == ChannelManager.es_user_id:
                     k.remove(z)
@@ -216,6 +228,7 @@ def init(bot: Bot, es_channels: EsChannels):
         except Exception as e:
             print(e)
 
+        # ####################### 检查注册玩家，未注册的要移出语音频道 #######################
         # print('this is z data')
         # print([i.__dict__ for i in z])
         # print('this is dict_for_kook_id')
@@ -417,7 +430,15 @@ def init(bot: Bot, es_channels: EsChannels):
                 Module.Divider(),
                 # Module.Header(f'服务器: {will_match_data.server_name}'),
                 # Module.Divider(),
-                Module.Header(f'比赛ID：{will_match_data.match_id_2}')
+                Module.Section(
+                    Element.Text(f'比赛ID：{will_match_data.match_id_2}'),
+                    Element.Button(text='取消比赛',
+                                   value=json.dumps({'type': ESActionType.Admin_Cancel_Match,
+                                                     'match_id_2': will_match_data.match_id_2,
+                                                     'match_id': will_match_data.match_id,
+                                                     }),
+                                   theme=Types.Theme.INFO)
+                )
             )
         ))
 
@@ -441,14 +462,6 @@ def init(bot: Bot, es_channels: EsChannels):
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel_2, divide_data.attacker_list)
                 await move_a_to_b_ex(OldGuildChannel.match_defend_channel_2, divide_data.defender_list)
             elif use_server_x in [ServerEnum.Server_3, ServerEnum.Server_4]:
-                # 如果服务器 为3，4 需要发送到 另一个服务器
-                # requests.post('http://localhost:14725/send_match_info', json=will_match_data)
-                async with aiohttp.ClientSession() as session:
-                    async with session.post('http://localhost:14725/send_match_info',
-                                            json=will_match_data.to_dict()) as response:
-                        text = await response.text()
-                pass
-
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel_3, divide_data.attacker_list)
                 await move_a_to_b_ex(OldGuildChannel.match_defend_channel_3, divide_data.defender_list)
                 pass
@@ -462,7 +475,8 @@ def init(bot: Bot, es_channels: EsChannels):
         with open(px, 'w') as f:
             text = GameConfig(server_name=f'CN_BTL_SHAOXING_{use_server_x.value}',
                               match_id=f'{will_match_data.match_id_2}',
-                              map_name=will_match_data.map_name)
+                              map_name=will_match_data.map_name,
+                              use_map_pool=is_use_map_pool_config)
             text.culture_team1 = first_faction
             text.culture_team2 = second_faction
             f.write(text.to_str())
@@ -471,7 +485,7 @@ def init(bot: Bot, es_channels: EsChannels):
         if not not_open_server:
             ServerManager.RestartBLMMServerEx(use_server_x)
         else:
-            await msg.reply('没有开服')
+            await msg.reply('3,4服，发放至其他服务器')
 
         await msg.reply('分配完毕!')
 

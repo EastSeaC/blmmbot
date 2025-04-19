@@ -113,7 +113,7 @@ def init(bot: Bot, es_channels: EsChannels):
             await msg.reply('禁止使用管理员指令')
             return
         print(msg.ctx.channel)
-        if msg.ctx.channel != OldGuildChannel.command_select_channel:
+        if msg.ctx.channel.id != OldGuildChannel.command_select_channel:
             await msg.reply('禁止在非 选人指令频道 使用')
             return
 

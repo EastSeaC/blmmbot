@@ -360,15 +360,6 @@ def init(bot: Bot, es_channels: EsChannels):
         # will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
         will_match_data.server_name = ServerManager.getServerName(use_server_x)
 
-        # 如果服务器 为3，4 需要发送到 另一个服务器
-        if use_server_x == ServerEnum.Server_3 or use_server_x == ServerEnum.Server_4:
-            # requests.post('http://localhost:14725/send_match_info', json=will_match_data)
-            async with aiohttp.ClientSession() as session:
-                async with session.post('http://localhost:14725/send_match_info',
-                                        json=will_match_data.to_dict()) as response:
-                    text = await response.text()
-            pass
-
         # 获取今天的日期并设置时间为 00:00:00 从而实现 0点充值 比赛id
         # 所有服务器中的比赛ID都是 唯一的
         today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -436,7 +427,14 @@ def init(bot: Bot, es_channels: EsChannels):
             elif use_server_x == ServerEnum.Server_2:
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel_2, divide_data.attacker_list)
                 await move_a_to_b_ex(OldGuildChannel.match_defend_channel_2, divide_data.defender_list)
-            elif use_server_x == ServerEnum.Server_3:
+            elif use_server_x in [ServerEnum.Server_3, ServerEnum.Server_4]:
+                # 如果服务器 为3，4 需要发送到 另一个服务器
+                # requests.post('http://localhost:14725/send_match_info', json=will_match_data)
+                async with aiohttp.ClientSession() as session:
+                    async with session.post('http://localhost:14725/send_match_info',
+                                            json=will_match_data.to_dict()) as response:
+                        text = await response.text()
+                pass
                 not_open_server = True  # 3服要交给其他服务器启动，因此不需要
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel_3, divide_data.attacker_list)
                 await move_a_to_b_ex(OldGuildChannel.match_defend_channel_3, divide_data.defender_list)

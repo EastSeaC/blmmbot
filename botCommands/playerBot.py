@@ -420,6 +420,18 @@ def init(bot: Bot, es_channels: EsChannels):
             )
         ))
 
+        # 发送到其他服务器
+        if use_server_x in [ServerEnum.Server_3, ServerEnum.Server_4]:
+            # 如果服务器 为3，4 需要发送到 另一个服务器
+            # requests.post('http://localhost:14725/send_match_info', json=will_match_data)
+            async with aiohttp.ClientSession() as session:
+                async with session.post('http://localhost:14725/send_match_info',
+                                        json=will_match_data.to_dict()) as response:
+                    text = await response.text()
+            not_open_server = True  # 3服要交给其他服务器启动，因此不需要
+            pass
+
+        # 是否移动玩家
         if not is_no_move:
             if use_server_x == ServerEnum.Server_1:
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel, divide_data.attacker_list)
@@ -435,7 +447,7 @@ def init(bot: Bot, es_channels: EsChannels):
                                             json=will_match_data.to_dict()) as response:
                         text = await response.text()
                 pass
-                not_open_server = True  # 3服要交给其他服务器启动，因此不需要
+
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel_3, divide_data.attacker_list)
                 await move_a_to_b_ex(OldGuildChannel.match_defend_channel_3, divide_data.defender_list)
                 pass

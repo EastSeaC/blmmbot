@@ -345,13 +345,14 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.first_team_culture = first_faction
         will_match_data.second_team_culture = second_faction
 
+        # 比赛类型，3v3？
         will_match_data.match_type = WillMatchType.get_match_type_with_player_num(len(divide_data.first_team))
         will_match_data.is_cancel = False
         will_match_data.is_finished = False
         will_match_data.map_name = map_sequence.get_next_map()  # ############## 使用图序确定图名
 
         # will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
-        will_match_data.server_name = ServerManager.getServerName(use_server_x)
+        # will_match_data.server_name = ServerManager.getServerName(use_server_x)
 
         if is_force_use_2:
             use_server_x = ServerEnum.Server_2

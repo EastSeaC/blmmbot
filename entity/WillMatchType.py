@@ -3,6 +3,7 @@ class WillMatchType:
     Match33 = 'Match33'
     Match66 = 'Match66'
     Match88 = 'Match88'
+    Match22 = 'Match22'
 
     @classmethod
     def get_match_type_with_player_num(cls, a: int):

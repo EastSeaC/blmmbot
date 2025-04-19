@@ -21,6 +21,16 @@ class DB_KookChannelGroup(Base):
 
     Eliminate_Wait_Channel = Column(BIGINT, default='0')
 
+    # 2服攻击者
+    server_2_team_attacker = Column(VARCHAR(100), nullable=True, default='')
+    server_2_team_defender = Column(VARCHAR(100), nullable=True, default='')
+
+    server_3_team_attacker = Column(VARCHAR(100), nullable=True, default='')
+    server_3_team_defender = Column(VARCHAR(100), nullable=True, default='')
+
+    server_4_team_attacker = Column(VARCHAR(100), nullable=True, default='')
+    server_4_team_defender = Column(VARCHAR(100), nullable=True, default='')
+
     @property
     def get_server_name(self):
         return self.group_name if self.group_name is not None and self.group_name != '' else self.server_nae

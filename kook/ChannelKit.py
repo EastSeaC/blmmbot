@@ -16,7 +16,7 @@ class ChannelManager:
     # 比赛分组
     match_group = '3182448324425808'
     # 候选频道语音
-    match_wait_channel = '7483461728419145'
+    match_wait_channel = '6713919713207768'
     match_attack_channel = '4855555618242776'
     match_defend_channel = '7704290253382922'
 

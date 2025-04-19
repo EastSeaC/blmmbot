@@ -71,8 +71,10 @@ class GameConfig:
 
     def __str__(self):
         self.automated_battle_pool = []
-        automated_battle_pool_str = ''.join(
-            [f"add_map_to_automated_battle_pool {i}\n" for i in self.automated_battle_pool])
+
+        # automated_battle_pool_str = ''.join([f"add_map_to_automated_battle_pool {i}\n" for i in
+        # self.automated_battle_pool])
+        automated_battle_pool_str = f"add_map_to_automated_battle_pool {self.map}\n" if self.is_use_map_pool else '\n'
 
         return (f"ServerName {self.server_name}\n"
                 f"GameType {self.game_type}\n"
@@ -81,7 +83,7 @@ class GameConfig:
                 # f"{automated_battle_pool_str}"
                 # f"enable_map_voting\n"
                 # f"enable_culture_voting\n"
-                f"add_map_to_automated_battle_pool {self.map}\n" if self.is_use_map_pool else '\n'
+                f'{automated_battle_pool_str}'
                 f"Map {self.map}\n"
                 f"CultureTeam1 {self.culture_team1}\n"
                 f"CultureTeam2 {self.culture_team2}\n"

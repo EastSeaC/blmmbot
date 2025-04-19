@@ -45,7 +45,7 @@ def init(bot: Bot, es_channels):
             await msg.reply('playerId不得为空')
             return
 
-        if re.match(r'\d{17}', player_id):
+        if re.match(r'\d+', player_id):
             player_id = '2.0.0.' + player_id
 
         if not re.match(r'^[\d\\.]+$', player_id):

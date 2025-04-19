@@ -9,6 +9,8 @@ class WillMatchType:
     def get_match_type_with_player_num(cls, a: int):
         if a == 1:
             return WillMatchType.Test11
+        elif a == 2:
+            return WillMatchType.Match22
         elif a == 3:
             return WillMatchType.Match33
         elif a == 6:

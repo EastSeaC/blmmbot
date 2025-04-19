@@ -45,6 +45,7 @@ def init(bot: Bot, es_channels):
             await msg.reply('playerId不得为空')
             return
 
+        # 不应该写精确的数值
         if re.match(r'\d+', player_id):
             player_id = '2.0.0.' + player_id
 

@@ -261,6 +261,7 @@ def init(bot: Bot, es_channels: EsChannels):
                     # selectPlayerMatchData.first_team_player_ids.append(selected_players)
                     # elif user_id in '1555061634':
                     #     selectPlayerMatchData.second_team_player_ids.append(selected_players)
+                    channel = await b.client.fetch_public_channel(OldGuildChannel.command_select_channel)
                     print('first_team_master', SelectPlayerMatchData.first_team_master)
                     print('second_team_master', SelectPlayerMatchData.second_team_master)
                     if user_id == SelectPlayerMatchData.first_team_master:

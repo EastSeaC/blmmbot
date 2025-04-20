@@ -243,7 +243,7 @@ def init(bot: Bot, es_channels: EsChannels):
         pass
 
     @bot.command(name='show', case_sensitive=False, aliases=['sw'])
-    async def show_player_info(msg: Message, target_kook_id: str | None = ''):
+    async def show_player_info(msg: Message, target_kook_id: str = ''):
         if not ChannelManager.is_es(msg.author_id):
             await msg.reply('禁止使用es指令')
             return

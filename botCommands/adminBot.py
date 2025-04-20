@@ -255,12 +255,55 @@ def init(bot: Bot, es_channels: EsChannels):
                 return
 
             player: DB_Player = p
+            player_data: DB_PlayerData = sql_session.query(DB_PlayerData).filter(
+                DB_PlayerData.playerId == player.playerId).first()
+            if not player_data:
+                await msg.reply(f'该玩家 player_data not exist')
+                return
+
+            target_player_id = player.playerId
+            # 查询玩家参与的左侧队伍比赛
+            left_matches = sql_session.query(DB_Matchs).filter(DB_Matchs.left_players.contains(target_player_id)).all()
+            # 查询玩家参与的右侧队伍比赛
+            right_matches = sql_session.query(DB_Matchs).filter(
+                DB_Matchs.right_players.contains(target_player_id)).all()
+
+            total_matches = len(left_matches) + len(right_matches)
+            win_matches = 0
+            draw_matches = 0  # 新增：统计平局场数
+
+            # 统计左侧队伍比赛的胜利场数和平局场数
+            for match in left_matches:
+                if match.left_win_rounds > match.right_win_rounds:
+                    win_matches += 1
+                elif match.left_win_rounds == match.right_win_rounds:
+                    draw_matches += 1
+
+            # 统计右侧队伍比赛的胜利场数和平局场数
+            for match in right_matches:
+                if match.right_win_rounds > match.left_win_rounds:
+                    win_matches += 1
+                elif match.right_win_rounds == match.left_win_rounds:
+                    draw_matches += 1
+
+            if total_matches == 0:
+                win_rate = 0
+                draw_rate = 0
+            else:
+                win_rate = win_matches / total_matches
+                draw_rate = draw_matches / total_matches  # 计算平局率
 
             cm = CardMessage()
             card = Card(Module.Header(f'kookId:{player.kookName} {player.kookId}'),
                         Module.Divider(),
-                        Module.Section(text=f'playerId{player.playerId}'),
+                        Module.Section(text=f'playerId:{player.playerId}'),
                         Module.Divider(),
+                        Module.Section(
+                            Struct.Paragraph(
+                                3,
+                                Element.Text(f'胜率: {win_rate * 100:.2f}%'),
+                                Element.Text(f'平局率: {draw_rate * 100:.2f}%')  # 新增：展示平局率
+                            ))
                         )
             cm.append(card)
             await msg.reply(cm)

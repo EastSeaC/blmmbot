@@ -64,7 +64,7 @@ def init(bot: Bot, es_channels: EsChannels):
         await es_channels.command_channel.send(cm)
     
     @bot.command(name='grant_medal', case_sensitive=False, aliases=['gm'])
-    async def grant_medal(msg: Message, target_kook_id: str, medal_id: int):
+    async def grant_medal(msg: Message, target_kook_id: str, medal_id: str):
         """
         授权玩家勋章
         :param msg: 消息对象

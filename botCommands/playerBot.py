@@ -77,7 +77,11 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='help', case_sensitive=False, aliases=['h'])
     async def help_x(msg: Message):
-        t = '''    /help 或 /h 查看所有指令
+        t = '''    
+        /help 或 /h 查看所有指令
+        **(font)/admin_help /ah 查看管理员指令(font)[warning]**
+
+        /log_history 或 /l 查看最近10场比赛    
         /score_list 或 /sl 查看分数榜单
         /score 或 /s 查看自己的分数
         **(font)/t 或 /type 修改自己的 第一兵种，第二兵种(font)[warning]**

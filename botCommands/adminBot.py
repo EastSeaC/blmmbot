@@ -111,25 +111,28 @@ def init(bot: Bot, es_channels: EsChannels):
                 sql_session.rollback()
                 await msg.reply(f'授予勋章失败: {str(e)}')
 
-    @bot.command(name='admin_help', case_sensitive=False, aliases=['adh'])
+    @bot.command(name='admin_help', case_sensitive=False, aliases=['ah'])
     async def es2(msg: Message):
-        t = '''    /reset_state_machine
-    
-    /admin 打开管理员菜单
-    /request_admin [playerId/userId] 申请成为管理
-    /change_admin_level [playerId] [level] 修改管理员等级
-    /cancel_admin [playerId/userId] 取消管理员
-    
-    /ban [gi/gu/ki/ku] [condition] 封印玩家
-        说明：
-        1.gi 类型为游戏PlayerID  举例 /ban gi 2.0.0.762.....
-        2.gu 类型为游戏名称       例如 /ban gi doinb
-        3.ki kook的userID        例如 /ban ki 222
-        4.ku kook的用户名        例如  /ban ku 2123
-    
-    /unban [PlayerId]
-    /reset_player_score [KookId] 重置玩家分数
-        '''
+        t = '''管理员指令说明：
+/initial, /ini - 初始化指令频道，删除旧的指令频道并创建新的。
+/es_adv, /es - 显示管理员操作按钮卡片，包含显示最近比赛、刷新验证码等操作。
+/grant_medal, /gm [target_kook_id] [medal_id] - 授权玩家勋章，需要提供目标玩家的 kook ID 和勋章对应的整数 ID。
+/reset_server, /reset [force] - 重置游戏服务器（具体逻辑待实现）。
+/reset_player_score, /rps [user_id] - 重置指定用户的分数，需要提供用户的 kook ID。
+/admin - 打开管理员界面，显示服务器重启、查看组织管理等操作按钮。
+/test_move_old_wait_channel_to_bot_channel, /test_mowctbc [custom_channel_id] - 移动某个频道的玩家到等候频道，可指定频道 ID。
+/move_set_to_wait, /msw - 将匹配设置频道的玩家移动到等候频道。
+/move_to_wait, /mtw - 将攻击和防守频道的玩家移动到等候频道。
+/move_to_set, /mtset - 将等候频道的玩家移动到匹配设置频道。
+/show, /sw [target_kook_id] - 显示指定玩家的比赛信息，包括胜率、平局率等。
+/grant_player_as_admin, /gad [target_kook_id] - 授权指定玩家为游戏内管理员。
+/remove_grant_as_common, /rga [target_kook_id] - 移除指定玩家的管理员角色。
+/guiltest - 测试将等候频道的玩家移动到攻击频道（仅限 es 用户）。
+/unban, /uban [kook_id] - 解除指定用户的封印。
+/ban [kook_id] [day] - 封印指定用户指定天数，默认 1 天。
+/add_score [kook_id] [score] - 为指定用户添加或减少分数。
+/reset_state_machine - 重置状态机（具体功能需根据实际实现确定）
+    '''
         await msg.reply(t)
 
     @bot.command(name='reset_server', case_sensitive=False, aliases=['reset'])

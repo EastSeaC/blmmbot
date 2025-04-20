@@ -504,6 +504,9 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='add_change_name_times', case_sensitive=False, aliases=['add_cname_times'])
     async def add_change_name_times(msg: Message, kook_id: str, times: str):
+        """
+        添加改名次数
+        """
         if not ChannelManager.is_es(msg.author_id):
             await msg.reply('禁止使用es指令')
             return

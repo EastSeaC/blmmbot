@@ -242,6 +242,31 @@ def init(bot: Bot, es_channels: EsChannels):
         await msg.reply('移动成功')
         pass
 
+    @bot.command(name='show', case_sensitive=False, aliases=['sw'])
+    async def show_player_info(msg: Message, target_kook_id: str):
+        if not ChannelManager.is_es(msg.author_id):
+            await msg.reply('禁止使用es指令')
+            return
+
+        with get_session() as sql_session:
+            p = sql_session.query(DB_Player).filter(DB_Player.kookId == target_kook_id).first()
+            if not p:
+                await msg.reply(f'该玩家{target_kook_id}未注册')
+                return
+
+            player: DB_Player = p
+
+            cm = CardMessage()
+            card = Card(Module.Header(f'kookId:{player.kookName} {player.kookId}'),
+                        Module.Divider(),
+                        Module.Section(text=f'playerId{player.playerId}'),
+                        Module.Divider(),
+                        )
+            cm.append(card)
+            await msg.reply(cm)
+            return
+        pass
+
     @bot.command(name='grant_player_as_admin', case_sensitive=False, aliases=['gad'])
     async def grant_player_as_admin(msg: Message, target_kook_id: str):
         """

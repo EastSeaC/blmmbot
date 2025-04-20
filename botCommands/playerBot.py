@@ -643,7 +643,7 @@ def init(bot: Bot, es_channels: EsChannels):
         t = sql_session.query(DB_Player).filter(DB_Player.kookId == target_kook_id)
 
         if t.count() != 1:
-            await msg.reply(f"未找到玩家 {target_kook_id} 请先注册")
+            await msg.reply(f"未找到玩家 {ChannelManager.get_at(target_kook_id)} 请先注册")
             return
 
         player: DB_Player = t.first()

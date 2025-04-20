@@ -3,7 +3,7 @@ from sqlalchemy import *
 from .base import Base
 
 
-class Verify(Base):
+class DB_Verify(Base):
     __tablename__ = "verifys"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

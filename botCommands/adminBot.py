@@ -443,7 +443,7 @@ def RefreshAllPlayerVerifyCode():
         dict_x[player_names_obj.playerId] = generate_numeric_code()
 
     for k, v in dict_x.items():
-        very = Verify()
+        very = DB_Verify()
         very.playerId = k
         very.code = v
         session.add(very)

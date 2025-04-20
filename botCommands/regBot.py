@@ -68,9 +68,10 @@ def init(bot: Bot, es_channels):
             return
 
         # 判断
-        verify_code_obj = sql_session.query(Verify).filter(Verify.code == verify_code, Verify.playerId == player_id)
+        verify_code_obj = sql_session.query(DB_Verify).filter(DB_Verify.code == verify_code,
+                                                              DB_Verify.playerId == player_id)
         if verify_code_obj is None:
-            LogHelper.log(Verify(verify_code_obj).code)
+            LogHelper.log(DB_Verify(verify_code_obj).code)
             failed_text += '验证码错误'
             await msg.reply(failed_text)
             return

@@ -63,16 +63,16 @@ async def get_player_info(request):
     player_reg.player_id = player_id
 
     if z1 == 0:  # 说明没注册
-        query = session.query(Verify).filter(Verify.playerId == player_id)
+        query = session.query(DB_Verify).filter(DB_Verify.playerId == player_id)
         z = query.count()
-        very = Verify()
+        very = DB_Verify()
         if z == 0:
             very.code = generate_numeric_code()
             very.playerId = player_id
             session.add(very)
             session.commit()
         elif z == 1:
-            very: Verify = query.first()
+            very: DB_Verify = query.first()
 
         player_reg.verify_code = very.code
         player_reg.is_reg = False
@@ -86,16 +86,16 @@ async def get_player_info(request):
 async def get_reg(req):
     player_id = req.match_info['player_id']
     with get_session() as session:
-        query = session.query(Verify).filter(Verify.playerId == player_id)
+        query = session.query(DB_Verify).filter(DB_Verify.playerId == player_id)
         z = query.count()
-        very = Verify()
+        very = DB_Verify()
         if z == 0:
             very.code = generate_numeric_code()
             very.playerId = player_id
             session.add(very)
             session.commit()
         elif z == 1:
-            very: Verify = query.first()
+            very: DB_Verify = query.first()
         LogHelper.log(f"{player_id}, 验证码{very.code}")
     return Response(text=very.code)
 
@@ -115,11 +115,11 @@ async def reg_player(request):
 @bp.get('/GetVerifyCode')
 async def get_verify_code(request):
     with get_session() as session:
-        result = session.query(Verify).filter(
-            Verify.until_time >= datetime.now()).all()
+        result = session.query(DB_Verify).filter(
+            DB_Verify.until_time >= datetime.now()).all()
         list = {}
         for i in result:
-            u: Verify = i
+            u: DB_Verify = i
             list[u.playerId] = u.code
         return web.Response(text=json.dumps(list))
 
@@ -144,6 +144,15 @@ async def add_player_name(request):
         LogHelper.log(f"已添加玩家名称:{name}")
     else:
         LogHelper.log("名字已存在")
+
+    z2 = session.query(DB_Verify).filter(DB_Verify.playerId == player_id).count()
+    if z2 == 0:
+        verify = DB_Verify()
+        verify.playerId = player_id
+        verify.code = generate_numeric_code()
+        session.add(verify)
+        session.commit()
+
     return Response(text='success')
 
 

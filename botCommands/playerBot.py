@@ -442,7 +442,7 @@ def init(bot: Bot, es_channels: EsChannels):
             )
         ))
 
-        # 发送到其他服务器
+        # ################################################################ 发送到其他服务器
         if use_server_x in [ServerEnum.Server_3, ServerEnum.Server_4]:
             # 如果服务器 为3，4 需要发送到 另一个服务器
             # requests.post('http://localhost:14725/send_match_info', json=will_match_data)
@@ -453,7 +453,7 @@ def init(bot: Bot, es_channels: EsChannels):
             not_open_server = True  # 3服要交给其他服务器启动，因此不需要
             pass
 
-        # 是否移动玩家
+        # ################################################################ 是否移动玩家
         if not is_no_move:
             if use_server_x == ServerEnum.Server_1:
                 await move_a_to_b_ex(OldGuildChannel.match_attack_channel, divide_data.attacker_list)
@@ -468,7 +468,7 @@ def init(bot: Bot, es_channels: EsChannels):
         else:
             LogHelper.log("不移动")
 
-        # 获取 txt配置文件路径
+        # ################################################################ 获取 txt配置文件路径
         px = ServerManager.CheckConfitTextFile(use_server_x)
         # px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x.txt'
         print('txt file path' + px)
@@ -481,7 +481,7 @@ def init(bot: Bot, es_channels: EsChannels):
             text.culture_team2 = second_faction
             f.write(text.to_str())
 
-        # ServerManager.RestartBLMMServer(6)
+        # ################################################################ ServerManager.RestartBLMMServer(6)
         if not not_open_server:
             ServerManager.RestartBLMMServerEx(use_server_x)
         else:
@@ -501,6 +501,45 @@ def init(bot: Bot, es_channels: EsChannels):
         channel_b = await bot.client.fetch_public_channel(b)
         for id, user_id in enumerate(list_player):
             await channel_b.move_user(b, user_id)
+
+    @bot.command(name='add_change_name_times', case_sensitive=False, aliases=['add_cname_times'])
+    async def add_change_name_times(msg: Message, kook_id: str, times: str):
+        if not ChannelManager.is_es(msg.author_id):
+            await msg.reply('禁止使用es指令')
+            return
+
+        if kook_id == '' or kook_id is None:
+            await msg.reply('kook_id异常')
+            return
+
+        if not times.isdigit():
+            await msg.reply('没有输入次数')
+            return
+
+        # ############################ 检查注册
+        session = get_session()
+        player: DB_Player = session.query(DB_Player).filter(DB_Player.kookId == kook_id).first()
+        if player is None:
+            await msg.reply(f'该用户 {ChannelManager.get_at(kook_id)}未注册')
+            return
+
+        player_change_names_obj = sqlSession.query(DB_PlayerChangeNames).filter(
+            DB_PlayerChangeNames.kookId == kook_id).first()
+        if not player_change_names_obj:
+            player_change_names_obj = DB_PlayerChangeNames()
+            player_change_names_obj.kookId = player.kookId
+            player_change_names_obj.kookName = player.kookName
+            player_change_names_obj.lastKookName = player.kookName
+            player_change_names_obj.playerId = player.playerId
+            player_change_names_obj.left_times = int(times)
+
+        else:
+            player_change_names_obj.left_times = int(times)
+        sqlSession.add(player_change_names_obj)
+        sqlSession.commit()
+
+        await msg.reply(f'给 {ChannelManager.get_at(kook_id)}添加了 {times} 改名次数')
+        return
 
     @bot.command(name='change_name', case_sensitive=False, aliases=['cn'])
     async def change_name(msg: Message, new_name: str, *args):

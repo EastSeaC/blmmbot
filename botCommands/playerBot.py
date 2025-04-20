@@ -638,7 +638,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 await msg.reply('禁止使用管理员参数')
                 return
             target_kook_id = str(args[0])
-            t = sql_session.query(DB_Player).filter(DB_Player.kookId == target_kook_id).first()
+            t = sql_session.query(DB_Player).filter(DB_Player.kookId == target_kook_id)
         else:
             t = sql_session.query(DB_Player).filter(DB_Player.kookId == msg.author_id)
 

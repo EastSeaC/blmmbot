@@ -260,11 +260,12 @@ async def update_match_data2(request):
     """
 
     playerData_2: dict = playerData
-    print('数据只有一项', '*' * 65)
+    print('*' * 65)
 
     show_data = []
     team_a_data = []
     team_b_data = []
+    player_score_dict = {}
 
     # 搜索玩家数据
     result = session.query(DB_PlayerData).filter(DB_PlayerData.playerId.in_(player_ids))
@@ -311,7 +312,10 @@ async def update_match_data2(request):
             #     k.set_is_lose(False)
             # else:
             #     k.set_is_lose(True)
-            oldData.rank += calculate_score(match_total_sum, k)
+            sum_score, score_dict = calculate_score(match_total_sum, k)
+            oldData.rank += sum_score
+            player_score_dict[k.player_id] = score_dict
+
             k.set_new_score(oldData.rank)
             show_data.append(k)
 
@@ -348,7 +352,11 @@ async def update_match_data2(request):
                 else:
                     k.set_is_lose(True)
 
-            newData.rank += calculate_score(match_total_sum, k)
+            sum_score, score_dict = calculate_score(match_total_sum, k)
+            newData.rank += sum_score
+
+            player_score_dict[k.player_id] = score_dict
+
             k.set_new_score(newData.rank)
             show_data.append(k)
 
@@ -363,8 +371,10 @@ async def update_match_data2(request):
         session.add(newData)
     pass
 
+    match_data.player_scores = json.dumps(player_score_dict)
     session.commit()
 
+    # ################################### 设置比赛结束
     server_name = ServerManager.getServerName(ServerEnum.Server_1)
     server_name_withou_clear: str = match_data.server_name
     if '-' in server_name_withou_clear:

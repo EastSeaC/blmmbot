@@ -243,7 +243,7 @@ def init(bot: Bot, es_channels: EsChannels):
         pass
 
     @bot.command(name='show', case_sensitive=False, aliases=['sw'])
-    async def show_player_info(msg: Message, target_kook_id: str):
+    async def show_player_info(msg: Message, target_kook_id: str | None = ''):
         if not ChannelManager.is_es(msg.author_id):
             await msg.reply('禁止使用es指令')
             return
@@ -315,7 +315,7 @@ def init(bot: Bot, es_channels: EsChannels):
                                 Element.Text(f'平局场次: {draw_matches}')
                             )
                         )
-                    )
+                        )
             cm.append(card)
             await msg.reply(cm)
             return

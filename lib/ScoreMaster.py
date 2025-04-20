@@ -33,7 +33,7 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
         enemy_total_spawn_times = all_player_data.second_team_total_spawn_times if player_data.team == BannerlordTeam.FirstTeam else all_player_data.first_team_total_spawn_times
         ally_total_assist_times = all_player_data.first_team_total_assist_times if player_data.team == BannerlordTeam.FirstTeam else all_player_data.second_team_total_spawn_times
 
-        # 计算队伍分数
+        # ################################## 计算队伍分数
         team_score = abs(all_player_data.attacker_rounds - all_player_data.defender_rounds) * 20
         if not 500 < player_data.get_old_score() < 3000:
             team_score = 30
@@ -74,6 +74,7 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
                 score_limit.max_assist_score,
             )
 
+        # ##################################### 计算对人伤害分数
         damage_score = clamp(
             score_limit.max_damage_score * (
                     player_data.damage / (score_limit.per_round_damage * all_player_data.total_round)),
@@ -81,10 +82,18 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
             score_limit.max_damage_score,
             # 'damage'
         )
+        # ##################################### 计算对马伤害分数
+        horse_damage_score = clamp(
+            score_limit.max_damage_score * (
+                    player_data.horse_damage / (3 * score_limit.per_round_damage * all_player_data.total_round)),
+            score_limit.min_damage_score,
+            score_limit.max_damage_score,
+        )
 
         match_lose_minus = score_limit.failed_minus if player_data.is_lose else 0
         # match_lose_minus = 0
-        sum_score = ceil(kill_score + death_score + assist_score + damage_score) + team_score - match_lose_minus
+        sum_score = ceil(
+            kill_score + death_score + assist_score + damage_score + horse_damage_score) + team_score - match_lose_minus
         score_dick = {
             'player_id': player_data.player_id,
             'player_name': player_data.player_name,
@@ -94,8 +103,9 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
             'damage_score': damage_score,
             'match_lose_minus': -match_lose_minus,
             'team_score': team_score,
+            'horse_damage_score': horse_damage_score,
             'sum_score': sum_score,
         }
         print(json.dumps(score_dick, indent=4, ensure_ascii=False))
-        return sum_score
+        return sum_score, score_dick
     pass

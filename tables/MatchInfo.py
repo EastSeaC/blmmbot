@@ -31,6 +31,8 @@ class DB_Matchs(Base):
     player_data = Column(JSON, nullable=False, default='')
     server_name = Column(VARCHAR(30), nullable=True, default='btl1')
 
+    player_scores = Column(JSON, nullable=True, default='{}')
+
     def get_data(self):
         return {
             'id': self.id,

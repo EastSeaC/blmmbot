@@ -7,6 +7,7 @@ from sqlalchemy import desc, text, select, update
 
 from botCommands.ButtonValueImpl import AdminButtonValue
 from config import INITIAL_SCORE
+from entity.PlayerMedelMapping import MEDAL_MAPPING, MedalType
 from lib.LogHelper import LogHelper
 from blmm_bot import EsChannels
 from init_db import get_session
@@ -15,6 +16,7 @@ from lib.basic import generate_numeric_code
 from tables import *
 from tables.Admin import DB_Admin
 from tables.Ban import DB_Ban
+from tables.PlayerMedal import DB_PlayerMedal
 from tables.PlayerNames import DB_PlayerNames
 
 session = get_session()
@@ -60,6 +62,54 @@ def init(bot: Bot, es_channels: EsChannels):
         )
         cm.append(c8)
         await es_channels.command_channel.send(cm)
+    
+    @bot.command(name='grant_medal', case_sensitive=False, aliases=['gm'])
+    async def grant_medal(msg: Message, target_kook_id: str, medal_id: int):
+        """
+        授权玩家勋章
+        :param msg: 消息对象
+        :param target_kook_id: 目标玩家的 kook ID
+        :param medal_id: 勋章对应的整数 ID
+        """
+        if not ChannelManager.is_es(msg.author_id):
+            await msg.reply('禁止使用es指令')
+            return
+
+        # 根据整数 ID 获取勋章类型
+        medal_type = MEDAL_MAPPING.get(medal_id)
+        if not medal_type:
+            await msg.reply(f'无效的勋章 ID: {medal_id}')
+            return
+
+        with get_session() as sql_session:
+            # 检查玩家是否注册
+            player = sql_session.query(DB_Player).filter(DB_Player.kookId == target_kook_id).first()
+            if not player:
+                await msg.reply(f'该玩家 {target_kook_id} 未注册')
+                return
+
+            # 假设 DB_PlayerMedal 是存储玩家勋章信息的表
+            player_medal = sql_session.query(DB_PlayerMedal).filter(DB_PlayerMedal.kookId == target_kook_id).first()
+            if not player_medal:
+                player_medal = DB_PlayerMedal()
+                player_medal.kookId = target_kook_id
+                player_medal.playerName = player.kookName
+                player_medal.playerId = player.playerId
+                sql_session.add(player_medal)
+
+            # 根据勋章类型授予勋章，使用枚举类型判定
+            if medal_type == MedalType.BLMM_TESTOR:
+                player_medal.medal_blmm_testor = 1
+            else:
+                await msg.reply(f'不支持的勋章类型: {medal_type.value}')
+                return
+
+            try:
+                sql_session.commit()
+                await msg.reply(f'已成功授予玩家 {player.kookName} {medal_type} 勋章')
+            except Exception as e:
+                sql_session.rollback()
+                await msg.reply(f'授予勋章失败: {str(e)}')
 
     @bot.command(name='admin_help', case_sensitive=False, aliases=['adh'])
     async def es2(msg: Message):

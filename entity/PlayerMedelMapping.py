@@ -9,6 +9,6 @@ MEDAL_MAPPING = {
 
 
 # 定义勋章类型的枚举类
-class MedalType(Enum):
+class MedalType:
     BLMM_TESTOR = 'blmm_testor'
     # 可以按照需求添加更多勋章类型

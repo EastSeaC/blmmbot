@@ -270,7 +270,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
             total_matches = len(left_matches) + len(right_matches)
             win_matches = 0
-            draw_matches = 0  # 新增：统计平局场数
+            draw_matches = 0
 
             # 统计左侧队伍比赛的胜利场数和平局场数
             for match in left_matches:
@@ -291,20 +291,31 @@ def init(bot: Bot, es_channels: EsChannels):
                 draw_rate = 0
             else:
                 win_rate = win_matches / total_matches
-                draw_rate = draw_matches / total_matches  # 计算平局率
+                draw_rate = draw_matches / total_matches
 
             cm = CardMessage()
             card = Card(Module.Header(f'kookId:{player.kookName} {player.kookId}'),
                         Module.Divider(),
                         Module.Section(text=f'playerId:{player.playerId}'),
                         Module.Divider(),
+                        # 第一行：胜率，胜利场次
                         Module.Section(
                             Struct.Paragraph(
-                                3,
+                                2,
                                 Element.Text(f'胜率: {win_rate * 100:.2f}%'),
-                                Element.Text(f'平局率: {draw_rate * 100:.2f}%')  # 新增：展示平局率
-                            ))
+                                Element.Text(f'胜利场次: {win_matches}')
+                            )
+                        ),
+                        Module.Divider(),
+                        # 第二行：平局率，平局场次
+                        Module.Section(
+                            Struct.Paragraph(
+                                2,
+                                Element.Text(f'平局率: {draw_rate * 100:.2f}%'),
+                                Element.Text(f'平局场次: {draw_matches}')
+                            )
                         )
+                    )
             cm.append(card)
             await msg.reply(cm)
             return

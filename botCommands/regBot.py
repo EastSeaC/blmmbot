@@ -56,7 +56,7 @@ def init(bot: Bot, es_channels):
         sql_session = get_session()
         z = sql_session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId.like(f'%{player_id}%')).count()
         if z == 0:
-            await msg.reply('该playerId 所属的玩家暂未进入服务器，请先进入游戏服务器')
+            await msg.reply(f'该playerId {player_id} 所属的玩家暂未进入服务器，请先进入游戏服务器')
             return
 
             # 检测是否已被注册

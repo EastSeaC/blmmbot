@@ -629,9 +629,19 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='score', case_sensitive=False, aliases=['s'])
     async def show_score(msg: Message, *args):
-        # 处理玩家随便输入的时候， 在函数原型中加入 , *args
+        # ####################################### 处理玩家随便输入的时候， 在函数原型中加入 , *args
+
         sql_session = get_session()
-        t = sql_session.query(DB_Player).filter(DB_Player.kookId == msg.author_id)
+
+        if len(args) == 1:
+            if not ChannelManager.is_admin(msg.author_id):
+                await msg.reply('禁止使用管理员参数')
+                return
+            target_kook_id = str(args[0])
+            t = sql_session.query(DB_Player).filter(DB_Player.kookId == target_kook_id).first()
+        else:
+            t = sql_session.query(DB_Player).filter(DB_Player.kookId == msg.author_id)
+
         if t.count() == 1:
             player: DB_Player = t.first()
 

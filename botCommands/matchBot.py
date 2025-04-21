@@ -583,17 +583,19 @@ def init(bot: Bot, es_channels: EsChannels):
     async def task5():
         condition = stateMachine.check_state()
         if condition == MatchCondition.WaitingJoin:
-            z: PublicVoiceChannel = es_channels.wait_channel
-            user_list = await z.fetch_user_list()
+            z = await bot.client.fetch_public_channel(ChannelManager.match_wait_channel)
+            real_z: PublicVoiceChannel = z
+            user_list = await real_z.fetch_user_list()
             user_count = len(user_list)
             if user_count >= 12:
                 pass
             # channel = await bot.client.fetch_public_channel(ChannelManager.command_channel)
-            z = "当前状态为 等待玩家加入"
+            # real_z = "当前状态为 等待玩家加入"
             # LogHelper.log(z)
             # await  es_channels.command_channel.send(z)
         elif condition == MatchCondition.DividePlayer:
-            z = "当前状态为 划分玩家状态"
+            pass
+            # z = "当前状态为 划分玩家状态"
             # LogHelper.log(z)
 
             # await es_channels.command_channel.send(z)

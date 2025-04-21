@@ -44,6 +44,7 @@ async def get_score_list_card():
 
 async def get_player_score_card(kook_id: str):
     sql_session = get_session()
+    sql_session.autoflush()
     t = sql_session.query(DB_Player).filter(DB_Player.kookId == kook_id)
     if t.count() == 1:
         player: DB_Player = t.first()
@@ -54,6 +55,7 @@ async def get_player_score_card(kook_id: str):
             player.rank = db_player.rank
         else:
             db_player = player
+        sql_session.commit()
 
         # 获取玩家 勋章
         player_medal_db = sql_session.query(DB_PlayerMedal).filter(DB_PlayerMedal.kookId == kook_id)

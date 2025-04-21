@@ -53,6 +53,14 @@ def init(bot: Bot, es_channels):
             await msg.reply('playerId 不合规则，请重新确认并仔细填写')
             return
 
+        # # 检查 player_id 是否为 17 位
+        # pure_digits = re.sub(r'\D', '', player_id)
+        # confirm = args[0] if len(args) > 0 else ''
+        # if len(pure_digits) != 17:
+        #     if confirm.lower() != 'x':
+        #         await msg.reply('player_id 不是 17  位，请在命令后添加参数 x 确认注册')
+        #         return
+
         sql_session = get_session()
         z = sql_session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId.like(f'%{player_id}%')).count()
         if z == 0:
@@ -69,7 +77,7 @@ def init(bot: Bot, es_channels):
 
         # 判断
         verify_code_obj = sql_session.query(DB_Verify).filter(DB_Verify.code == verify_code,
-                                                              DB_Verify.playerId == player_id)
+                                                              DB_Verify.playerId == player_id).first()
         if verify_code_obj is None:
             LogHelper.log(DB_Verify(verify_code_obj).code)
             failed_text += '验证码错误'

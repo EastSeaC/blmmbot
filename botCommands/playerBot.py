@@ -670,6 +670,7 @@ def init(bot: Bot, es_channels: EsChannels):
         total_matches = len(left_matches) + len(right_matches)
         win_matches = 0
         draw_matches = 0
+        lose_matches = 0
 
         # 统计左侧队伍比赛的胜利场数和平局场数
         for match in left_matches:
@@ -677,6 +678,8 @@ def init(bot: Bot, es_channels: EsChannels):
                 win_matches += 1
             elif match.left_win_rounds == match.right_win_rounds:
                 draw_matches += 1
+            else:
+                lose_matches += 1
 
         # 统计右侧队伍比赛的胜利场数和平局场数
         for match in right_matches:
@@ -684,16 +687,21 @@ def init(bot: Bot, es_channels: EsChannels):
                 win_matches += 1
             elif match.right_win_rounds == match.left_win_rounds:
                 draw_matches += 1
+            else:
+                lose_matches += 1
 
         if total_matches == 0:
             win_rate = 0
             draw_rate = 0
+            lose_rate = 0
         else:
             win_rate = win_matches / total_matches
             draw_rate = draw_matches / total_matches
+            lose_rate = lose_matches / total_matches
 
         db_player.win = win_matches
         db_player.draw = draw_matches
+        db_player.lose = lose_matches
         # ############################## 获取玩家 勋章
         player_medal_db = sql_session.query(DB_PlayerMedal).filter(DB_PlayerMedal.kookId == target_kook_id)
         if player_medal_db.count() == 1:
@@ -752,10 +760,11 @@ def init(bot: Bot, es_channels: EsChannels):
         game_info = f'''**游戏**
     对局数:{total_matches}
     胜场:{win_matches}
-    胜率:{win_rate* 100:.2f}%
+    胜率:{win_rate * 100:.2f}%
     平局:{draw_matches}
-    平局率:{draw_rate* 100:.2f}%
-    败场:{db_player.lose}
+    平局率:{draw_rate * 100:.2f}%
+    败场:{lose_matches}
+    败率:{lose_rate*100:.2f}%
     胜/败:{round(db_player.win / max(db_player.lose, 1), 3)}
     MVPs:{0}
             '''

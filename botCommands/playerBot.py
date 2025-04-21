@@ -789,6 +789,7 @@ def init(bot: Bot, es_channels: EsChannels):
         # cm.append(c1)
         cm.append(c1)
         cm.append(c2)
+        print(repr(cm))
         await msg.reply(cm)
         pass
 

@@ -752,9 +752,9 @@ def init(bot: Bot, es_channels: EsChannels):
         game_info = f'''**游戏**
     对局数:{total_matches}
     胜场:{win_matches}
-    胜率:{win_rate}
+    胜率:{win_rate* 100:.2f}%
     平局:{draw_matches}
-    平局率:{draw_rate}
+    平局率:{draw_rate* 100:.2f}%
     败场:{db_player.lose}
     胜/败:{round(db_player.win / max(db_player.lose, 1), 3)}
     MVPs:{0}

@@ -82,7 +82,7 @@ class ChannelManager:
     image_big_knight_2 = 'https://img.kookapp.cn/assets/2024-12/30/U0bx0f56nw01s01s.png'
     image_follower = 'https://img.kookapp.cn/assets/2024-12/30/aXfKXOO9Q90b40b4.png'
     image_guard = 'https://img.kookapp.cn/assets/2024-12/30/V5Nx6soV1J0b40b4.png'
-    image_knight = 'https://img.kookapp.cn/assets/2025-04/21/haQvhtn0hS1hc1hc.png'
+    image_knight = 'https://img.kookapp.cn/assets/2025-04/21/WWHWntc8Oh0e80e8.png'
 
     image_lord = 'https://img.kookapp.cn/assets/2024-12/30/ZUAQnICKXb0e80e8.png'
     image_duke = 'https://img.kookapp.cn/assets/2024-12/30/XlFk0gAFp201s01s.png'

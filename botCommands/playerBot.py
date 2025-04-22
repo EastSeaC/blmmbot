@@ -644,6 +644,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 return
             target_kook_id = str(args[0])
 
+        # ############################### 查询后做了修改要立即提交
         t = sql_session.query(DB_Player).filter(DB_Player.kookId == target_kook_id)
 
         if t.count() != 1:

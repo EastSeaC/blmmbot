@@ -704,6 +704,7 @@ def init(bot: Bot, es_channels: EsChannels):
         db_player.win = win_matches
         db_player.draw = draw_matches
         db_player.lose = lose_matches
+        sql_session.commit()
         # ############################## 获取玩家 勋章
         player_medal_db = sql_session.query(DB_PlayerMedal).filter(DB_PlayerMedal.kookId == target_kook_id)
         if player_medal_db.count() == 1:

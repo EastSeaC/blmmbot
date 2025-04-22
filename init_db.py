@@ -6,14 +6,14 @@ from config import *
 from tables import *
 
 global engine
-engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8')
+engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8mb4')
 engine.connect()
 
 
 @event.listens_for(engine, "close")
 def receive_close(conn, exception):
     global engine
-    engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8')
+    engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8mb4')
     engine.connect()
     print("连接关闭,重新连接")
 
@@ -23,7 +23,7 @@ def get_session():
         global engine
         Session = sessionmaker(bind=engine)
     except Exception as e:
-        engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8')
+        engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8mb4')
         engine.connect()
         Session = sessionmaker(bind=engine)
 
@@ -42,7 +42,7 @@ def __test_a():
 # engine = sqlalchemy.create_engine(
 #         "%s+%s://%s:%s@%s:%d/?charset=utf8" % (DIALECT, DRIVER, USERNAME, PASSWORD, HOST, PORT))
 if __name__ == '__main__':
-    engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8')
+    engine = create_engine(f'{DIALECT}+{DRIVER}://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?charset=utf8mb4')
     connect = engine.connect()
     Base.metadata.create_all(engine)  # 创建表结构
     # player = Player.query().filter(Player.playerId == '2.0.0.76561199044372880').first()

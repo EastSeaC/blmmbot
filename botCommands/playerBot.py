@@ -658,6 +658,7 @@ def init(bot: Bot, es_channels: EsChannels):
             player.rank = db_player.rank
         else:
             db_player = player
+        sql_session.commit()
 
         # ######################################### 计算玩家胜率
         target_player_id = player.playerId

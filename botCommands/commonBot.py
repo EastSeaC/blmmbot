@@ -9,6 +9,7 @@ from khl.card import CardMessage, Card, Module, Element, Types, Struct
 from sqlalchemy import desc, select
 
 from botCommands.ButtonValueImpl import AdminButtonValue, ESActionType, PlayerButtonValue
+from convert.PlayerMatchData import TPlayerMatchData
 from entity.ServerEnum import ServerEnum
 from entity.WillMatchType import WillMatchType
 from kook.CardHelper import get_player_score_card, get_score_list_card
@@ -18,6 +19,7 @@ from kook.ChannelKit import EsChannels, ChannelManager, OldGuildChannel
 from lib.SelectMatchData import SelectPlayerMatchData
 from lib.ServerGameConfig import get_random_faction_2
 from lib.ServerManager import ServerManager
+from lib.log.LoggerHelper import logger
 from lib.match_state import MatchConditionEx
 from tables import *
 from tables import WillMatch
@@ -410,6 +412,85 @@ def init(bot: Bot, es_channels: EsChannels):
                 else:
                     await channel.send(
                         f'(met){user_id}(met) 你没有注册，请先注册')
+
+    @bot.task.add_interval(seconds=1)
+    async def task1():
+        """
+        输出比赛数据
+        """
+        # 1s触发器
+        # 检查是否有数据
+        if MatchConditionEx.end_game:
+            MatchConditionEx.end_game = False
+            # ############################# 现在由于限制频道最大人数，直接移动会导致 人过多无法开启比赛，取消移动，
+            # 移动大伙回来
+            # await move_a_to_b(ChannelManager.match_attack_channel, ChannelManager.match_wait_channel)
+            # await move_a_to_b(ChannelManager.match_defend_channel, ChannelManager.match_wait_channel)
+
+            LogHelper.log("输出比赛数据")
+            await es_channels.command_channel.send(CardMessage(
+                Card(
+                    Module.Header(f'服务器名称:{MatchConditionEx.server_name}'),
+                    # Module.Context(f'比赛时间为{MatchConditionEx}'),
+                    Module.Divider(),
+                    Module.Header(f'时间:{get_time_str()}'),
+                    Module.Divider(),
+                    Module.Header(f'比分:{MatchConditionEx.attacker_score}:{MatchConditionEx.defender_score}')
+                )))
+            z = MatchConditionEx.data2
+
+            name_str = '姓名:'
+            game_info = '分数:'
+            kill_info = 'KAD伤:'
+
+            cm = CardMessage()
+            z1 = z[0:6]
+            for i in z1:
+                player: TPlayerMatchData = i
+                name_str += f'\n{player.truncate_by_width()}'
+                game_info += f'\n{player.get_score_info_2}'
+                kill_info += f'\n{player.get_kill_info_2}'
+
+            c1 = Card(
+                Module.Section(
+                    Struct.Paragraph(
+                        3,
+                        Element.Text(name_str, type=Types.Text.KMD),
+                        Element.Text(kill_info, type=Types.Text.KMD),
+                        Element.Text(game_info, type=Types.Text.KMD),
+                    )
+                )
+            )
+            cm.append(c1)
+
+            z2 = z[6:]
+
+            name_str = ''
+            game_info = ''
+            kill_info = ''
+            for i in z2:
+                player: TPlayerMatchData = i
+                name_str += f'\n{player.truncate_by_width()}'
+                game_info += f'\n{player.get_score_info_2}'
+                kill_info += f'\n{player.get_kill_info_2}'
+
+            c2 = Card(
+                Module.Section(
+                    Struct.Paragraph(
+                        3,
+                        Element.Text(name_str, type=Types.Text.KMD),
+                        Element.Text(kill_info, type=Types.Text.KMD),
+                        Element.Text(game_info, type=Types.Text.KMD),
+                    )
+                )
+            )
+            cm.append(c2)
+
+            try:
+                await es_channels.command_channel.send(cm)
+            except Exception as e:
+                logger.exception("发生异常:")
+                return
 
 
 def show_server_state():

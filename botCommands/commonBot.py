@@ -237,6 +237,9 @@ def init(bot: Bot, es_channels: EsChannels):
         # print(e.body, "\n")
         value = str(e.body['value'])
         user_id = e.body['user_id']
+
+        if 'guild_id' not in e.body:
+            return
         guild_id = e.body['guild_id']
         channel_id = e.body['target_id']
         e_body_user_info = e.body['user_info']['username']

@@ -17,8 +17,8 @@ class ChannelManager:
     match_group = '3182448324425808'
     # 候选频道语音
     match_wait_channel = '6713919713207768'
-    match_attack_channel = '4855555618242776'
-    match_defend_channel = '7704290253382922'
+    match_attack_channel = '5436769046749546'
+    match_defend_channel = '8246783800929740'
 
     match_set_channel = '9152989485766507'  # 淘汰休息室
     match_high_score_match_channel = '8860007123246981'  # 高分频道

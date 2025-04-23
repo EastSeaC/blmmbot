@@ -85,19 +85,22 @@ async def is_cancel_match(req):
     server_name = req.match_info['server_name']
     match_id = req.match_info['match_id']
 
-    sql_session = get_session()
-    if server_name is not None and match_id is not None:
+    with get_session() as sql_session:
+        if server_name is None or match_id is None:
+            return web.json_response(text=ControllerResponse.error_response(-1, "未找到对应match"))
         target_match_id = int(match_id)
 
         today_midnight = get_midnight_time()
-        z = sql_session.execute(select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight,
-                                                            DB_WillMatchs.server_name == server_name,
-                                                            DB_WillMatchs.match_id_2 == target_match_id)).first()
+        z = sql_session.execute(select(DB_WillMatchs)
+        .order_by(desc(DB_WillMatchs.time_match)).where(
+            DB_WillMatchs.server_name == server_name,
+            DB_WillMatchs.match_id_2 == target_match_id)).scalrs().first()
+
         if z is None or len(z) == 0:
-            return ControllerResponse.success_response(True)
+            return web.json_response(text=ControllerResponse.error_response(-1, "未找到对应match"))
         will_match: DB_WillMatchs = z[0]
-        if will_match.is_cancel is True or will_match.is_finished is True:
-            return ControllerResponse.success_response(True)
+        if will_match.is_cancel == 1 or will_match.is_finished == 1:
+            return web.json_response(text=ControllerResponse.success_response(True))
         else:
             return ControllerResponse.success_response(False)
 

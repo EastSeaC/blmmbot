@@ -17,6 +17,7 @@ from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager, OldGuildChannel
 from lib.ServerManager import ServerManager
+from lib.log.LoggerHelper import logger
 from lib.match_guard import MatchGuard
 from lib.match_state import MatchConditionEx
 from tables.Admin import DB_Admin
@@ -152,7 +153,13 @@ async def task1():
             )
         )
         cm.append(c2)
-        await es_channels.command_channel.send(cm)
+
+        try:
+            await es_channels.command_channel.send(cm)
+        except Exception as e:
+            logger.exception("发生异常:")
+            return
+
 
 
 async def move_a_to_b(a: str, b: str):

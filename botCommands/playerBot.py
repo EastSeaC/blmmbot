@@ -1,33 +1,30 @@
 import json
-import os.path
 import random
-import re
 import uuid
 from datetime import datetime
 
 import aiohttp
-import requests
-from khl import Bot, Message, GuildUser, EventTypes, Event, PublicVoiceChannel
+from khl import Bot, Message, GuildUser
 from khl.card import CardMessage, Card, Module, Struct, Element, Types
 from sqlalchemy import select, desc
 
-from botCommands.ButtonValueImpl import AdminButtonValue, PlayerButtonValue, ESActionType
+from botCommands.ButtonValueImpl import ESActionType
+from config import get_rank_name
 from entity.ServerEnum import ServerEnum
 from entity.WillMatchType import WillMatchType
-from lib.LogHelper import LogHelper, get_time_str
-from config import get_rank_name
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager, kim, get_troop_type_image, OldGuildChannel
+from lib.LogHelper import LogHelper, get_time_str
 from lib.SelectMatchData import SelectPlayerMatchData
 from lib.ServerGameConfig import get_random_faction_2, GameConfig, MapSequence
 from lib.ServerManager import ServerManager
-from lib.match_state import PlayerBasicInfo, DivideData, MatchState, MatchConditionEx
+from lib.match_state import PlayerBasicInfo, DivideData, MatchState
 from tables import *
 from tables.Ban import DB_Ban
-from tables.WillMatch import DB_WillMatchs
 from tables.PlayerChangeName import DB_PlayerChangeNames
 from tables.PlayerMedal import DB_PlayerMedal
 from tables.ScoreLimit import DB_ScoreLimit
+from tables.WillMatch import DB_WillMatchs
 
 sqlSession = get_session()
 g_channels: EsChannels

@@ -1,12 +1,10 @@
 import asyncio
-import datetime
 import json
 
-import aiohttp
 import aiohttp_jinja2
 import jinja2
 from aiohttp import web
-from khl import Bot, GuildUser
+from khl import Bot
 from sqlalchemy import select
 
 from botCommands import adminBot, regBot, playerBot, configBot, matchBot, testBot, commonBot

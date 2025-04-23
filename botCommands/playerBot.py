@@ -86,7 +86,7 @@ def init(bot: Bot, es_channels: EsChannels):
         /score 或 /s 查看自己的分数
         **(font)/t 或 /type 修改自己的 第一兵种，第二兵种(font)[warning]**
         /change_name 或 /cn 修改名字
-        ##### 匹配指令 #####
+        ##### `匹配指令` #####
         **(font)/ae 美式匹配(font)[success]**
         **(font)/e 均分匹配(font)[success]**
         **(font)/select_mode 选人匹配(font)[info]**
@@ -604,36 +604,6 @@ def init(bot: Bot, es_channels: EsChannels):
         )
         await msg.reply(CardMessage(c8))
 
-    @bot.on_message()
-    async def kook_bot_message(m: Message):
-        bot_id = (await bot.client.fetch_me()).id
-
-        # print(bot_id)
-        a = re.search(f'\(met\){bot_id}\(met\)', m.content)
-        if a is None:
-            return
-
-        c7 = Card(
-            Module.Header('玩家帮助菜单'),
-            Module.Divider(),
-            Module.ActionGroup(
-                Element.Button("查看服务器状态", value=PlayerButtonValue.player_wonder_server_state
-                               , click=Types.Click.RETURN_VAL, theme=Types.Theme.INFO),
-                Element.Button("查看分数", value=PlayerButtonValue.player_score, click=Types.Click.RETURN_VAL,
-                               theme=Types.Theme.DANGER),
-                Element.Button("查看排行榜", value=PlayerButtonValue.player_score_list, click=Types.Click.RETURN_VAL,
-                               theme=Types.Theme.SECONDARY)
-            ),
-            Module.Divider()
-        )
-
-        if ChannelManager.is_admin(m.author_id):
-            c7.append(Module.Section(
-                Element.Text(content=ServerManager.check_token_file())
-            ))
-
-        await m.reply(CardMessage(c7))
-
     @bot.command(name='score', case_sensitive=False, aliases=['s'])
     async def show_score(msg: Message, *args):
         # ####################################### 处理玩家随便输入的时候， 在函数原型中加入 , *args
@@ -723,7 +693,7 @@ def init(bot: Bot, es_channels: EsChannels):
         rank_name = get_rank_name(player.rank)
         c1 = Card(
             Module.Header("基本信息"),
-            Module.Context(f'playerId:{player.playerId}'),
+            Module.Context(f'playerId:{player.playerId} kookId:{target_kook_id}'),
             Module.Section(
                 Struct.Paragraph(
                     3,
@@ -770,7 +740,7 @@ def init(bot: Bot, es_channels: EsChannels):
     平局:{draw_matches}
     平局率:{draw_rate * 100:.2f}%
     败场:{lose_matches}
-    败率:{lose_rate*100:.2f}%
+    败率:{lose_rate * 100:.2f}%
     胜/败:{round(db_player.win / max(db_player.lose, 1), 3)}
     MVPs:{0}
             '''

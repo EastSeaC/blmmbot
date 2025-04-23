@@ -1,10 +1,11 @@
 import json
 import random
+import re
 import uuid
 from datetime import datetime
 import datetime as dt_or
 
-from khl import Bot, EventTypes, Event
+from khl import Bot, EventTypes, Event, Message
 from khl.card import CardMessage, Card, Module, Element, Types, Struct
 from sqlalchemy import desc, select
 
@@ -494,6 +495,36 @@ def init(bot: Bot, es_channels: EsChannels):
                 for i in cm:
                     logger.debug(repr(i))
                 return
+
+    @bot.on_message()
+    async def kook_bot_message(m: Message):
+        bot_id = (await bot.client.fetch_me()).id
+
+        # print(bot_id)
+        a = re.search(f'\(met\){bot_id}\(met\)', m.content)
+        if a is None:
+            return
+
+        c7 = Card(
+            Module.Header('玩家帮助菜单'),
+            Module.Divider(),
+            Module.ActionGroup(
+                Element.Button("查看服务器状态", value=PlayerButtonValue.player_wonder_server_state
+                               , click=Types.Click.RETURN_VAL, theme=Types.Theme.INFO),
+                Element.Button("查看分数", value=PlayerButtonValue.player_score, click=Types.Click.RETURN_VAL,
+                               theme=Types.Theme.DANGER),
+                Element.Button("查看排行榜", value=PlayerButtonValue.player_score_list, click=Types.Click.RETURN_VAL,
+                               theme=Types.Theme.SECONDARY)
+            ),
+            Module.Divider()
+        )
+
+        if ChannelManager.is_admin(m.author_id):
+            c7.append(Module.Section(
+                Element.Text(content=ServerManager.check_token_file())
+            ))
+
+        await m.reply(CardMessage(c7))
 
 
 def show_server_state():

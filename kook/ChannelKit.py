@@ -151,16 +151,25 @@ class OldGuildChannel:
     match_attack_channel_3 = '4653727651132216'
     match_defend_channel_3 = '7136051179773177'
 
-    command_select_channel = '4437897819137837'
+    match_attack_channel_4 = '6549179321865306'
+    match_defend_channel_4 = '7270117468200787'
+
+    command_select_channel = '4437897819137837'  # 选人指令频道
     match_select_channel = '2645329202100415'  # 选人频道
 
-    def get_match_attack_channel(self, server: ServerEnum):
-        if server == ServerEnum.Server_1:
-            return OldGuildChannel.match_attack_channel
-        elif server == ServerEnum.Server_2:
-            return OldGuildChannel.match_attack_channel_2
-        elif server == ServerEnum.Server_3:
-            return OldGuildChannel.match_attack_channel_3
+    @classmethod
+    def get_match_channels(cls, server_enum: ServerEnum):
+        """Returns (attack_channel, defend_channel) based on the server enum."""
+        if server_enum == ServerEnum.Server_1:
+            return cls.match_attack_channel, cls.match_defend_channel
+        elif server_enum == ServerEnum.Server_2:
+            return cls.match_attack_channel_2, cls.match_defend_channel_2
+        elif server_enum == ServerEnum.Server_3:
+            return cls.match_attack_channel_3, cls.match_defend_channel_3
+        elif server_enum == ServerEnum.Server_4:
+            return cls.match_attack_channel_4, cls.match_defend_channel_4
+
+        return cls.match_wait_channel, cls.match_wait_channel
 
     @classmethod
     def get_at(cls, kook_id: str):

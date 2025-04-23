@@ -459,18 +459,21 @@ def init(bot: Bot, es_channels: EsChannels):
 
         # ################################################################ 是否移动玩家
         if not is_no_move:
-            if use_server_x == ServerEnum.Server_1:
-                await move_a_to_b_ex(OldGuildChannel.match_attack_channel, divide_data.attacker_list)
-                await move_a_to_b_ex(OldGuildChannel.match_defend_channel, divide_data.defender_list)
-            elif use_server_x == ServerEnum.Server_2:
-                await move_a_to_b_ex(OldGuildChannel.match_attack_channel_2, divide_data.attacker_list)
-                await move_a_to_b_ex(OldGuildChannel.match_defend_channel_2, divide_data.defender_list)
-            elif use_server_x in [ServerEnum.Server_3, ServerEnum.Server_4]:
-                await move_a_to_b_ex(OldGuildChannel.match_attack_channel_3, divide_data.attacker_list)
-                await move_a_to_b_ex(OldGuildChannel.match_defend_channel_3, divide_data.defender_list)
-                pass
+            channel_a, channel_d = OldGuildChannel.get_match_channels(use_server_x)
+            await move_a_to_b_ex(channel_a, divide_data.attacker_list)
+            await move_a_to_b_ex(channel_d, divide_data.defender_list)
+            # if use_server_x == ServerEnum.Server_1:
+            #     await move_a_to_b_ex(channel_a, divide_data.attacker_list)
+            #     await move_a_to_b_ex(channel_d, divide_data.defender_list)
+            # elif use_server_x == ServerEnum.Server_2:
+            #     await move_a_to_b_ex(OldGuildChannel.match_attack_channel_2, divide_data.attacker_list)
+            #     await move_a_to_b_ex(OldGuildChannel.match_defend_channel_2, divide_data.defender_list)
+            # elif use_server_x in [ServerEnum.Server_3, ServerEnum.Server_4]:
+            #     await move_a_to_b_ex(OldGuildChannel.match_attack_channel_3, divide_data.attacker_list)
+            #     await move_a_to_b_ex(OldGuildChannel.match_defend_channel_3, divide_data.defender_list)
+            #     pass
         else:
-            LogHelper.log("不移动")
+            LogHelper.log("不移动玩家")
 
         # ################################################################ 获取 txt配置文件路径
         px = ServerManager.CheckConfitTextFile(use_server_x)

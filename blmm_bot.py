@@ -6,26 +6,20 @@ import aiohttp
 import aiohttp_jinja2
 import jinja2
 from aiohttp import web
-from khl import Bot, Message, GuildUser
-from khl.card import Card, Module, Struct, Element, Types, CardMessage
+from khl import Bot, GuildUser
 from sqlalchemy import select
 
-from lib.BLMMServerSocket import websocket_handler
-from lib.LogHelper import LogHelper
 from botCommands import adminBot, regBot, playerBot, configBot, matchBot, testBot, commonBot
-from convert.PlayerMatchData import TPlayerMatchData
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager, OldGuildChannel
+from lib.BLMMServerSocket import websocket_handler
 from lib.ServerManager import ServerManager
-from lib.log.LoggerHelper import logger
 from lib.match_guard import MatchGuard
-from lib.match_state import MatchConditionEx
 from tables.Admin import DB_Admin
 from tables.KookChannelGroup import DB_KookChannelGroup
 from tables.ScoreLimit import DB_ScoreLimit
 from webBlueprint.adminRouter import adminRouter
 from webBlueprint.matchRouter import matchRouter
-
 from web_bp import bp
 
 sqlSession = get_session()
@@ -36,20 +30,6 @@ app.add_routes(adminRouter)
 app.add_routes(matchRouter)
 
 guard = MatchGuard()
-
-baseUrl = "https://www.kookapp.cn/api/v3/"
-baseUrl2 = "https://www.kookapp.cn"
-
-
-class UrlHelper:
-    baseUrl2 = "https://www.kookapp.cn"
-
-    user_list = baseUrl2 + '/api/v3/channel/user-list'
-    move_user = baseUrl2 + '/api/v3/channel/move-user'
-    delete_message = baseUrl2 + '/api/v3/message/delete'
-
-    local_url = "http://localhost:14725/"
-    reg_url = local_url + 'reg/'
 
 
 def open_file(path: str):
@@ -75,32 +55,6 @@ es_channels = EsChannels()
 #  case_sensitive=False 忽略大小写
 # 分数列表
 
-async def fetch(url):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            return await response.text()
-
-
-def get_time_str():
-    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-
-
-
-async def move_a_to_b(a: str, b: str):
-    channel = await bot.client.fetch_public_channel(a)
-    channel_b = await bot.client.fetch_public_channel(b)
-    k = await channel.fetch_user_list()
-    for id, user in enumerate(k):
-        d: GuildUser = user
-        await channel_b.move_user(ChannelManager.match_wait_channel, d.id)
-
-
-async def move_a_to_b_ex(b: str, list_player: list):
-    channel_b = await bot.client.fetch_public_channel(b)
-    for id, user_id in enumerate(list_player):
-        await channel_b.move_user(b, user_id)
-
 
 async def CheckDataBase():
     with  get_session() as sql_session:
@@ -122,7 +76,7 @@ async def CheckDataBase():
             guild = await bot.client.fetch_guild(OldGuildChannel.sever)
             print(guild)
             category_list = await guild.fetch_channel_category_list(True)
-            current_category_names = [i.name for i in category_list]
+            current_category_names = [i.name for i in category_list]  # 当前 kook服务器内的分类列表
             print(current_category_names)
             category_names = OldGuildChannel.get_category_list_name()
             print(category_names)
@@ -186,6 +140,7 @@ if __name__ == '__main__':
     # 保存所有活跃的 WebSocket 连接
     app['websockets'] = set()
 
+    # ########################################  添加websocket服务器
     app.add_routes([web.get('/ws', websocket_handler)])
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('satic'))
 

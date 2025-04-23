@@ -84,10 +84,10 @@ def init(bot: Bot, es_channels: EsChannels):
         **(font)/t 或 /type 修改自己的 第一兵种，第二兵种(font)[warning]**
         /change_name 或 /cn 修改名字
         ##### `匹配指令` #####
-        **(font)/ae 美式匹配(font)[success]**
-        **(font)/e 均分匹配(font)[success]**
-        **(font)/select_mode 选人匹配(font)[info]**
-        **(font)/cnm (font)[warning]** 【比赛ID】 取消比赛 ，例如 /cnm 10
+        **(font)/ae 美式匹配(font)[success]** 【**(font)只能由管理员启动(font)[info]**】
+        **(font)/e 均分匹配(font)[success]** 【**(font)只能由管理员启动(font)[info]**】
+        **(font)/select_mode 选人匹配(font)[info]** 【**(font)只能由管理员启动(font)[info]**】
+        **(font)/cnm (font)[warning]** 【比赛ID】 取消比赛 ，例如 /cnm 10 【**(font)只能由管理员启动(font)[info]**】
 
         **(font)注册指令(私聊机器人注册,如果直接私聊机器人，但是无响应，可以先公屏输入/help, 再私聊就可以解决问题)：(font)[danger]**
 /v [playerId] [code]  例如 /v 76561198104994845 600860

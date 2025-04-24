@@ -534,8 +534,8 @@ def init(bot: Bot, es_channels: EsChannels):
                 pass
             warning_text = f'(met){user_id}(met): 请注意,你已离开比赛频道{times}次'
             # 获取指定频道
-            ch = await bot.client.fetch_public_channel(ChannelManager.announcement)
-            ret = await ch.send(warning_text)  # 方法1
+            # ch = await bot.client.fetch_public_channel(ChannelManager.announcement)
+            # ret = await ch.send(warning_text)  # 方法1
             # LogHelper.log(f" {ret['msg_id']}")  # 方法1 发送消息的id
             pass
 

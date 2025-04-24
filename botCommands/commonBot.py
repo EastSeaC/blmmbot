@@ -489,13 +489,10 @@ def init(bot: Bot, es_channels: EsChannels):
 
             try:
                 await es_channels.command_channel.send(cm)
-                for i in cm:
-                    logger.info(json.dumps(i))
             except Exception as e:
                 logger.exception("发生异常:")
-                logger.debug('*' * 30)
-                for i in cm:
-                    logger.debug(i)
+                logger.info('*' * 70)
+                logger.info('\n' + json.dumps(cm))
                 return
 
     @bot.on_message()

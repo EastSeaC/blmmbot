@@ -14,6 +14,7 @@ from entity.ServerEnum import ServerEnum
 from entity.WillMatchType import WillMatchType
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager, kim, get_troop_type_image, OldGuildChannel
+from kook.Enum.KookTextColorEnum import TextColorEnum
 from lib.LogHelper import LogHelper, get_time_str
 from lib.SelectMatchData import SelectPlayerMatchData
 from lib.ServerGameConfig import get_random_faction_2, GameConfig, MapSequence
@@ -74,7 +75,7 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.command(name='help', case_sensitive=False, aliases=['h'])
     async def help_x(msg: Message):
-        t = '''    
+        t = f'''    
         /help 或 /h 查看所有指令
         **(font)/admin_help /ah 查看管理员指令(font)[warning]**
         /log_history 或 /l 查看最近10场比赛    
@@ -85,6 +86,9 @@ def init(bot: Bot, es_channels: EsChannels):
         ##### `匹配指令` #####
         **(font)/ae 美式匹配(font)[success]** 【**(font)只能由管理员启动(font)[info]**】
         **(font)/e 均分匹配(font)[success]** 【**(font)只能由管理员启动(font)[info]**】
+        
+        不想出现 镜像阵营 可以使用指令 {ChannelManager.get_color_text('/e m', TextColorEnum.danger)} 启动
+        
         **(font)/select_mode 选人匹配(font)[info]** 【**(font)只能由管理员启动(font)[info]**】
 **(font)/cnm (font)[warning]**【比赛ID】 取消比赛,例如 /cnm 6 【**(font)只能由管理员启动(font)[info]**】
 
@@ -149,7 +153,7 @@ def init(bot: Bot, es_channels: EsChannels):
         command_description = """
         开启匹配指令
         n:  表示 不移动玩家，仅用作测试
-        m:  表示 不使用config  添加地图池子指令
+        m:  表示 不使用config  添加地图池子指令 add_map_pool
         e:  不包括东海
         z:  不启动游戏服务器
         

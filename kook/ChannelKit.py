@@ -1,6 +1,7 @@
 from khl import PublicVoiceChannel, PublicTextChannel
 
 from entity.ServerEnum import ServerEnum
+from kook.Enum.KookTextColorEnum import TextColorEnum
 from lib.LogHelper import LogHelper
 
 
@@ -62,6 +63,10 @@ class ChannelManager:
             return "1451138349000890"
         elif guild_id == '2784764957685998':
             return "3971225977704461"
+
+    @staticmethod
+    def get_color_text(a: str, b: TextColorEnum):
+        return f'**(font){a}(font)[{b.value}]**'
 
     @staticmethod
     def get_emoji_id():

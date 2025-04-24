@@ -466,9 +466,9 @@ def init(bot: Bot, es_channels: EsChannels):
 
             z2 = z[6:]
 
-            name_str = ''
-            game_info = ''
-            kill_info = ''
+            name_str = '姓名:'
+            game_info = '分数:'
+            kill_info = 'KAD伤:'
             for i in z2:
                 player: TPlayerMatchData = i
                 name_str += f'\n{player.truncate_by_width()}'

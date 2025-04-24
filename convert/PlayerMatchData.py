@@ -14,6 +14,7 @@ class TPlayerMatchData:
         self.assist = data.get("assist", 0)
 
         self.match = 1
+        self.total_matches = 1
         self.win = data.get("win", 0)
         self.lose = data.get("Lose1", 0)
         self.draw = data.get("Draw1", 0)
@@ -38,6 +39,9 @@ class TPlayerMatchData:
         self.__old_score = 0
         self.new_score = 0
         self.is_lose = False
+
+    def set_total_matches(self, matches: int):
+        self.total_matches = matches
 
     def set_old_score(self, score: int):
         self.__old_score = score

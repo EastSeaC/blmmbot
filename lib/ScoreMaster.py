@@ -90,10 +90,15 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
             score_limit.max_damage_score,
         )
 
-        match_lose_minus = score_limit.failed_minus if player_data.is_lose else 0
-        # match_lose_minus = 0
+        # match_lose_minus = score_limit.failed_minus if player_data.is_lose else 0
+        match_lose_minus = 0
         sum_score = ceil(
             kill_score + death_score + assist_score + damage_score + horse_damage_score) + team_score - match_lose_minus
+
+        # ######################################## 小于30局，不扣分
+        if player_data.total_matches <= 30:
+            sum_score = max(0, sum_score)
+
         score_dick = {
             'player_id': player_data.player_id,
             'player_name': player_data.player_name,

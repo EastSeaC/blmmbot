@@ -6,6 +6,29 @@ from kook.ChannelKit import kim, get_troop_type_image
 from tables import DB_Player, DB_PlayerData
 from tables.PlayerMedal import DB_PlayerMedal
 
+word_dict = {
+    '恶霸': 'XErBa',
+    "城管": 'CenGua',
+}
+
+
+def replace_sensitive_words(text: str) -> str:
+    """
+    Replace sensitive words in the input text with their corresponding placeholders.
+
+    Args:
+        text: Input string potentially containing sensitive words
+
+    Returns:
+        String with sensitive words replaced by their placeholders
+    """
+    if not isinstance(text, str):
+        return text
+
+    for word, placeholder in word_dict.items():
+        text = text.replace(word, placeholder)
+    return text
+
 
 async def get_score_list_card():
     cm = CardMessage()

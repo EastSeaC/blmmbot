@@ -281,6 +281,7 @@ async def update_match_data2(request):
     for i in result:
         oldData: DB_PlayerData = i
         k = TPlayerMatchData(playerData[oldData.playerId])
+        k.set_total_matches(oldData.match)
         ## 计分系统
         # print(f"{k.player_id}: {k.win_rounds}")
         if not k.is_spectator_by_score():
@@ -340,6 +341,7 @@ async def update_match_data2(request):
         newData.playerName = k.player_name
         # 积分
         k.set_old_score(newData.rank)
+        k.set_total_matches(1)
         if not k.is_spectator_by_score():
             if k.player_id in match_data.left_players:
                 if match_total_sum.attacker_rounds < match_total_sum.defender_rounds:

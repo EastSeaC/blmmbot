@@ -13,6 +13,7 @@ from config import get_rank_name
 from entity.ServerEnum import ServerEnum
 from entity.WillMatchType import WillMatchType
 from init_db import get_session
+from kook.CardHelper import replace_sensitive_words
 from kook.ChannelKit import EsChannels, ChannelManager, kim, get_troop_type_image, OldGuildChannel
 from kook.Enum.KookTextColorEnum import TextColorEnum
 from lib.LogHelper import LogHelper, get_time_str
@@ -698,7 +699,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 Struct.Paragraph(
                     3,
                     Element.Text(
-                        f"名字:\n{player.kookName}",
+                        f"名字:\n{replace_sensitive_words(player.kookName)}",
                         type=Types.Text.KMD),
                     Element.Text(f"分数:\n{player.rank}", type=Types.Text.KMD),
                     Element.Text(f"位阶:\n(font){rank_name}(font)[pink]",

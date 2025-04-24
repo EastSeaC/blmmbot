@@ -232,6 +232,7 @@ async def update_match_data2(request):
     for i in result:
         oldData: DB_PlayerData = i
         k = TPlayerMatchData(playerData[oldData.playerId])
+        k.set_total_matches(oldData.match)
         ## 计分系统
         # print(f"{k.player_id}: {k.win_rounds}")
         if not k.is_spectator_by_score():
@@ -284,6 +285,7 @@ async def update_match_data2(request):
     for i in missing_data:
         # print('test123')
         k = TPlayerMatchData(i)
+        k.set_total_matches(1)
         # print(k.__dict__)
         newData = DB_PlayerData()
         newData.clear_data()

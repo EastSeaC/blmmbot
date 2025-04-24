@@ -13,7 +13,7 @@ from botCommands.ButtonValueImpl import AdminButtonValue, ESActionType, PlayerBu
 from convert.PlayerMatchData import TPlayerMatchData
 from entity.ServerEnum import ServerEnum
 from entity.WillMatchType import WillMatchType
-from kook.CardHelper import get_player_score_card, get_score_list_card
+from kook.CardHelper import get_player_score_card, get_score_list_card, replace_sensitive_words
 from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager, OldGuildChannel
@@ -452,6 +452,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 game_info += f'\n{player.get_score_info_2}'
                 kill_info += f'\n{player.get_kill_info_2}'
 
+            name_str = replace_sensitive_words(name_str)  # 替换敏感词
             c1 = Card(
                 Module.Section(
                     Struct.Paragraph(
@@ -475,6 +476,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 game_info += f'\n{player.get_score_info_2}'
                 kill_info += f'\n{player.get_kill_info_2}'
 
+            name_str = replace_sensitive_words(name_str)  # 替换敏感词
             c2 = Card(
                 Module.Section(
                     Struct.Paragraph(

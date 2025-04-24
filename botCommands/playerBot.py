@@ -724,7 +724,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 mode=Types.SectionMode.LEFT
             )
         )
-        Kill_Info = f'''**Kill Info**
+        Kill_Info = f'''**战场数据**
     击杀:{db_player.kill}
     死亡:{db_player.death}
     助攻:{db_player.assist}
@@ -733,7 +733,7 @@ def init(bot: Bot, es_channels: EsChannels):
     伤害:{db_player.damage}
     '''
 
-        game_info = f'''**游戏**
+        game_info = f'''**对局数据**
     对局数:{total_matches}
     胜场:{win_matches}
     胜率:{win_rate * 100:.2f}%
@@ -750,7 +750,7 @@ def init(bot: Bot, es_channels: EsChannels):
                     3,
                     Element.Text(Kill_Info, type=Types.Text.KMD),
                     Element.Text(game_info, type=Types.Text.KMD),
-                    Element.Text(f"**步/骑/弓弩**\n{player.infantry}/{player.cavalry}/{player.archer}",
+                    Element.Text(f"**步/骑/弓弩**\n{db_player.infantry}/{db_player.cavalry}/{db_player.archer}",
                                  type=Types.Text.KMD),
                 )
             ),

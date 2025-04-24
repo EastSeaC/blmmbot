@@ -493,7 +493,7 @@ def init(bot: Bot, es_channels: EsChannels):
                 logger.exception("发生异常:")
                 logger.debug('*' * 30)
                 for i in cm:
-                    logger.debug(repr(i))
+                    logger.debug(i)
                 return
 
     @bot.on_message()

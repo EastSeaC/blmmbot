@@ -1,3 +1,6 @@
+# KOOK指令
+ctrl+shift+alt + ) 打开控制台 PC端和网页端均可
+
 # 便捷指令
 
 >pip install -r requirements.txt

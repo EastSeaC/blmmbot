@@ -153,7 +153,7 @@ class MatchState:
         x, y = min_diff_partition(a)
 
         # 随机交换一名队员
-        if len(a)>= 10:
+        if len(a) >= 10:
             exchange_index = randint(2, 5)
             exchange_item = x[exchange_index]
             x[exchange_index] = y[exchange_index]
@@ -173,7 +173,7 @@ class MatchState:
 
             print(k.score, k.user_id)
             div.add_first_team(k)
-            div.add_attacker_info(k.user_name, k.score, k.player_id)  # 添加 积分块
+            div.add_attacker_info(k.user_name, k.score, k.player_id, k.user_id)  # 添加 积分块
 
         print('*' * 20)
         n = []
@@ -185,7 +185,7 @@ class MatchState:
             print(k.score, k.user_id)
 
             div.add_second_team(k)
-            div.add_defender_info(k.user_name, k.score, k.player_id)  # 添加 积分块
+            div.add_defender_info(k.user_name, k.score, k.player_id, k.user_id)  # 添加 积分块
 
         # while div.not_balance():
         #     div.balance()
@@ -383,11 +383,11 @@ class DivideData:
     def add_second_team(self, s: PlayerBasicInfo):
         self.second_team.append(s)
 
-    def add_attacker_info(self, attacker_name: str, score: int, player_id: str):
-        self.attacker_info_block.append([attacker_name, score, player_id])
+    def add_attacker_info(self, attacker_name: str, score: int, player_id: str, kook_id: str = '-1'):
+        self.attacker_info_block.append([attacker_name, score, player_id, kook_id])
 
-    def add_defender_info(self, defender_name: str, score: int, player_id: str):
-        self.defender_info_block.append([defender_name, score, player_id])
+    def add_defender_info(self, defender_name: str, score: int, player_id: str, kook_id: str = '-1'):
+        self.defender_info_block.append([defender_name, score, player_id, kook_id])
 
     def get_first_team_player_ids(self):
         return [defender_info[2] for defender_info in self.attacker_info_block]

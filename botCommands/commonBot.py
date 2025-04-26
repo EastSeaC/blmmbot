@@ -71,7 +71,7 @@ def init(bot: Bot, es_channels: EsChannels):
                     else:
                         await channel.send(
                             ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
-
+                        # ####################################### 发送倒计时
                         await channel.send(CardMessage(Card(
                             Module.Countdown(
                                 datetime.now() + dt_or.timedelta(seconds=12), mode=Types.CountdownMode.SECOND
@@ -301,6 +301,19 @@ def init(bot: Bot, es_channels: EsChannels):
                     # SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(
                     # selected_players)
                     print('变化后', SelectPlayerMatchData.need_to_select)
+
+                    if len(SelectPlayerMatchData.need_to_select) > 0:
+                        await channel.send(CardMessage(Card(
+                            Module.Context(
+                                Element.Text(ChannelManager.get_at(
+                                    SelectPlayerMatchData.get_cur_select_master_ex()) + f'该你选人了'),
+                            ),
+                            Module.Countdown(
+                                datetime.now() + dt_or.timedelta(seconds=12), mode=Types.CountdownMode.SECOND
+                            )
+                        )
+                        ))
+
                 elif type == ESActionType.Admin_Cancel_Match:
                     if not ChannelManager.is_admin(user_id):
                         await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')

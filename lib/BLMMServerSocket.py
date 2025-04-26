@@ -8,6 +8,7 @@ from aiohttp import web
 
 from lib.LogHelper import LogHelper
 from init_db import get_session
+from lib.log.LoggerHelper import logger
 from services.DataSyncService import DataSyncService
 
 # 创建事件
@@ -59,7 +60,7 @@ async def websocket_handler(request):
                                 'type': 'from_main_server',
                             }))
                     except Exception as e:
-                        print(repr(e))
+                        logger.debug(e)
                         print(f"Error processing message: {e}")
                 elif msg.type == aiohttp.WSMsgType.ERROR:
                     print(f"WebSocket Error: {ws.exception()}")

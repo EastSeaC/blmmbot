@@ -298,7 +298,8 @@ def init(bot: Bot, es_channels: EsChannels):
                     print('need_to_select变化前', SelectPlayerMatchData.need_to_select)
                     print(MatchConditionEx.blmm_2)
                     print('目标', selected_players)
-                    # SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(selected_players)
+                    # SelectPlayerMatchData.need_to_select = SelectPlayerMatchData.need_to_select.remove(
+                    # selected_players)
                     print('变化后', SelectPlayerMatchData.need_to_select)
                 elif type == ESActionType.Admin_Cancel_Match:
                     if not ChannelManager.is_admin(user_id):

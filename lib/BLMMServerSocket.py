@@ -6,6 +6,7 @@ from typing import Dict, Set
 import aiohttp
 from aiohttp import web
 
+from lib.JSONCompiler.jsonCompiler import ComplexEncoder
 from lib.LogHelper import LogHelper
 from init_db import get_session
 from lib.log.LoggerHelper import logger
@@ -58,7 +59,7 @@ async def websocket_handler(request):
                                 'op': 'sync_base',
                                 'data': data_to_send,
                                 'type': 'from_main_server',
-                            }))
+                            }, cls=ComplexEncoder))
                     except Exception as e:
                         logger.exception('x')
                         print(f"Error processing message: {e}")

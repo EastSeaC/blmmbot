@@ -313,18 +313,20 @@ def init(bot: Bot, es_channels: EsChannels):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
             ServerManager.RestartBLMMServerEx(ServerEnum.Server_1)
-
+            await channel.send(f'{ChannelManager.get_at(user_id)} 已重启服务器{ServerEnum.Server_1.value}')
         elif value == AdminButtonValue.Restart_Server_2:  # 重启服务器2
             if not ChannelManager.is_admin(user_id):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
             ServerManager.RestartBLMMServerEx(ServerEnum.Server_2)
-
+            await channel.send(f'{ChannelManager.get_at(user_id)} 已重启服务器{ServerEnum.Server_2.value}')
         elif value == AdminButtonValue.Restart_Server_3:  # 重启服务器3
             if not ChannelManager.is_admin(user_id):
                 await channel.send(f'(met){user_id}(met) 禁止使用管理员指令')
                 return
-            ServerManager.RestartBLMMServerEx(ServerEnum.Server_3)
+            # 3服在隔壁，暂时不起作用
+            # ServerManager.RestartBLMMServerEx(ServerEnum.Server_3)
+            # await channel.send(f'{ChannelManager.get_at(user_id)} 已重启服务器{ServerEnum.Server_3.value}')
             await channel.send(f'(met){user_id}(met) 服务器Server_3 已重启')
         elif value == AdminButtonValue.Show_Admin_Command:
             pass

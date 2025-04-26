@@ -95,9 +95,9 @@ def calculate_score(all_player_data: MatchSumData, player_data: TPlayerMatchData
         sum_score = ceil(
             kill_score + death_score + assist_score + damage_score + horse_damage_score) + team_score - match_lose_minus
 
-        # ######################################## 小于30局，不扣分
-        if player_data.total_matches <= 30:
-            sum_score = max(0, sum_score)
+        # ######################################## 小于30局，不扣分(经过大C建议，取消）
+        # if player_data.total_matches <= 30:
+        #     sum_score = max(0, sum_score)
 
         score_dick = {
             'player_id': player_data.player_id,

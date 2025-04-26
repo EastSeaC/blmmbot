@@ -18,7 +18,7 @@ class DB_PlayerData(Base):
     playerName = Column(VARCHAR(50), nullable=True)
 
     admin_level = Column(Integer, nullable=False, default=0)
-    ban_until_time = Column(DateTime)
+    create_time = Column(DateTime)
     last_login_ip = Column(String(256))
 
     history_names = Column(JSON, nullable=False, default=[])

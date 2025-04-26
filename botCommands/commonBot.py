@@ -270,6 +270,11 @@ def init(bot: Bot, es_channels: EsChannels):
                     channel = await b.client.fetch_public_channel(OldGuildChannel.command_select_channel)
                     print('first_team_master', SelectPlayerMatchData.first_team_master)
                     print('second_team_master', SelectPlayerMatchData.second_team_master)
+                    # #################################### 禁止重复选取
+                    if selected_players not in SelectPlayerMatchData.need_to_select:
+                        await channel.send(
+                            f'{ChannelManager.get_at(user_id)} 玩家{ChannelManager.get_at(selected_players)}已被选取，不允许再次选取')
+                        return
                     if user_id == SelectPlayerMatchData.first_team_master:
                         if SelectPlayerMatchData.get_cur_select_master() == '1':
                             await channel.send(ChannelManager.get_at(

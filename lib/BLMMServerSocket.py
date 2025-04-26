@@ -60,7 +60,7 @@ async def websocket_handler(request):
                                 'type': 'from_main_server',
                             }))
                     except Exception as e:
-                        logger.debug(e)
+                        logger.exception('x')
                         print(f"Error processing message: {e}")
                 elif msg.type == aiohttp.WSMsgType.ERROR:
                     print(f"WebSocket Error: {ws.exception()}")

@@ -10,6 +10,8 @@ def get_random_faction_2():
     return random_selection
 
 
+
+
 class GameConfig:
     def __init__(self,
                  server_name: str,

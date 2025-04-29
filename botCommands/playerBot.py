@@ -405,6 +405,8 @@ def init(bot: Bot, es_channels: EsChannels):
             # print(divide_data.attacker_list)
         # print(divide_data.defender_list)
         first_faction, second_faction = get_random_faction_2()
+        print('first_faction', first_faction)
+        print(ChannelManager.get_faction_image(first_faction))
         await msg.reply(CardMessage(
             Card(
                 Module.Header(f'服务器: {will_match_data.server_name}-{will_match_data.match_id_2}'),
@@ -414,6 +416,12 @@ def init(bot: Bot, es_channels: EsChannels):
                 Module.Header(f'时间:{get_time_str()}'),
                 Module.Divider(),
                 Module.Section(f'地图名`{will_match_data.map_name}`'),
+                Module.Divider(),
+                Module.ImageGroup(
+                    Element.Image(src=ChannelManager.get_faction_image(first_faction)),
+                    Element.Image(src=ChannelManager.image_vs),
+                    Element.Image(src=ChannelManager.get_faction_image(second_faction)),
+                ),
                 Module.Divider(),
                 Module.Section(
                     Struct.Paragraph(

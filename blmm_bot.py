@@ -44,6 +44,7 @@ config = open_file('config\\config.json')
 # 初始化机器人
 """main bot"""
 bot = Bot(token=config['token'])  # 默认采用 websocket
+# bot = Bot(token='1/MjkyOTM=/HLs/0Fi9IEBUsPcUtbb7Tg==')  # 默认采用 websocket
 
 ServerManager.MB_Path = config.get('MB_Path', '')
 es_channels = EsChannels()

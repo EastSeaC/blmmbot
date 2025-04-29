@@ -1,8 +1,41 @@
+from enum import Enum
+
 from khl import PublicVoiceChannel, PublicTextChannel
 
 from entity.ServerEnum import ServerEnum
 from kook.Enum.KookTextColorEnum import TextColorEnum
 from lib.LogHelper import LogHelper
+
+
+class Faction(Enum):
+    KHUZAIT = "khuzait"
+    EMPIRE = "empire"
+    VLANDIA = "vlandia"
+    STURGIA = "sturgia"
+    BATTANIA = "battania"
+    ASERAI = "aserai"
+
+
+def convert_emoji_format(emoji_str: str):
+    # 定义基础格式
+    __base_emoji = "(emj){}(emj)[{}]"
+
+    # 解析原始字符串，提取名称和ID
+    # 原始格式示例：'[:库塞特:9019084812125033/py018TXFqF02o02o]'
+    emoji_str = emoji_str.strip()
+    if emoji_str.startswith('[:') and emoji_str.endswith(']'):
+        # 去掉开头和结尾的符号
+        content = emoji_str[2:-1]
+        # 分割名称和ID部分
+        parts = content.split(':')
+        if len(parts) == 2:
+            name = parts[0]
+            emoji_id = parts[1]
+            # 使用基础格式构造新的emoji字符串
+            return __base_emoji.format(name, emoji_id)
+
+    # 如果格式不符合预期，返回原字符串或抛出异常
+    return emoji_str
 
 
 class ChannelManager:
@@ -80,6 +113,52 @@ class ChannelManager:
     emoji_infantry = __base_emoji.format('步兵', '9019084812125033/WN0jvQAtEY00o01r')
     emoji_archer = __base_emoji.format('射手', '9019084812125033/usVMZodUDl01700u')
     emoji_calvary = __base_emoji.format('骑士', '9019084812125033/Miw85Tj2UO01900u')
+
+    emoji_khuzait = convert_emoji_format('[:库塞特:9019084812125033/py018TXFqF02o02o]')
+    emoji_empire = convert_emoji_format('[:帝国:9019084812125033/0hTjZ1WNSl02o02o]')
+    emoji_vlandia = convert_emoji_format('[:瓦兰迪亚:9019084812125033/UfbjsLdqI402o02o]')
+    emoji_sturgia = convert_emoji_format('[:斯特吉亚:9019084812125033/tnDpXrEG0C02o02o]')
+    emoji_battania = convert_emoji_format('[:瓦兰迪亚:9019084812125033/NwuMZhzJyU02o02o]')
+    emoji_aserai = convert_emoji_format('[:阿塞莱:9019084812125033/yP4v6PNbWn02o02o]')
+
+    image_khuzait = 'https://img.kookapp.cn/assets/2025-04/29/avZOXPBq4v02o02o.png'
+    image_empire_faction = 'https://img.kookapp.cn/assets/2025-04/29/kCk8UXelZG02o02o.png'
+    image_vlandia = 'https://img.kookapp.cn/assets/2025-04/29/CxdxHophJM02o02o.png'
+    image_sturgia = 'https://img.kookapp.cn/assets/2025-04/29/QJXv13AD4U02o02o.png'
+    image_battania = 'https://img.kookapp.cn/assets/2025-04/29/rTqyi3WAER02o02o.png'
+    image_aserai = 'https://img.kookapp.cn/assets/2025-04/29/40PaFWNgwH02o02o.png'
+    image_vs = 'https://img.kookapp.cn/assets/2025-04/29/HMRaT9zhJh05k05k.png'
+
+    # 根据枚举返回对应emoji的函数
+    @classmethod
+    def get_faction_emoji(cls, faction: Faction):
+        emoji_map = {
+            Faction.KHUZAIT: cls.emoji_khuzait,
+            Faction.EMPIRE: cls.emoji_empire,
+            Faction.VLANDIA: cls.emoji_vlandia,
+            Faction.STURGIA: cls.emoji_sturgia,
+            Faction.BATTANIA: cls.emoji_battania,
+            Faction.ASERAI: cls.emoji_aserai
+        }
+        return emoji_map.get(faction, "")
+
+    @classmethod
+    def get_faction_image(cls, faction: Faction | str):
+        if isinstance(faction, str):
+            try:
+                faction = Faction(faction)  # 将字符串转换为 Faction 枚举
+            except ValueError:
+                return ""  # 如果字符串无效，返回默认值
+
+        emoji_map = {
+            Faction.KHUZAIT: cls.image_khuzait,
+            Faction.EMPIRE: cls.image_empire_faction,
+            Faction.VLANDIA: cls.image_vlandia,
+            Faction.STURGIA: cls.image_sturgia,
+            Faction.BATTANIA: cls.image_battania,
+            Faction.ASERAI: cls.image_aserai
+        }
+        return emoji_map.get(faction, '')
 
     image_joker = 'https://img.kookapp.cn/assets/2024-12/30/amsrdVMzVI0b40b4.png'
     image_farmer = 'https://img.kookapp.cn/assets/2024-12/30/jxTLdruutF0b40b4.png'

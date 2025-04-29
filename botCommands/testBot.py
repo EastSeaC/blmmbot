@@ -343,7 +343,7 @@ def init(bot: Bot, es_channels: EsChannels):
         ))
         pass
 
-    @bot.command(name='show_match_2', case_sensitive=False, aliases=['sm2'])
+    @bot.command(name='show_match_2e', case_sensitive=False, aliases=['sm2'])
     async def show_match(msg: Message):
         # user_list = ['482714005', '1757472132']
         user_list = ['482714005', '1386568452']  # 平克曼
@@ -410,11 +410,21 @@ def init(bot: Bot, es_channels: EsChannels):
         else:
             sqlSession.commit()
 
+        first_faction, second_faction = get_random_faction_2()
+        print('first_faction', first_faction)
+        print(ChannelManager.get_faction_image(first_faction))
         await msg.reply(CardMessage(
             Card(
                 Module.Header('分队情况表'),
                 Module.Divider(),
                 Module.Header(f'时间:{get_time_str()}'),
+                Module.Divider(),
+                Module.ImageGroup(
+                    Element.Image(src=ChannelManager.get_faction_image(first_faction)),
+                    Element.Image(src=ChannelManager.image_vs, alt='VS'),
+                    Element.Image(src=ChannelManager.get_faction_image(second_faction)),
+                ),
+                Module.Divider(),
                 Module.Section(
                     Struct.Paragraph(
                         3,

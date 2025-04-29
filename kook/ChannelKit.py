@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Union
 
 from khl import PublicVoiceChannel, PublicTextChannel
 
@@ -143,7 +144,7 @@ class ChannelManager:
         return emoji_map.get(faction, "")
 
     @classmethod
-    def get_faction_image(cls, faction: Faction | str):
+    def get_faction_image(cls, faction: Union[Faction, str]):
         if isinstance(faction, str):
             try:
                 faction = Faction(faction)  # 将字符串转换为 Faction 枚举

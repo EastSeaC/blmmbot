@@ -58,6 +58,29 @@ class SelectPlayerMatchData:
     def close_run(cls):
         cls.is_running = False
 
+    @classmethod
+    def refresh_match_select(cls):
+        cls.is_running = False
+        cls.origin_list = []
+
+        cls.first_team_master = ''
+        cls.second_team_master = ''
+
+        cls.first_team_player_ids = []
+        cls.second_team_player_ids = []
+
+        cls.origin_list = []
+        cls.total_list = []
+        cls.need_to_select = []
+
+        cls.cur_select_master = 0
+        cls.cur_index = 0
+        cls.select_order = '2112212121'
+
+        cls.cur_waiting = 0
+        # max_waiting = 12
+        cls.max_waiting = 15
+
     def __init__(self):
         self.first_team_master = ''
         self.first_team_player_ids = []

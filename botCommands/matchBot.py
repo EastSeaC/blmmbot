@@ -67,6 +67,15 @@ def init(bot: Bot, es_channels: EsChannels):
         else:
             await msg.reply('[Warning]:do not use es command!')
 
+    @bot.command(name='cancel_select', case_sensitive=False, aliases=['cns'])
+    async def cancel_select(msg: Message, *args):
+        if not ChannelManager.is_organization_user(msg.author_id):
+            await msg.reply('禁止使用管理员指令')
+            return
+
+        SelectPlayerMatchData.refresh_match_select()
+        await msg.reply('已取消选人')
+
     @bot.command(name='cancel_match', case_sensitive=False, aliases=['cnm'])
     async def cancel_match(msg: Message, *args):
         count = len(args)

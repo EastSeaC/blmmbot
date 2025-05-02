@@ -264,6 +264,9 @@ def init(bot: Bot, es_channels: EsChannels):
         card8 = Card()
         for i, t in dict_for_kook_id.items():
             if i in SelectPlayerMatchData.need_to_select:
+                if i == first_team_o or i == second_team_o:
+                    continue
+
                 card8.append(Module.Section(
                     Element.Text(
                         f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",

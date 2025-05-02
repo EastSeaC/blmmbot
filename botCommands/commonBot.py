@@ -62,11 +62,11 @@ def init(bot: Bot, es_channels: EsChannels):
                     if SelectPlayerMatchData.get_cur_select_master() == '1':
                         SelectPlayerMatchData.add_attacker(x)
                         await channel.send(ChannelManager.get_at(
-                            SelectPlayerMatchData.get_cur_select_master_ex()) + f'你选取了{ChannelManager.get_at(x)}【系统随机】')
+                            SelectPlayerMatchData.first_team_master) + f'你选取了{ChannelManager.get_at(x)}【系统随机】')
                     elif SelectPlayerMatchData.get_cur_select_master() == '2':
                         SelectPlayerMatchData.add_defender(x)
                         await channel.send(ChannelManager.get_at(
-                            SelectPlayerMatchData.get_cur_select_master_ex()) + f'你选取了{ChannelManager.get_at(x)}【系统随机】')
+                            SelectPlayerMatchData.second_team_master) + f'你选取了{ChannelManager.get_at(x)}【系统随机】')
 
                     else:
                         await channel.send(

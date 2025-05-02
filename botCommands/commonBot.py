@@ -68,15 +68,14 @@ def init(bot: Bot, es_channels: EsChannels):
                         await channel.send(ChannelManager.get_at(
                             SelectPlayerMatchData.second_team_master) + f'你选取了{ChannelManager.get_at(x)}【系统随机】')
 
-                    else:
-                        await channel.send(
-                            ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
-                        # ####################################### 发送倒计时
-                        await channel.send(CardMessage(Card(
-                            Module.Countdown(
-                                datetime.now() + dt_or.timedelta(seconds=12), mode=Types.CountdownMode.SECOND
-                            )
-                        )))
+                    await channel.send(
+                        ChannelManager.get_at(SelectPlayerMatchData.get_cur_select_master_ex()) + ':该你选人了')
+                    # ####################################### 发送倒计时
+                    await channel.send(CardMessage(Card(
+                        Module.Countdown(
+                            datetime.now() + dt_or.timedelta(seconds=12), mode=Types.CountdownMode.SECOND
+                        )
+                    )))
                     card8 = Card()
 
                     for i, t in SelectPlayerMatchData.data.items():
@@ -160,48 +159,67 @@ def init(bot: Bot, es_channels: EsChannels):
                     if newest_data is not None and len(newest_data) > 0:
                         last_match_number += newest_data[0].match_id_2
 
-                    use_server_x = ServerEnum.Server_1
-                    # if is_force_use_2:
-                    #     use_server_x = ServerEnum.Server_2
-                    # else:
-                    #     use_server_x = ServerEnum.Server_1
-                    # import datetime as dt_or
-                    name_x_initial = ServerManager.getServerName(ServerEnum.Server_1)
-                    LogHelper.log('name_x_initial: ' + name_x_initial)
-                    result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
-                              .filter(DB_WillMatchs.server_name == name_x_initial,
-                                      DB_WillMatchs.is_cancel == 0,
-                                      DB_WillMatchs.is_finished == 0,
-                                      )).limit(1).count()
+                    # ############################ 寻找服务器 #############################
+                    # 定义匿名函数
+                    count_will_matchs = lambda session, name: (
+                        session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                        .filter(DB_WillMatchs.server_name == name,
+                                DB_WillMatchs.is_cancel == 0,
+                                DB_WillMatchs.is_finished == 0,
+                                )).limit(1).count()
 
-                    if result == 0:
-                        use_server_x = ServerEnum.Server_1
-                        LogHelper.log(f'first_result {use_server_x} {result}')
-                        pass
-                    elif result > 0:
-                        use_server_x = ServerEnum.Server_2
-                        name_x_initial = ServerManager.getServerName(use_server_x)
-                        result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
-                                  .filter(DB_WillMatchs.server_name == name_x_initial,
-                                          DB_WillMatchs.is_cancel == 0,
-                                          DB_WillMatchs.is_finished == 0,
-                                          )).limit(1).count()
+                    for server in ServerEnum:
+                        current_server_name_str = ServerManager.getServerName(server)
+                        result = count_will_matchs(session, current_server_name_str)
                         if result == 0:
-                            use_server_x = ServerEnum.Server_2
+                            use_server_x = server
                             LogHelper.log(f'server result: {use_server_x} {result}')
-                        if result > 0:
-                            name_x_initial = ServerManager.getServerName(ServerEnum.Server_3)
-                            result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
-                                      .filter(DB_WillMatchs.server_name == name_x_initial,
-                                              DB_WillMatchs.is_cancel == 0,
-                                              DB_WillMatchs.is_finished == 0,
-                                              )).limit(1).count()
-                            if result == 0:
-                                use_server_x = ServerEnum.Server_3
-                                LogHelper.log(f'server result: {use_server_x} {result}')
-                            else:
-                                await channel.send('暂无服务器，请稍等')
-                                return
+                            break
+                    else:
+                        await channel.send('暂无服务器，请稍等')
+                        return
+                    # use_server_x = ServerEnum.Server_1
+                    # # if is_force_use_2:
+                    # #     use_server_x = ServerEnum.Server_2
+                    # # else:
+                    # #     use_server_x = ServerEnum.Server_1
+                    # # import datetime as dt_or
+                    # name_x_initial = ServerManager.getServerName(ServerEnum.Server_1)
+                    # LogHelper.log('name_x_initial: ' + name_x_initial)
+                    # result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                    #           .filter(DB_WillMatchs.server_name == name_x_initial,
+                    #                   DB_WillMatchs.is_cancel == 0,
+                    #                   DB_WillMatchs.is_finished == 0,
+                    #                   )).limit(1).count()
+                    #
+                    # if result == 0:
+                    #     use_server_x = ServerEnum.Server_1
+                    #     LogHelper.log(f'first_result {use_server_x} {result}')
+                    #     pass
+                    # elif result > 0:
+                    #     use_server_x = ServerEnum.Server_2
+                    #     name_x_initial = ServerManager.getServerName(use_server_x)
+                    #     result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                    #               .filter(DB_WillMatchs.server_name == name_x_initial,
+                    #                       DB_WillMatchs.is_cancel == 0,
+                    #                       DB_WillMatchs.is_finished == 0,
+                    #                       )).limit(1).count()
+                    #     if result == 0:
+                    #         use_server_x = ServerEnum.Server_2
+                    #         LogHelper.log(f'server result: {use_server_x} {result}')
+                    #     if result > 0:
+                    #         name_x_initial = ServerManager.getServerName(ServerEnum.Server_3)
+                    #         result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
+                    #                   .filter(DB_WillMatchs.server_name == name_x_initial,
+                    #                           DB_WillMatchs.is_cancel == 0,
+                    #                           DB_WillMatchs.is_finished == 0,
+                    #                           )).limit(1).count()
+                    #         if result == 0:
+                    #             use_server_x = ServerEnum.Server_3
+                    #             LogHelper.log(f'server result: {use_server_x} {result}')
+                    #         else:
+                    #             await channel.send('暂无服务器，请稍等')
+                    #             return
 
                     will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value)
 

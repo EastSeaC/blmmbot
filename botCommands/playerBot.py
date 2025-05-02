@@ -155,6 +155,7 @@ def init(bot: Bot, es_channels: EsChannels):
         开启匹配指令
         n:  表示 不移动玩家，仅用作测试
         m:  表示 不使用config  添加地图池子指令 add_map_pool
+        x:  表示 使用 add_map_pool
         e:  不包括东海
         z:  不启动游戏服务器
         
@@ -172,7 +173,7 @@ def init(bot: Bot, es_channels: EsChannels):
         is_force_use_3 = False
         is_force_use_4 = False
         not_open_server = False
-        is_use_map_pool_config = True
+        is_use_map_pool_config = False
         for i in arg:
             if i == 'e':
                 is_exclude_es = True
@@ -194,6 +195,8 @@ def init(bot: Bot, es_channels: EsChannels):
                 is_force_use_4 = True
             elif i == 'm':
                 is_use_map_pool_config = False
+            elif i == 'x':
+                is_use_map_pool_config = True
 
         # k: PublicVoiceChannel = await bot.client.fetch_public_channel(OldGuildChannel.match_wait_channel)
         # k = await k.fetch_user_list()

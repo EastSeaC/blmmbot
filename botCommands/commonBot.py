@@ -150,7 +150,15 @@ def init(bot: Bot, es_channels: EsChannels):
                         len(SelectPlayerMatchData.first_team_player_ids))
                     will_match_data.is_cancel = False
                     will_match_data.is_finished = False
+
+                    today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+                    newest_data = session.execute(
+                        select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight).order_by(
+                            desc(DB_WillMatchs.time_match)).limit(1)).first()
                     will_match_data.match_id_2 = 100
+                    last_match_number = random.randint(3, 6)
+                    if newest_data is not None and len(newest_data) > 0:
+                        last_match_number += newest_data[0].match_id_2
 
                     use_server_x = ServerEnum.Server_1
                     # if is_force_use_2:
@@ -232,6 +240,8 @@ def init(bot: Bot, es_channels: EsChannels):
                             Module.Header(f'比赛ID：{will_match_data.match_id_2}')
                         )
                     ))
+
+                ServerManager.RestartBLMMServerEx(use_server_x)
 
     @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)
     async def btn_click_event(b: Bot, e: Event):

@@ -50,6 +50,8 @@ def init(bot: Bot, es_channels):
             player_id = '2.0.0.' + player_id
 
         if not re.match(r'^[\d\\.]+$', player_id):
+            failed_text += 'playerId 不合规则，请重新确认并仔细填写'
+            print(failed_text)
             await msg.reply('playerId 不合规则，请重新确认并仔细填写')
             return
 
@@ -64,7 +66,7 @@ def init(bot: Bot, es_channels):
         sql_session = get_session()
         z = sql_session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId.like(f'%{player_id}%')).count()
         if z == 0:
-            result_str=f'该playerId {player_id} 所属的玩家暂未进入服务器，请先进入游戏服务器'
+            result_str = f'该playerId {player_id} 所属的玩家暂未进入服务器，请先进入游戏服务器'
             await msg.reply(result_str)
             print(result_str)
             return

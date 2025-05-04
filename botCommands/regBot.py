@@ -64,7 +64,9 @@ def init(bot: Bot, es_channels):
         sql_session = get_session()
         z = sql_session.query(DB_PlayerNames).filter(DB_PlayerNames.playerId.like(f'%{player_id}%')).count()
         if z == 0:
-            await msg.reply(f'该playerId {player_id} 所属的玩家暂未进入服务器，请先进入游戏服务器')
+            result_str=f'该playerId {player_id} 所属的玩家暂未进入服务器，请先进入游戏服务器'
+            await msg.reply(result_str)
+            print(result_str)
             return
 
             # 检测是否已被注册
@@ -72,6 +74,7 @@ def init(bot: Bot, es_channels):
             or_(DB_Player.playerId == player_id, DB_Player.kookId == user_id)).count()
         if t > 0:
             failed_text += '该kook_id 或player_id已被注册,如果你确认这个账号是你的，请联系管理员'
+            print(failed_text)
             await msg.reply(failed_text)
             return
 
@@ -81,6 +84,7 @@ def init(bot: Bot, es_channels):
         if verify_code_obj is None:
             LogHelper.log(DB_Verify(verify_code_obj).code)
             failed_text += '验证码错误'
+            print(failed_text)
             await msg.reply(failed_text)
             return
 

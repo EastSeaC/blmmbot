@@ -145,8 +145,7 @@ def init(bot: Bot, es_channels: EsChannels):
                     will_match_data.first_team_culture = first_faction
                     will_match_data.second_team_culture = second_faction
 
-                    will_match_data.match_type = WillMatchType.get_match_type_with_player_num(
-                        len(SelectPlayerMatchData.first_team_player_ids))
+                    will_match_data.match_type = WillMatchType.get_match_type_with_player_num(6)
                     will_match_data.is_cancel = False
                     will_match_data.is_finished = False
 
@@ -154,10 +153,11 @@ def init(bot: Bot, es_channels: EsChannels):
                     newest_data = session.execute(
                         select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight).order_by(
                             desc(DB_WillMatchs.time_match)).limit(1)).first()
-                    will_match_data.match_id_2 = 100
+
                     last_match_number = random.randint(3, 6)
                     if newest_data is not None and len(newest_data) > 0:
                         last_match_number += newest_data[0].match_id_2
+                    will_match_data.match_id_2 = last_match_number
 
                     # ############################ 寻找服务器 #############################
                     # 定义匿名函数

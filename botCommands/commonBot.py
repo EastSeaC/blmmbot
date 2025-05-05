@@ -341,6 +341,25 @@ def init(bot: Bot, es_channels: EsChannels):
                             )
                         )
                         ))
+                        card8 = Card()
+                        for i, t in SelectPlayerMatchData.data.items():
+                            if i in SelectPlayerMatchData.need_to_select:
+                                card8.append(Module.Section(
+                                    Element.Text(
+                                        f"{t.kookName}({t.rank}) \t {ChannelManager.get_troop_emoji(t.first_troop)} {ChannelManager.get_troop_emoji(t.second_troop)} ",
+                                        type=Types.Text.KMD),
+                                    Element.Button(
+                                        "选取",
+                                        value=json.dumps({'type': 'match_select_players',
+                                                          'kookId': t.kookId,
+                                                          'playerId': t.playerId,
+                                                          'match_id': '9'}),
+                                        click=Types.Click.RETURN_VAL,
+                                        theme=Types.Theme.INFO,
+                                    ),
+                                ))
+                                card8.append(Module.Divider())
+                        await channel.send(CardMessage(card8))
 
                 elif type == ESActionType.Admin_Cancel_Match:
                     if not ChannelManager.is_admin(user_id):

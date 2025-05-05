@@ -5,11 +5,13 @@ import uuid
 from datetime import datetime
 import datetime as dt_or
 
+import aiohttp
 from khl import Bot, EventTypes, Event, Message
 from khl.card import CardMessage, Card, Module, Element, Types, Struct
 from sqlalchemy import desc, select
 
 from botCommands.ButtonValueImpl import AdminButtonValue, ESActionType, PlayerButtonValue
+from botCommands.playerBot import map_sequence
 from convert.PlayerMatchData import TPlayerMatchData
 from entity.ServerEnum import ServerEnum
 from entity.WillMatchType import WillMatchType
@@ -18,7 +20,7 @@ from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
 from kook.ChannelKit import EsChannels, ChannelManager, OldGuildChannel
 from lib.SelectMatchData import SelectPlayerMatchData
-from lib.ServerGameConfig import get_random_faction_2
+from lib.ServerGameConfig import get_random_faction_2, GameConfig
 from lib.ServerManager import ServerManager
 from lib.log.LoggerHelper import logger
 from lib.match_state import MatchConditionEx
@@ -148,6 +150,7 @@ def init(bot: Bot, es_channels: EsChannels):
                     will_match_data.match_type = WillMatchType.get_match_type_with_player_num(6)
                     will_match_data.is_cancel = False
                     will_match_data.is_finished = False
+                    will_match_data.map_name = map_sequence.get_next_map()
 
                     today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
                     newest_data = session.execute(
@@ -178,53 +181,14 @@ def init(bot: Bot, es_channels: EsChannels):
                     else:
                         await channel.send('暂无服务器，请稍等')
                         return
-                    # use_server_x = ServerEnum.Server_1
-                    # # if is_force_use_2:
-                    # #     use_server_x = ServerEnum.Server_2
-                    # # else:
-                    # #     use_server_x = ServerEnum.Server_1
-                    # # import datetime as dt_or
-                    # name_x_initial = ServerManager.getServerName(ServerEnum.Server_1)
-                    # LogHelper.log('name_x_initial: ' + name_x_initial)
-                    # result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
-                    #           .filter(DB_WillMatchs.server_name == name_x_initial,
-                    #                   DB_WillMatchs.is_cancel == 0,
-                    #                   DB_WillMatchs.is_finished == 0,
-                    #                   )).limit(1).count()
-                    #
-                    # if result == 0:
-                    #     use_server_x = ServerEnum.Server_1
-                    #     LogHelper.log(f'first_result {use_server_x} {result}')
-                    #     pass
-                    # elif result > 0:
-                    #     use_server_x = ServerEnum.Server_2
-                    #     name_x_initial = ServerManager.getServerName(use_server_x)
-                    #     result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
-                    #               .filter(DB_WillMatchs.server_name == name_x_initial,
-                    #                       DB_WillMatchs.is_cancel == 0,
-                    #                       DB_WillMatchs.is_finished == 0,
-                    #                       )).limit(1).count()
-                    #     if result == 0:
-                    #         use_server_x = ServerEnum.Server_2
-                    #         LogHelper.log(f'server result: {use_server_x} {result}')
-                    #     if result > 0:
-                    #         name_x_initial = ServerManager.getServerName(ServerEnum.Server_3)
-                    #         result = (session.query(DB_WillMatchs).order_by(desc(DB_WillMatchs.time_match))
-                    #                   .filter(DB_WillMatchs.server_name == name_x_initial,
-                    #                           DB_WillMatchs.is_cancel == 0,
-                    #                           DB_WillMatchs.is_finished == 0,
-                    #                           )).limit(1).count()
-                    #         if result == 0:
-                    #             use_server_x = ServerEnum.Server_3
-                    #             LogHelper.log(f'server result: {use_server_x} {result}')
-                    #         else:
-                    #             await channel.send('暂无服务器，请稍等')
-                    #             return
 
                     will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value)
 
                     session.add(will_match_data)
                     session.commit()
+
+                    first_faction, second_faction = get_random_faction_2()
+
                     await channel.send(CardMessage(
                         Card(
                             Module.Header(f'服务器: {will_match_data.server_name}-{will_match_data.match_id_2}'),
@@ -232,6 +196,14 @@ def init(bot: Bot, es_channels: EsChannels):
                             Module.Header('分队情况表'),
                             Module.Divider(),
                             Module.Header(f'时间:{get_time_str()}'),
+                            Module.Divider(),
+                            Module.Section(f'地图名`{will_match_data.map_name}`'),
+                            Module.Divider(),
+                            Module.ImageGroup(
+                                Element.Image(src=ChannelManager.get_faction_image(first_faction)),
+                                Element.Image(src=ChannelManager.image_vs, alt='VS'),
+                                Element.Image(src=ChannelManager.get_faction_image(second_faction)),
+                            ),
                             Module.Section(
                                 Struct.Paragraph(
                                     3,
@@ -259,6 +231,29 @@ def init(bot: Bot, es_channels: EsChannels):
                         )
                     ))
 
+                # ################################################################ 发送到其他服务器
+                if use_server_x in [ServerEnum.Server_3, ServerEnum.Server_4]:
+                    # 如果服务器 为3，4 需要发送到 另一个服务器
+                    # requests.post('http://localhost:14725/send_match_info', json=will_match_data)
+                    async with aiohttp.ClientSession() as session:
+                        async with session.post('http://localhost:14725/send_match_info',
+                                                json=will_match_data.to_dict()) as response:
+                            text = await response.text()
+                    not_open_server = True  # 3服要交给其他服务器启动，因此不需要
+                    pass
+
+                # ################################################################ 获取 txt配置文件路径
+                px = ServerManager.CheckConfitTextFile(use_server_x)
+                # px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x.txt'
+                print('txt file path' + px)
+                with open(px, 'w') as f:
+                    text = GameConfig(server_name=will_match_data.server_name ,
+                                      match_id=f'{will_match_data.match_id_2}',
+                                      map_name=will_match_data.map_name,
+                                      use_map_pool=False)
+                    text.culture_team1 = first_faction
+                    text.culture_team2 = second_faction
+                    f.write(text.to_str())
                 ServerManager.RestartBLMMServerEx(use_server_x)
 
     @bot.on_event(EventTypes.MESSAGE_BTN_CLICK)

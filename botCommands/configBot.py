@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 from khl import Bot
@@ -19,7 +20,12 @@ def init(bot: Bot, es_channels: EsChannels):
 
     @bot.task.add_cron(hour=9, timezone="Asia/Shanghai")
     async def backup_data():
-        backup()
+        current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
+        backup_dir = "C:\\Users\\Administrator\\Desktop\\blmmbackup"
+        if not os.path.exists(backup_dir):
+            os.makedirs(backup_dir, exist_ok=True)
+
+        backup_file_path = f"{backup_dir}\\backup_{current_time}.json"
         pass
 
     @bot.task.add_cron(minute=49, timezone="Asia/Shanghai")

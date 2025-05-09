@@ -1,4 +1,5 @@
 import datetime
+import os
 import re
 
 from khl import Bot, Message, GuildUser, PublicChannel, User
@@ -12,6 +13,7 @@ from lib.LogHelper import LogHelper
 from blmm_bot import EsChannels
 from init_db import get_session
 from kook.ChannelKit import ChannelManager
+from lib.SqlUtil.backup_utils import backup
 from lib.basic import generate_numeric_code
 from tables import *
 from tables.Admin import DB_Admin
@@ -135,9 +137,19 @@ def init(bot: Bot, es_channels: EsChannels):
     '''
         await msg.reply(t)
 
-    @bot.command(name='reset_server', case_sensitive=False, aliases=['reset'])
+    @bot.command(name='backup_data', case_sensitive=False, aliases=['backup'])
     async def reset_game_server(msg: Message, force: str):
+        if not ChannelManager.is_es(msg.author_id):
+            await msg.reply('禁止使用es指令')
+            return
+        else:
+            current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
+            backup_dir = "C:\\Users\\Administrator\\Desktop\\blmmbackup"
+            if not os.path.exists(backup_dir):
+                os.makedirs(backup_dir, exist_ok=True)
 
+            backup_file_path = f"{backup_dir}\\backup_{current_time}.json"
+            backup(backup_file_path)
         pass
 
     @bot.command(name='reset_player_score', case_sensitive=False, aliases=['rps'])  # 重置玩家分数

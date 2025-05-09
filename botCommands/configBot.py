@@ -5,6 +5,7 @@ from khl import Bot
 from lib.LogHelper import LogHelper
 from init_db import get_session
 from kook.ChannelKit import EsChannels
+from lib.SqlUtil.backup_utils import backup
 from tables import *
 from tables.ResetPlayer import DB_ResetPlayer
 
@@ -16,7 +17,12 @@ def init(bot: Bot, es_channels: EsChannels):
     global g_channels
     g_channels = es_channels
 
-    @bot.task.add_cron(minute=49)
+    @bot.task.add_cron(hour=9, timezone="Asia/Shanghai")
+    async def backup_data():
+        backup()
+        pass
+
+    @bot.task.add_cron(minute=49, timezone="Asia/Shanghai")
     async def reset_all_player_data():
         reset_record = session.query(DB_ResetPlayer).all()
         if not reset_record:

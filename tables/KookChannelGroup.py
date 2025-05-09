@@ -2,9 +2,6 @@ from sqlalchemy import *
 
 from .base import Base
 
-from typing import List
-import json
-
 
 class DB_KookChannelGroup(Base):
     __tablename__ = "kook_channel_group"

@@ -2,4 +2,11 @@ from .players import DB_Player
 from .verifys import DB_Verify
 from .MatchInfo import DB_Matchs
 from .PlayerData import DB_PlayerData
+from .KookChannelGroup import DB_KookChannelGroup
+from .Admin import DB_Admin
+from .Ban import DB_Ban
+from .WillMatch import DB_WillMatchs
+from .PlayerMedal import DB_PlayerMedal
+from .MedalPool import DB_MedalPool
+from .ScoreLimit import DB_ScoreLimit
 from .base import Base

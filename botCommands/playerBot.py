@@ -87,6 +87,8 @@ def init(bot: Bot, es_channels: EsChannels):
         ##### `匹配指令` #####
         **(font)/ae 美式匹配(font)[success]** 【**(font)只能由管理员启动(font)[info]**】
         **(font)/e 均分匹配(font)[success]** 【**(font)只能由管理员启动(font)[info]**】
+        /select_mode 选人模式
+        /cancel_select 取消选人 
         
         不想出现 镜像阵营 可以使用指令 {ChannelManager.get_color_text('/e m', TextColorEnum.danger)} 启动
         

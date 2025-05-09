@@ -48,6 +48,11 @@ def init(bot: Bot, es_channels: EsChannels):
     global g_channels
     g_channels = es_channels
 
+    async def move_a_to_b_ex(b: str, list_player: list):
+        channel_b = await bot.client.fetch_public_channel(b)
+        for id, user_id in enumerate(list_player):
+            await channel_b.move_user(b, user_id)
+
     @bot.task.add_interval(seconds=1)
     async def task_for_select_match():
         if SelectPlayerMatchData.is_running:
@@ -106,6 +111,7 @@ def init(bot: Bot, es_channels: EsChannels):
                         f'{ChannelManager.get_at(SelectPlayerMatchData.first_team_master)} {ChannelManager.get_at(SelectPlayerMatchData.second_team_master)} 选人结束，请进入比赛服务器')
 
             if len(SelectPlayerMatchData.need_to_select) == 0:
+                # ############################################# 停止运行选人 计时器
                 SelectPlayerMatchData.close_run()
 
                 first_team_player_ids_x = []
@@ -147,11 +153,14 @@ def init(bot: Bot, es_channels: EsChannels):
                     will_match_data.first_team_culture = first_faction
                     will_match_data.second_team_culture = second_faction
 
-                    will_match_data.match_type = WillMatchType.get_match_type_with_player_num(6)
+                    # ########################################################## 多种模式支持
+                    single_side_player_number = len(SelectPlayerMatchData.first_team_player_ids)
+                    single_side_player_number = max(1, single_side_player_number)
+                    will_match_data.match_type = WillMatchType.get_match_type_with_player_num(single_side_player_number)
                     will_match_data.is_cancel = False
                     will_match_data.is_finished = False
                     will_match_data.map_name = map_sequence.get_next_map()
-
+                    # ########################################################## 获取比赛id
                     today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
                     newest_data = session.execute(
                         select(DB_WillMatchs).where(DB_WillMatchs.time_match >= today_midnight).order_by(
@@ -242,12 +251,21 @@ def init(bot: Bot, es_channels: EsChannels):
                     not_open_server = True  # 3服要交给其他服务器启动，因此不需要
                     pass
 
+                # ################################################################ 是否移动玩家
+                is_no_move = False
+                if not is_no_move:
+                    channel_a, channel_d = OldGuildChannel.get_match_channels(use_server_x)
+                    await move_a_to_b_ex(channel_a, SelectPlayerMatchData.first_team_player_ids)
+                    await move_a_to_b_ex(channel_d, SelectPlayerMatchData.second_team_player_ids)
+                else:
+                    LogHelper.log("不移动玩家")
+
                 # ################################################################ 获取 txt配置文件路径
                 px = ServerManager.CheckConfitTextFile(use_server_x)
                 # px = r'C:\Users\Administrator\Desktop\server files license\Modules\Native\blmm_6_x.txt'
                 print('txt file path' + px)
                 with open(px, 'w') as f:
-                    text = GameConfig(server_name=will_match_data.server_name ,
+                    text = GameConfig(server_name=will_match_data.server_name,
                                       match_id=f'{will_match_data.match_id_2}',
                                       map_name=will_match_data.map_name,
                                       use_map_pool=False)

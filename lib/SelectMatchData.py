@@ -22,6 +22,16 @@ class SelectPlayerMatchData:
     data = []
 
     @classmethod
+    def refine_select_order(cls, number: int):
+        if number == 12:
+            cls.select_order = '2112212121'
+        elif number == 6:
+            cls.select_order = '2121'
+        else:
+            cls.select_order = '2112212121'
+        pass
+
+    @classmethod
     def get_cur_select_master(cls):
         try:
             print('选人索引', cls.cur_index)

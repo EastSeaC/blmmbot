@@ -6,3 +6,4 @@ test
 config/config.json
 config
 logs
+lib/SqlUtil/*.json

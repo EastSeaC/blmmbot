@@ -106,7 +106,7 @@ async def is_cancel_match(req):
         if will_match.is_cancel == 1 or will_match.is_finished == 1:
             return web.json_response(text=ControllerResponse.success_response(True))
         else:
-            return ControllerResponse.success_response(False)
+            return web.json_response(text=ControllerResponse.success_response(False))
 
 
 @matchRouter.post('/divide_players_to_2_group')

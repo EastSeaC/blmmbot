@@ -213,9 +213,9 @@ def init(bot: Bot, es_channels: EsChannels):
 
         # ####################### 检查人数 #######################
         number_of_user = len(k)
-        # if number_of_user % 2 == 1 or number_of_user == 0 or number_of_user != 12:
-        #     await msg.reply(f'人数异常, 当前人数为 {len(k)} , 必须为12个人')
-        #     return
+        if number_of_user % 2 == 1 or number_of_user == 0:
+            await msg.reply(f'人数异常, 当前人数为 {len(k)} , 必须为偶数个人【推荐6/12人】')
+            return
 
         sqlSession = get_session()
         z = sqlSession.query(DB_Player).filter(DB_Player.kookId.in_([i.id for i in k])).all()
@@ -374,6 +374,9 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.is_finished = False
         will_match_data.map_name = map_sequence.get_next_map()  # ############## 使用图序确定图名
 
+        if will_match_data.match_type == WillMatchType.NotSupport:
+            await msg.reply(f'当前人数 {len(divide_data.first_team)} 不支持')
+            return
         # will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
         # will_match_data.server_name = ServerManager.getServerName(use_server_x)
 
@@ -384,7 +387,7 @@ def init(bot: Bot, es_channels: EsChannels):
         # will_match_data.server_name = 'CN_BTL_SHAOXING_' + str(use_server_x.value[0])
         will_match_data.server_name = ServerManager.getServerName(use_server_x)
 
-        # 获取今天的日期并设置时间为 00:00:00 从而实现 0点充值 比赛id
+        # ############################################### 获取今天的日期并设置时间为 00:00:00 从而实现 0点充值 比赛id
         # 所有服务器中的比赛ID都是 唯一的
         today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
         # 更新session

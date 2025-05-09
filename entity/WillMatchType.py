@@ -5,6 +5,8 @@ class WillMatchType:
     Match88 = 'Match88'
     Match22 = 'Match22'
 
+    NotSupport = 'NotSupport'
+
     @classmethod
     def get_match_type_with_player_num(cls, a: int):
         if a == 1:
@@ -17,3 +19,5 @@ class WillMatchType:
             return WillMatchType.Match66
         elif a == 8:
             return WillMatchType.Match88
+        else:
+            return WillMatchType.NotSupport

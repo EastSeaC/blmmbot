@@ -26,6 +26,7 @@ def init(bot: Bot, es_channels: EsChannels):
             os.makedirs(backup_dir, exist_ok=True)
 
         backup_file_path = f"{backup_dir}\\backup_{current_time}.json"
+        backup(backup_file_path)
         pass
 
     @bot.task.add_cron(minute=49, timezone="Asia/Shanghai")

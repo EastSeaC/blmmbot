@@ -98,6 +98,7 @@ class GameConfig:
                 f"FriendlyFireDamageRangedFriendPercent {self.friendly_fire_damage_ranged_friend_percent}\n"
                 f"FriendlyFireDamageRangedSelfPercent {self.friendly_fire_damage_ranged_self_percent}\n"
                 f"MinNumberOfPlayersForMatchStart {self.min_number_of_players_for_match_start}\n"
+                f"SpectatorCamera 6\n"
                 f"SpectatorCameraTypes 6\n"
                 f"RoundTotal {self.round_total}\n"
                 f"MapTimeLimit {self.map_time_limit}\n"

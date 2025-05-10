@@ -1,5 +1,6 @@
 import random
 
+from entity.WillMatchType import WillMatchType
 from lib.LogHelper import LogHelper
 
 
@@ -8,8 +9,6 @@ def get_random_faction_2():
     # 从列表中随机选择两个元素
     random_selection = random.sample(z, 2)
     return random_selection
-
-
 
 
 class GameConfig:
@@ -129,7 +128,19 @@ class MapSequence:
             "mp_skirmish_map_003_skinc",
             "mp_skirmish_map_002f",
         ]
+
+        self.maps_for_33 = [
+            'mp_mm_gf'
+        ]
         self.index = 0
+
+    def get_next_map_with_type(self, type_a: WillMatchType):
+        if type_a in [WillMatchType.Match66, WillMatchType.Match88]:
+            return self.get_next_map()
+        elif type_a == WillMatchType.Match33:
+            return self.maps_for_33[0]
+        else:
+            return self.get_next_map()
 
     def get_next_map(self):
         current_map = self.maps[self.index]

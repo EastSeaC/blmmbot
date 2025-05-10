@@ -1,9 +1,9 @@
+import datetime as dt_or
 import json
 import random
 import re
 import uuid
 from datetime import datetime
-import datetime as dt_or
 
 import aiohttp
 from khl import Bot, EventTypes, Event, Message
@@ -15,19 +15,17 @@ from botCommands.playerBot import map_sequence
 from convert.PlayerMatchData import TPlayerMatchData
 from entity.ServerEnum import ServerEnum
 from entity.WillMatchType import WillMatchType
-from kook.CardHelper import get_player_score_card, get_score_list_card, replace_sensitive_words
-from lib.LogHelper import LogHelper, get_time_str
 from init_db import get_session
+from kook.CardHelper import get_player_score_card, get_score_list_card, replace_sensitive_words
 from kook.ChannelKit import EsChannels, ChannelManager, OldGuildChannel
+from lib.LogHelper import LogHelper, get_time_str
 from lib.SelectMatchData import SelectPlayerMatchData
 from lib.ServerGameConfig import get_random_faction_2, GameConfig
 from lib.ServerManager import ServerManager
 from lib.log.LoggerHelper import logger
 from lib.match_state import MatchConditionEx
 from tables import *
-from tables import WillMatch
 from tables.WillMatch import DB_WillMatchs
-from tables.ResetPlayer import DB_ResetPlayer
 
 session = get_session()
 g_channels: EsChannels
@@ -159,7 +157,9 @@ def init(bot: Bot, es_channels: EsChannels):
                     will_match_data.match_type = WillMatchType.get_match_type_with_player_num(single_side_player_number)
                     will_match_data.is_cancel = False
                     will_match_data.is_finished = False
-                    will_match_data.map_name = map_sequence.get_next_map()
+                    # will_match_data.map_name = map_sequence.get_next_map()
+                    # 根据比赛类型，确定地图
+                    will_match_data.map_name = map_sequence.get_next_map_with_type(will_match_data.match_type)
                     # ########################################################## 获取比赛id
                     today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
                     newest_data = session.execute(

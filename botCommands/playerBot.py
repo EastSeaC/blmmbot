@@ -372,7 +372,9 @@ def init(bot: Bot, es_channels: EsChannels):
         will_match_data.match_type = WillMatchType.get_match_type_with_player_num(len(divide_data.first_team))
         will_match_data.is_cancel = False
         will_match_data.is_finished = False
-        will_match_data.map_name = map_sequence.get_next_map()  # ############## 使用图序确定图名
+        # will_match_data.map_name = map_sequence.get_next_map()  # ############## 使用图序确定图名
+        # 根据比赛类型，确定地图
+        will_match_data.map_name = map_sequence.get_next_map_with_type(will_match_data.match_type)
 
         if will_match_data.match_type == WillMatchType.NotSupport:
             await msg.reply(f'当前人数 {len(divide_data.first_team)} 不支持')

@@ -104,9 +104,9 @@ async def is_cancel_match(req):
             return web.json_response(text=ControllerResponse.error_response(-1, "未找到对应match"))
         will_match: DB_WillMatchs = z[0]
         if will_match.is_cancel == 1 or will_match.is_finished == 1:
-            return web.json_response(text=ControllerResponse.success_response(True))
+            return web.json_response(text=ControllerResponse.success_response({"is_cancel": True, "reason": will_match.cancel_reason}))
         else:
-            return web.json_response(text=ControllerResponse.success_response(False))
+            return web.json_response(text=ControllerResponse.success_response({"is_cancel": False, "reason": ""}))
 
 
 @matchRouter.post('/divide_players_to_2_group')

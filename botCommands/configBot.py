@@ -8,6 +8,7 @@ from init_db import get_session
 from kook.ChannelKit import EsChannels
 from lib.ServerGameConfig import MapSequence
 from lib.SqlUtil.backup_utils import backup
+from lib.log.LoggerHelper import logger
 from tables import *
 from tables.ResetPlayer import DB_ResetPlayer
 from tables.MapRecord import DB_BLMMMap
@@ -38,14 +39,17 @@ def init(bot: Bot, es_channels: EsChannels):
             # 假设这里已经导入了必要的模块和类
             with get_session() as session:
                 # 查询所有地图记录
-                map_records = session.query(DB_BLMMMap.map_name).filter(DB_BLMMMap.is_for_33 == 0,
-                                                                        DB_BLMMMap.is_available == 1).scalars().all()
-
+                map_records = session.query(DB_BLMMMap).filter(DB_BLMMMap.is_for_33 == 0,
+                                                               DB_BLMMMap.is_available == 1).all()
+                map_records = [i.map_name for i in map_records]
                 MapSequence.maps_list = map_records
             # 关闭会话
             session.close()
         except Exception as e:
-            print(f"读取地图记录时出错: {e}")
+            logger.exception('123')
+            # print(f"读取地图记录时出错: {e}")
+
+
 
     # ... existing code ...
 

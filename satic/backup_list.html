@@ -23,6 +23,7 @@
                 <li class="layui-nav-item layui-hide-xs"><a href="/">导出数据</a></li>
                 <li class="layui-nav-item layui-hide-xs"><a href="/ban">封印</a></li>
                 <li class="layui-nav-item layui-hide-xs"><a href="/debug">调试界面</a></li>
+                <li class="layui-nav-item layui-hide-xs"><a href="/backup">备份页面</a></li>
             </ul>
         </div>
     </div>
@@ -76,8 +77,10 @@
                 var layEvent = obj.event;
 
                 if (layEvent === 'action1') {
-                    // 操作1的逻辑
-                    layer.msg('执行操作1');
+                    // 假设 data 中包含文件名
+                    var filename = data.name; 
+                    var url = '/download_backup_file/' + filename;
+                    window.location.href = url;
                 } else if (layEvent === 'action2') {
                     // 操作2的逻辑
                     layer.msg('执行操作2');

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>备份列表</title>
+
+    <script src="/satic/layui/layui.js"></script>
+    <link href="/satic/layui/css/layui.css" rel="stylesheet">
+    <script src="/satic/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo layui-hide-xs layui-bg-black">BLMM[BTL]网页端 - 备份列表</div>
+            <!-- 头部区域（可配合layui 已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                <!-- 移动端显示 -->
+                <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+                    <i class="layui-icon layui-icon-spread-left"></i>
+                </li>
+                <li class="layui-nav-item layui-hide-xs"><a href="/">导出数据</a></li>
+                <li class="layui-nav-item layui-hide-xs"><a href="/ban">封印</a></li>
+                <li class="layui-nav-item layui-hide-xs"><a href="/debug">调试界面</a></li>
+            </ul>
+        </div>
+    </div>
+    <blockquote class="layui-elem-quote layui-text">
+        备份列表
+    </blockquote>
+
+    <table class="layui-hide" id="backupListTable" lay-filter="backupList"></table>
+
+    <script type="text/html" id="barBackupDemo">
+        <div class="layui-clear-space">
+            <a class="layui-btn layui-btn-xs" lay-event="action1">操作1</a>
+            <a class="layui-btn layui-btn-xs" lay-event="action2">操作2</a>
+        </div>
+    </script>
+
+    <script>
+        layui.use(['form', 'jquery', 'table', 'dropdown', 'layer'], function () {
+            var form = layui.form;
+            var $ = layui.jquery;
+            var table = layui.table;
+            var dropdown = layui.dropdown;
+
+            // 渲染备份列表表格
+            table.render({
+                elem: '#backupListTable',
+                url: '/GetBackUpList',
+                parseData: function (res) {
+                    // return {
+                    //     "code": 0,
+                    //     "msg": "暂无数据",
+                    //     "data": res
+                    // }
+                    return res;
+                },
+                cols: [
+                    [
+                        // 这里需要根据实际数据字段调整表头
+                        { field: 'id', title: 'ID', sort: true, fixed: 'left' },
+                        { field: 'name', title: '名称' },
+                        { field: 'date', title: '日期' },
+                        { fixed: 'right', width: 150, align: 'center', toolbar: '#barBackupDemo' },
+                    ]
+                ],
+                page: true // 开启分页
+            });
+
+            // 监听工具条
+            table.on('tool(backupList)', function (obj) {
+                var data = obj.data;
+                var layEvent = obj.event;
+
+                if (layEvent === 'action1') {
+                    // 操作1的逻辑
+                    layer.msg('执行操作1');
+                } else if (layEvent === 'action2') {
+                    // 操作2的逻辑
+                    layer.msg('执行操作2');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -151,7 +151,7 @@ def init(bot: Bot, es_channels: EsChannels):
             with get_session() as session:
                 # 查询所有地图记录
                 map_records = session.query(DB_BLMMMap.map_name).filter(DB_BLMMMap.is_for_33 == 0,
-                                                                        DB_BLMMMap.is_available == 1).scalars().all()
+                                                                        DB_BLMMMap.is_available == 1).all()
 
                 MapSequence.maps_list = map_records
             # 关闭会话

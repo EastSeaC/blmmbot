@@ -16,9 +16,11 @@ from kook.ChannelKit import ChannelManager
 from lib.ServerGameConfig import MapSequence
 from lib.SqlUtil.backup_utils import backup
 from lib.basic import generate_numeric_code
+from lib.log.LoggerHelper import logger
 from tables import *
 from tables.Admin import DB_Admin
 from tables.Ban import DB_Ban
+from tables.MapRecord import DB_BLMMMap
 from tables.PlayerMedal import DB_PlayerMedal
 from tables.PlayerNames import DB_PlayerNames
 
@@ -143,6 +145,21 @@ def init(bot: Bot, es_channels: EsChannels):
         if not ChannelManager.is_es(msg.author_id):
             await msg.reply('禁止使用es指令')
             return
+
+        try:
+            # 假设这里已经导入了必要的模块和类
+            with get_session() as session:
+                # 查询所有地图记录
+                map_records = session.query(DB_BLMMMap.map_name).filter(DB_BLMMMap.is_for_33 == 0,
+                                                                        DB_BLMMMap.is_available == 1).scalars().all()
+
+                MapSequence.maps_list = map_records
+            # 关闭会话
+            session.close()
+        except Exception as e:
+            logger.exception('123')
+            await msg.reply(f"读取地图记录时出错: {e}")
+            # print(f"读取地图记录时出错: {e}")
 
         map_str = str(MapSequence.maps_list)
         await msg.reply(map_str)

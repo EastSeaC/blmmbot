@@ -11,7 +11,6 @@ from khl.card import CardMessage, Card, Module, Element, Types, Struct
 from sqlalchemy import desc, select
 
 from botCommands.ButtonValueImpl import AdminButtonValue, ESActionType, PlayerButtonValue
-from botCommands.playerBot import map_sequence
 from convert.PlayerMatchData import TPlayerMatchData
 from entity.ServerEnum import ServerEnum
 from entity.WillMatchType import WillMatchType
@@ -20,7 +19,7 @@ from kook.CardHelper import get_player_score_card, get_score_list_card, replace_
 from kook.ChannelKit import EsChannels, ChannelManager, OldGuildChannel
 from lib.LogHelper import LogHelper, get_time_str
 from lib.SelectMatchData import SelectPlayerMatchData
-from lib.ServerGameConfig import get_random_faction_2, GameConfig
+from lib.ServerGameConfig import get_random_faction_2, GameConfig, MapSequence
 from lib.ServerManager import ServerManager
 from lib.log.LoggerHelper import logger
 from lib.match_state import MatchConditionEx
@@ -159,6 +158,7 @@ def init(bot: Bot, es_channels: EsChannels):
                     will_match_data.is_finished = False
                     # will_match_data.map_name = map_sequence.get_next_map()
                     # 根据比赛类型，确定地图
+                    map_sequence = MapSequence()
                     will_match_data.map_name = map_sequence.get_next_map_with_type(will_match_data.match_type)
                     # ########################################################## 获取比赛id
                     today_midnight = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)

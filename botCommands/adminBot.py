@@ -13,6 +13,7 @@ from lib.LogHelper import LogHelper
 from blmm_bot import EsChannels
 from init_db import get_session
 from kook.ChannelKit import ChannelManager
+from lib.ServerGameConfig import MapSequence
 from lib.SqlUtil.backup_utils import backup
 from lib.basic import generate_numeric_code
 from tables import *
@@ -64,7 +65,7 @@ def init(bot: Bot, es_channels: EsChannels):
         )
         cm.append(c8)
         await es_channels.command_channel.send(cm)
-    
+
     @bot.command(name='grant_medal', case_sensitive=False, aliases=['gm'])
     async def grant_medal(msg: Message, target_kook_id: str, medal_id: str):
         """
@@ -136,6 +137,16 @@ def init(bot: Bot, es_channels: EsChannels):
 /reset_state_machine - 重置状态机（具体功能需根据实际实现确定）
     '''
         await msg.reply(t)
+
+    @bot.command('show_map_list', case_sensitive=False, aliases=['sml'])
+    async def show_map_list(msg: Message):
+        if not ChannelManager.is_es(msg.author_id):
+            await msg.reply('禁止使用es指令')
+            return
+
+        map_str = str(MapSequence.maps_list)
+        await msg.reply(map_str)
+        pass
 
     @bot.command(name='backup_data', case_sensitive=False, aliases=['backup'])
     async def reset_game_server(msg: Message, force: str):

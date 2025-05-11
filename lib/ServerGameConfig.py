@@ -114,6 +114,23 @@ class GameConfig:
 
 
 class MapSequence:
+    maps_list = [
+        "mp_bnl_fortlieve",
+        # "mp_bnl_ghosttown",
+        "mp_bnl_lighthouse",
+        "mp_bnl_purplehaze",
+        "mp_skirmish_map_007",
+        "mp_skirmish_map_010",
+        "mp_skirmish_map_020",
+        "mp_skirmish_map_008_skin",
+        "mp_skirmish_map_003_skinc",
+        "mp_skirmish_map_002f",
+    ]
+
+    maps_for_33g = [
+        'mp_mm_gf'
+    ]
+
     def __init__(self):
         self.maps = [
             # "mp_adimiduel_empire",
@@ -144,7 +161,7 @@ class MapSequence:
             return self.get_next_map()
 
     def get_next_map(self):
-        current_map = self.maps[self.index]
+        current_map = MapSequence.maps_list[self.index]
         self.index = (self.index + 1) % len(self.maps)
         return current_map
 

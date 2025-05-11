@@ -6,9 +6,11 @@ from khl import Bot
 from lib.LogHelper import LogHelper
 from init_db import get_session
 from kook.ChannelKit import EsChannels
+from lib.ServerGameConfig import MapSequence
 from lib.SqlUtil.backup_utils import backup
 from tables import *
 from tables.ResetPlayer import DB_ResetPlayer
+from tables.MapRecord import DB_BLMMMap
 
 session = get_session()
 g_channels: EsChannels
@@ -28,6 +30,24 @@ def init(bot: Bot, es_channels: EsChannels):
         backup_file_path = f"{backup_dir}\\backup_{current_time}.json"
         backup(backup_file_path)
         pass
+
+    # ... existing code ...
+    @bot.task.add_cron(second=9, timezone="Asia/Shanghai")
+    async def read_map_records():
+        try:
+            # 假设这里已经导入了必要的模块和类
+            with get_session() as session:
+                # 查询所有地图记录
+                map_records = session.query(DB_BLMMMap.map_name).filter(DB_BLMMMap.is_for_33 == 0,
+                                                                        DB_BLMMMap.is_available == 1).scalars().all()
+
+                MapSequence.maps_list = map_records
+            # 关闭会话
+            session.close()
+        except Exception as e:
+            print(f"读取地图记录时出错: {e}")
+
+    # ... existing code ...
 
     @bot.task.add_cron(minute=49, timezone="Asia/Shanghai")
     async def reset_all_player_data():
@@ -59,7 +79,7 @@ def init(bot: Bot, es_channels: EsChannels):
         LogHelper.log("已重置所有人数据")
         session.commit()
 
-    async def reset_apply(arg:str):
+    async def reset_apply(arg: str):
         session = get_session()
         some_records = session.query(DB_PlayerData).all()
 

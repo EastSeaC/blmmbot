@@ -121,7 +121,10 @@ async def download_backup_file(request):
 
     if os.path.exists(file_path) and os.path.isfile(file_path):
         try:
-            return web.FileResponse(file_path)
+            response = web.FileResponse(file_path)
+            # 添加 Content-Disposition 头以强制下载
+            response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+            return response
         except Exception as e:
             return web.json_response({'code': 3, 'msg': f'下载文件失败: {str(e)}'})
     else:

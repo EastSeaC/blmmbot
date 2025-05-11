@@ -150,9 +150,9 @@ def init(bot: Bot, es_channels: EsChannels):
             # 假设这里已经导入了必要的模块和类
             with get_session() as session:
                 # 查询所有地图记录
-                map_records = session.query(DB_BLMMMap.map_name).filter(DB_BLMMMap.is_for_33 == 0,
+                map_records = session.query(DB_BLMMMap).filter(DB_BLMMMap.is_for_33 == 0,
                                                                         DB_BLMMMap.is_available == 1).all()
-
+                map_records = [i.map_name for i in map_records]
                 MapSequence.maps_list = map_records
             # 关闭会话
             session.close()

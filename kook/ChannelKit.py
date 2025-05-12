@@ -61,6 +61,8 @@ class ChannelManager:
     error_channel = '3489054506196442'
     es_user_id = '482714005'
 
+    root_manager_id = ['482714005', '1124099478']
+
     # 通用 人类提示频道
     common_channel = '3137719365146347'
     command_channel = '3971225977704461'
@@ -77,6 +79,8 @@ class ChannelManager:
     @staticmethod
     def is_es(kook_id: str):
         if kook_id == ChannelManager.es_user_id:
+            return True
+        elif kook_id in ChannelManager.root_manager_id:
             return True
         else:
             return False

@@ -360,7 +360,7 @@ def init(bot: Bot, es_channels: EsChannels):
             elif i == '3':
                 is_force_use_2 = False
                 is_force_use_3 = True
-
+        # return
         channel = await bot.client.fetch_public_channel(
             ChannelManager.match_high_score_match_channel)
         voice_channel: PublicVoiceChannel = channel
@@ -501,19 +501,20 @@ def init(bot: Bot, es_channels: EsChannels):
 
             pass
         elif channel_id == ChannelManager.match_high_score_match_channel:
-            with get_session() as session:
-                p = session.query(DB_Player).filter(DB_Player.kookId == user_id).first()
-                remove = False
-                if p is None:
-                    remove = True
-                else:
-                    player: DB_Player = p
-                    if player.rank <= 1100:
-                        remove = True
-
-                # 移除
-                if remove:
-                    await move_a_to_b_ex(ChannelManager.match_wait_channel, [user_id])
+            return
+            # with get_session() as session:
+            #     p = session.query(DB_Player).filter(DB_Player.kookId == user_id).first()
+            #     remove = False
+            #     if p is None:
+            #         remove = True
+            #     else:
+            #         player: DB_Player = p
+            #         if player.rank <= 1100:
+            #             remove = True
+            #
+            #     # 移除
+            #     if remove:
+            #         await move_a_to_b_ex(ChannelManager.match_wait_channel, [user_id])
         pass
 
     @bot.on_event(EventTypes.EXITED_CHANNEL)

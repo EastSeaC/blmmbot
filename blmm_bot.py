@@ -69,19 +69,19 @@ async def CheckDataBase():
 
         #  检查服务区频道
         result = sql_session.execute(
-            select(DB_KookChannelGroup).where(DB_KookChannelGroup.guild_id == OldGuildChannel.sever)).all()
-        # print('服务器ID', result)
-        if len(result) == 0 and False:
-            guild = await bot.client.fetch_guild(OldGuildChannel.sever)
+            select(DB_KookChannelGroup).where(DB_KookChannelGroup.guild_id == ChannelManager.sever)).all()
+
+        print('服务器ID', result)
+        if len(result) == 0:
+            guild = await bot.client.fetch_guild(ChannelManager.sever)
             print(guild)
             category_list = await guild.fetch_channel_category_list(True)
             current_category_names = [i.name for i in category_list]  # 当前 kook服务器内的分类列表
             print(current_category_names)
-            category_names = OldGuildChannel.get_category_list_name()
+            category_names = ChannelManager.get_category_list_name()
             print(category_names)
             for i in category_names:
-                print(i)
-                print(type(i))
+                print('category_names_record', i, type(i))
                 if i not in current_category_names:
                     try:
                         blmm_5_category = await guild.create_channel_category(i)
@@ -94,7 +94,8 @@ async def CheckDataBase():
                         #     OldGuildChannel.channel_eliminate_room, blmm_5_category)
                         channel_group.group_name = i
                         channel_group.group_id = blmm_5_category.id
-                        channel_group.guild_id = OldGuildChannel.sever
+                        channel_group.guild_id = ChannelManager.sever
+                        print('channel_group.guild_id = ChannelManager.sever', channel_group.guild_id)
                         channel_group.team_a_channel = team_a_channel.id
                         channel_group.team_b_channel = team_b_channel.id
                         # channel_group.wait_channel = team_eliminate_channel.id
@@ -105,7 +106,7 @@ async def CheckDataBase():
                     except Exception as e:
                         sql_session.rollback()
                         print(e)
-        else:
+        else:  # 频道存在，直接读取数据库到
             pass
 
 

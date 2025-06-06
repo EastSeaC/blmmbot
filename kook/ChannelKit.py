@@ -45,15 +45,15 @@ class ChannelManager:
     # 公告区
     announcement = '7368706706716074'
     # 集结频道ID
-    old_wait_channel = '3137719365146347'
+    old_wait_channel = '7483461728419145'
     # 休息室
     sleep_room_channel = '2602141163900435'
     # 比赛分组
     match_group = '3182448324425808'
     # 候选频道语音
-    match_wait_channel = '6713919713207768'
-    match_attack_channel = '5436769046749546'
-    match_defend_channel = '8246783800929740'
+    match_wait_channel = '6486738692616979'
+    match_attack_channel = '4855555618242776'
+    match_defend_channel = '7704290253382922'
 
     match_set_channel = '9152989485766507'  # 淘汰休息室
     match_high_score_match_channel = '8860007123246981'  # 高分频道
@@ -63,19 +63,42 @@ class ChannelManager:
 
     root_manager_id = ['482714005', '1124099478']
 
+    match_attack_channel_2 = '5889652844944800'
+    match_defend_channel_2 = '8324383899171681'
+
+    match_attack_channel_3 = '4653727651132216'
+    match_defend_channel_3 = '7136051179773177'
+
+    match_attack_channel_4 = '6549179321865306'
+    match_defend_channel_4 = '7270117468200787'
+
+    command_select_channel = '4437897819137837'  # 选人指令频道
+    match_select_channel = '2645329202100415'  # 选人频道
+
+    # ######################################## 各频道的名字
+    command_channel_name = '指令频道'
+    wait_channel_name = '⏳集结等人频道⏳'
+    channel_a_team = 'A队'
+    channel_b_team = 'B队'
+    channel_wait_room = '休息室'
+    channel_eliminate_room = '淘汰休息室'
+    # ######################################## 各频道的名字
+
     # 通用 人类提示频道
     common_channel = '3137719365146347'
     command_channel = '3971225977704461'
     manager_user_id = ['482714005',
                        '404770518',  # 大C
                        '1439484517',  # 小明？
-                       '3743625354',  # 海棠
+                       '1124099478',  # 茉莉
+                       # '3743625354',  # 海棠
                        ]
 
     organization_user_ids = [
 
     ]
 
+    # ########################################### 管理员账号
     @staticmethod
     def is_es(kook_id: str):
         if kook_id == ChannelManager.es_user_id:
@@ -97,6 +120,9 @@ class ChannelManager:
 
     @staticmethod
     def get_command_channel_id(guild_id: str):
+        """
+        获取指令频道 参数
+        """
         if guild_id == '9019084812125033':
             return "1451138349000890"
         elif guild_id == '2784764957685998':
@@ -115,16 +141,29 @@ class ChannelManager:
     emoji_farmer = __base_emoji.format('农民', '2784764957685998/ScZtMJaGPk0b40b4')
     emoji_joker = __base_emoji.format('小丑', '2784764957685998/3xeNeLlxjz0b40b4')
 
-    emoji_infantry = __base_emoji.format('步兵', '9019084812125033/WN0jvQAtEY00o01r')
-    emoji_archer = __base_emoji.format('射手', '9019084812125033/usVMZodUDl01700u')
-    emoji_calvary = __base_emoji.format('骑士', '9019084812125033/Miw85Tj2UO01900u')
+    # emoji_infantry = __base_emoji.format('步兵', '9019084812125033/WN0jvQAtEY00o01r')
+    # emoji_archer = __base_emoji.format('射手', '9019084812125033/usVMZodUDl01700u')
+    # emoji_calvary = __base_emoji.format('骑士', '9019084812125033/Miw85Tj2UO01900u')
 
-    emoji_khuzait = convert_emoji_format('[:库塞特:9019084812125033/py018TXFqF02o02o]')
-    emoji_empire = convert_emoji_format('[:帝国:9019084812125033/0hTjZ1WNSl02o02o]')
-    emoji_vlandia = convert_emoji_format('[:瓦兰迪亚:9019084812125033/UfbjsLdqI402o02o]')
-    emoji_sturgia = convert_emoji_format('[:斯特吉亚:9019084812125033/tnDpXrEG0C02o02o]')
-    emoji_battania = convert_emoji_format('[:瓦兰迪亚:9019084812125033/NwuMZhzJyU02o02o]')
-    emoji_aserai = convert_emoji_format('[:阿塞莱:9019084812125033/yP4v6PNbWn02o02o]')
+    emoji_infantry = convert_emoji_format('[:infantry:2784764957685998/foaURrQmiT074074]')
+    emoji_archer = convert_emoji_format('[:archer:2784764957685998/mD6nWKwaO001700u]')
+    emoji_calvary = convert_emoji_format('[:cavalry:2784764957685998/kLUB3wkSsU01900u]')
+
+    # emoji_khuzait = convert_emoji_format('[:库塞特:9019084812125033/py018TXFqF02o02o]')
+    emoji_khuzait = convert_emoji_format('[:库塞特2:2784764957685998/XXUdCoUtMr02o02o]')
+
+    # emoji_empire = convert_emoji_format('[:帝国:9019084812125033/0hTjZ1WNSl02o02o]')
+    emoji_empire = convert_emoji_format('[:帝国:2784764957685998/u6IlXzIeC202o02o]')
+
+    # emoji_vlandia = convert_emoji_format('[:瓦兰迪亚:9019084812125033/UfbjsLdqI402o02o]')
+    emoji_vlandia = convert_emoji_format('[:瓦兰迪亚:2784764957685998/IgH0cj8DeV02o02o]')
+
+    # emoji_sturgia = convert_emoji_format('[:斯特吉亚:9019084812125033/tnDpXrEG0C02o02o]')
+    emoji_sturgia = convert_emoji_format('[:斯特吉亚:2784764957685998/MlF46f2qF602o02o]')
+
+    emoji_battania = convert_emoji_format('[:巴丹尼亚:2784764957685998/tQjUz8bnq102o02o]')
+    #
+    emoji_aserai = convert_emoji_format('[:阿塞莱:2784764957685998/Q1nM8IiU0h02o02o]')
 
     image_khuzait = 'https://img.kookapp.cn/assets/2025-04/29/avZOXPBq4v02o02o.png'
     image_empire_faction = 'https://img.kookapp.cn/assets/2025-04/29/kCk8UXelZG02o02o.png'
@@ -205,6 +244,10 @@ class ChannelManager:
     def get_at(cls, kook_id: str):
         return f'(met){kook_id}(met)'
 
+    @classmethod
+    def get_category_list_name(cls):
+        return [f'BLMM_{i}' for i in range(1, 4 + 1)]
+
 
 class OldGuildChannel:
     # 服务器
@@ -220,8 +263,8 @@ class OldGuildChannel:
     # 候选频道语音
     match_wait_channel = '9263713909740224'
     # 1队频道
-    match_attack_channel = '5436769046749546'
-    match_defend_channel = '8246783800929740'
+    match_attack_channel = '7308932802383743'
+    match_defend_channel = '7290026622193157'
 
     match_set_channel = '6713919713207768'  # 淘汰休息室
     # 警告频道
@@ -232,19 +275,21 @@ class OldGuildChannel:
     common_channel = '3137719365146347'
     command_channel = '1451138349000890'
 
-    manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
+    manager_user_id = ['482714005', '404770518', '1439484517',
+                       # '3743625354', # 海棠
+                       '2806603494']
 
-    match_attack_channel_2 = '5889652844944800'
-    match_defend_channel_2 = '8324383899171681'
+    match_attack_channel_2 = '1803681562240168'
+    match_defend_channel_2 = '5193278548479470'
 
-    match_attack_channel_3 = '4653727651132216'
-    match_defend_channel_3 = '7136051179773177'
+    match_attack_channel_3 = '2699188070848195'
+    match_defend_channel_3 = '2569791961177069'
 
-    match_attack_channel_4 = '6549179321865306'
-    match_defend_channel_4 = '7270117468200787'
+    match_attack_channel_4 = '7257226911868428'
+    match_defend_channel_4 = '2990551033712608'
 
-    command_select_channel = '4437897819137837'  # 选人指令频道
-    match_select_channel = '2645329202100415'  # 选人频道
+    command_select_channel = '2497003141756957'  # 选人指令频道
+    match_select_channel = '3865383181396844'  # 选人频道
 
     @classmethod
     def get_match_channels(cls, server_enum: ServerEnum):
@@ -314,6 +359,71 @@ def kim(rank_name: str):
         return ChannelManager.image_empire
 
 
+class OldGuildChannelForHTLObsolete:
+    # 服务器
+    sever = '9019084812125033'
+    # 公告区
+    announcement = '7368706706716074'
+    # 集结频道ID
+    old_wait_channel = '3137719365146347'
+    # 休息室
+    sleep_room_channel = '2602141163900435'
+    # 比赛分组
+    match_group = '8867447588765353'
+    # 候选频道语音
+    match_wait_channel = '9263713909740224'
+    # 1队频道
+    match_attack_channel = '5436769046749546'
+    match_defend_channel = '8246783800929740'
+
+    match_set_channel = '6713919713207768'  # 淘汰休息室
+    # 警告频道
+    error_channel = '3489054506196442'
+    es_user_id = '482714005'
+
+    # 通用 人类提示频道
+    common_channel = '3137719365146347'
+    command_channel = '1451138349000890'
+
+    manager_user_id = ['482714005', '404770518', '1439484517', '3743625354', '2806603494']
+
+    match_attack_channel_2 = '5889652844944800'
+    match_defend_channel_2 = '8324383899171681'
+
+    match_attack_channel_3 = '4653727651132216'
+    match_defend_channel_3 = '7136051179773177'
+
+    match_attack_channel_4 = '6549179321865306'
+    match_defend_channel_4 = '7270117468200787'
+
+    command_select_channel = '4437897819137837'  # 选人指令频道
+    match_select_channel = '2645329202100415'  # 选人频道
+
+    __base_emoji = "(emj){}(emj)[{}]"
+
+    emoji_farmer = __base_emoji.format('农民', '2784764957685998/ScZtMJaGPk0b40b4')
+    emoji_joker = __base_emoji.format('小丑', '2784764957685998/3xeNeLlxjz0b40b4')
+
+    emoji_infantry = __base_emoji.format('步兵', '9019084812125033/WN0jvQAtEY00o01r')
+    emoji_archer = __base_emoji.format('射手', '9019084812125033/usVMZodUDl01700u')
+    emoji_calvary = __base_emoji.format('骑士', '9019084812125033/Miw85Tj2UO01900u')
+
+    emoji_khuzait = convert_emoji_format('[:库塞特:9019084812125033/py018TXFqF02o02o]')
+    emoji_empire = convert_emoji_format('[:帝国:9019084812125033/0hTjZ1WNSl02o02o]')
+    emoji_vlandia = convert_emoji_format('[:瓦兰迪亚:9019084812125033/UfbjsLdqI402o02o]')
+    emoji_sturgia = convert_emoji_format('[:斯特吉亚:9019084812125033/tnDpXrEG0C02o02o]')
+    emoji_battania = convert_emoji_format('[:瓦兰迪亚:9019084812125033/NwuMZhzJyU02o02o]')
+    emoji_aserai = convert_emoji_format('[:阿塞莱:9019084812125033/yP4v6PNbWn02o02o]')
+
+    image_khuzait = 'https://img.kookapp.cn/assets/2025-04/29/avZOXPBq4v02o02o.png'
+    image_empire_faction = 'https://img.kookapp.cn/assets/2025-04/29/kCk8UXelZG02o02o.png'
+    image_vlandia = 'https://img.kookapp.cn/assets/2025-04/29/CxdxHophJM02o02o.png'
+    image_sturgia = 'https://img.kookapp.cn/assets/2025-04/29/QJXv13AD4U02o02o.png'
+    image_battania = 'https://img.kookapp.cn/assets/2025-04/29/rTqyi3WAER02o02o.png'
+    image_aserai = 'https://img.kookapp.cn/assets/2025-04/29/40PaFWNgwH02o02o.png'
+    image_vs = 'https://img.kookapp.cn/assets/2025-04/29/HMRaT9zhJh05k05k.png'
+
+
 class EsChannels:
     _instance = None
 
@@ -330,9 +440,9 @@ class EsChannels:
             OldGuildChannel.match_wait_channel)
         self.match_attack_channel: PublicVoiceChannel = await bot1.client.fetch_public_channel(
             OldGuildChannel.match_attack_channel)
-        self.match_defend_channel: PublicVoiceChannel = await  bot1.client.fetch_public_channel(
+        self.match_defend_channel: PublicVoiceChannel = await bot1.client.fetch_public_channel(
             OldGuildChannel.match_defend_channel)
-        self.command_channel: PublicTextChannel = await  bot1.client.fetch_public_channel(
+        self.command_channel: PublicTextChannel = await bot1.client.fetch_public_channel(
             OldGuildChannel.command_channel)
 
         self.ready = True

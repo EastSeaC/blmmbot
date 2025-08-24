@@ -7,6 +7,13 @@
 # KOOK指令
 ctrl+shift+alt + ) 打开控制台 PC端和网页端均可
 
+# 使用方式
+1. 安装python，推荐版本>3.9
+2. 安装对应的库 ，需要执行指令 `pip install -r requirements.txt` 
+   1. 有些库安装缓慢，那么需要使用镜像，即 `pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple`
+   2. 有些库镜像当中没有，需要直接安装 `pip install -r requirements.txt -i https://pypi.org/simple`
+3. 使用指令运行 `python blmm_bot.py`
+
 # 便捷指令
 
 >pip install -r requirements.txt
